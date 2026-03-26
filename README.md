@@ -507,7 +507,21 @@ Restart Xray:
 sudo systemctl restart xray
 ```
 
-### Configure Firewall (Restrict to Your IP)
+### Configure Firewall
+
+**Option A — Open to everyone (no IP restriction)**
+
+Use this if you want any machine to be able to connect to your proxy (e.g., a small trusted network, or you'll handle access control at the application level):
+
+```bash
+sudo ufw allow 10801/tcp
+```
+
+> **Warning:** An open proxy with no authentication is a security risk. Anyone on the internet who discovers port 10801 can route their traffic through your server and VPN. Only use this on isolated or trusted networks.
+
+**Option B — Restrict to a specific IP (recommended)**
+
+Use this to allow only your home/office IP and block everyone else:
 
 ```bash
 # Allow only your IP to access the proxy
@@ -517,7 +531,14 @@ sudo ufw allow from YOUR_HOME_IP to any port 10801 proto tcp
 sudo ufw deny 10801/tcp
 ```
 
-> **Warning:** Never leave an open proxy on the internet without authentication or IP restriction. Anyone could use it.
+> Replace `YOUR_HOME_IP` with your actual public IP address (find it with `curl ifconfig.me` from your home machine).
+
+In both cases, make sure ufw is enabled:
+
+```bash
+sudo ufw enable
+sudo ufw status
+```
 
 ### Connect from Your Home Machine
 
