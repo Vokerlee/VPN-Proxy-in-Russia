@@ -101,10 +101,57 @@ You need a VPS server in a country of your choice (Europe, US, etc.). Requiremen
 
 > For a VPN server the location matters: choose a country where internet is not restricted. For a local proxy server (Part B, Option 2) you want a server close to your users — a Moscow-based VDS from FirstVDS works well if you and your users are in Russia.
 
-**Example two-server setup (Russia → Europe):**
+**Possible setups — choose what fits your situation:**
+
+---
+
+**Setup 1 — VPN server only, direct connection from a personal device**
+
+Use this when you just want to bypass restrictions on your phone, laptop, or PC.
 
 ```
-Your device (Russia)
+Your device (phone / PC)
+       │
+       │  VLESS + XTLS-Reality tunnel, encrypted
+       ▼
+HostVDS server (Europe / USA)
+  └─ runs 3X-UI + VLESS inbound on port 443
+       │
+       ▼
+   Internet
+```
+
+→ Follow [Part A](#vps-server-requirements) to set up the VPN server, then [Part B → Option 1](#option-1-direct-connection-via-client-apps) to connect from your device using a GUI client app.
+
+---
+
+**Setup 2 — VPN server only, system-wide proxy on a Linux server**
+
+Use this when you want an entire Linux server (e.g., a cloud VM) to route all its traffic through the VPN — no separate proxy VDS needed.
+
+```
+Linux server (any location)
+  └─ runs Xray HTTP proxy on 127.0.0.1:10801
+       │
+       │  VLESS + XTLS-Reality tunnel, encrypted
+       ▼
+HostVDS server (Europe / USA)
+  └─ runs 3X-UI + VLESS inbound on port 443
+       │
+       ▼
+   Internet
+```
+
+→ Follow [Part A](#vps-server-requirements) to set up the VPN server, then [Part B → Option 2](#option-2-system-wide-proxy-on-a-linux-server) to configure system-wide proxy on the Linux server.
+
+---
+
+**Setup 3 — Two-server setup with a Russian proxy (recommended for Russia)**
+
+Use this when you are based in Russia and want all your devices to go through the VPN via a single local entry point.
+
+```
+Your devices (Russia)
        │
        │  direct connection, low latency
        ▼
@@ -116,17 +163,17 @@ FirstVDS server (Moscow, Russia)
 HostVDS server (Europe / USA)
   └─ runs 3X-UI + VLESS inbound on port 443
        │
-       │  regular HTTPS traffic
        ▼
    Internet
 ```
 
-This is the recommended architecture if you are based in Russia:
-- Your device connects to the **FirstVDS proxy** using a short local hop (low latency, no censorship friction)
+- Your devices connect to the **FirstVDS proxy** using a short local hop (low latency, no censorship friction)
 - The FirstVDS proxy forwards all traffic through an encrypted **VLESS + XTLS-Reality tunnel** to the HostVDS VPN server abroad
 - From the outside, the tunnel looks like normal HTTPS traffic to google.com — DPI cannot distinguish it
 
-Follow **Part A** to set up the HostVDS server, then **Part B → Option 2** to configure the FirstVDS server as the proxy.
+→ Follow [Part A](#vps-server-requirements) to set up the HostVDS server, then [Part B → Option 2](#option-2-system-wide-proxy-on-a-linux-server) to configure the FirstVDS server as the proxy, and [Expose Proxy to Remote Clients](#expose-proxy-to-remote-clients) to allow your devices to connect to it.
+
+---
 
 Any other VPS provider will also work (Hetzner, DigitalOcean, Vultr, OVH, etc.).
 
