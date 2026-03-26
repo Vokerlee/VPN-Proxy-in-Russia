@@ -12,17 +12,52 @@ You can follow Part A alone if you just need a VPN server, or skip to Part B if 
 ## Table of Contents
 
 **PART A — VPN Server**
+
 1. [How It Works](#how-it-works)
 2. [VPS Server Requirements](#vps-server-requirements)
 3. [Install 3X-UI Panel](#install-3x-ui-panel)
+   - [Connect to Your Server via SSH](#connect-to-your-server-via-ssh)
+   - [Update the System](#update-the-system)
+   - [Install Curl](#install-curl)
+   - [Install the 3X-UI Panel](#install-the-3x-ui-panel)
+   - [Initial Credentials and Panel URL](#initial-credentials-and-panel-url)
 4. [Server Security](#server-security)
+   - [Install fail2ban](#install-fail2ban)
+   - [Create a New User with Sudo Privileges](#create-a-new-user-with-sudo-privileges)
+   - [Disable Root SSH Login](#disable-root-ssh-login)
 5. [Create VLESS + XTLS-Reality Protocol in 3X-UI](#create-vless--xtls-reality-protocol-in-3x-ui)
+   - [Access the Web Panel](#access-the-web-panel)
+   - [Add a New Connection](#add-a-new-connection)
+   - [Configure the Inbound](#configure-the-inbound)
+   - [Save](#save)
+   - [Get Connection Details](#get-connection-details)
 
 **PART B — Connecting to the VPN**
+
 6. [Option 1: Direct Connection via Client Apps](#option-1-direct-connection-via-client-apps)
+   - [Windows — Invisible Man XRay](#windows--invisible-man-xray)
+   - [macOS — FoXray](#macos--foxray)
+   - [iOS — FoXray](#ios--foxray)
+   - [Android — NekoBox](#android--nekobox)
 7. [Option 2: System-Wide Proxy on a Linux Server](#option-2-system-wide-proxy-on-a-linux-server)
+   - [Install Xray Core](#install-xray-core)
+   - [Create the Xray Config](#create-the-xray-config)
+   - [Enable and Start Xray](#enable-and-start-xray)
+   - [Configure System-Wide Proxy](#configure-system-wide-proxy)
+   - [Persistence Summary](#persistence-summary)
 8. [Expose Proxy to Remote Clients](#expose-proxy-to-remote-clients)
+   - [Change Listen Address](#change-listen-address)
+   - [Configure Firewall](#configure-firewall)
+   - [Connect from Your Home Machine](#connect-from-your-home-machine)
 9. [Troubleshooting](#troubleshooting)
+   - [Xray won't start](#xray-wont-start)
+   - [Proxy works but some sites don't load](#proxy-works-but-some-sites-dont-load)
+   - [Check your exit IP](#check-your-exit-ip)
+   - [Xray is running but connection fails](#xray-is-running-but-connection-fails)
+   - [3X-UI panel is not accessible](#3x-ui-panel-is-not-accessible)
+   - [Disable the proxy temporarily](#disable-the-proxy-temporarily)
+   - [Full uninstall script (client side)](#full-uninstall-script-client-side)
+10. [Quick Reference: Complete Client Setup Script](#quick-reference-complete-client-setup-script)
 
 ---
 
@@ -57,7 +92,43 @@ You need a VPS server in a country of your choice (Europe, US, etc.). Requiremen
 - **Unlimited traffic** (important for VPN usage)
 - **Dedicated IPv4 address**
 
-Any VPS provider will work (Hetzner, DigitalOcean, Vultr, OVH, etc.).
+**Recommended providers:**
+
+| Use case | Provider | Notes |
+|----------|----------|-------|
+| VPN server (Europe / USA) | [HostVDS](https://hostvds.com) | Good selection of European and US locations, affordable plans, KVM virtualization, Ubuntu supported |
+| Proxy server (Moscow / Russia) | [FirstVDS](https://firstvds.ru) | Russian data centers, low latency from Moscow, budget-friendly, Ubuntu supported |
+
+> For a VPN server the location matters: choose a country where internet is not restricted. For a local proxy server (Part B, Option 2) you want a server close to your users — a Moscow-based VDS from FirstVDS works well if you and your users are in Russia.
+
+**Example two-server setup (Russia → Europe):**
+
+```
+Your device (Russia)
+       │
+       │  direct connection, low latency
+       ▼
+FirstVDS server (Moscow, Russia)
+  └─ runs Xray HTTP proxy on port 10801
+       │
+       │  VLESS + XTLS-Reality tunnel, encrypted
+       ▼
+HostVDS server (Europe / USA)
+  └─ runs 3X-UI + VLESS inbound on port 443
+       │
+       │  regular HTTPS traffic
+       ▼
+   Internet
+```
+
+This is the recommended architecture if you are based in Russia:
+- Your device connects to the **FirstVDS proxy** using a short local hop (low latency, no censorship friction)
+- The FirstVDS proxy forwards all traffic through an encrypted **VLESS + XTLS-Reality tunnel** to the HostVDS VPN server abroad
+- From the outside, the tunnel looks like normal HTTPS traffic to google.com — DPI cannot distinguish it
+
+Follow **Part A** to set up the HostVDS server, then **Part B → Option 2** to configure the FirstVDS server as the proxy.
+
+Any other VPS provider will also work (Hetzner, DigitalOcean, Vultr, OVH, etc.).
 
 After purchasing, you'll receive:
 - Server IP address
