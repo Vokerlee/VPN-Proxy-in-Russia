@@ -50,8 +50,7 @@ This guide explains how to set up a self-hosted VPN using the **VLESS + XTLS-Rea
 13. [Configure System-Wide Proxy](#configure-system-wide-proxy)
 14. [Persistence Summary](#persistence-summary)
 15. [Expose Proxy to Remote Clients](#expose-proxy-to-remote-clients) *(optional)*
-16. [Troubleshooting](#troubleshooting)
-17. [Quick Reference: Complete Client Setup Script](#quick-reference-complete-client-setup-script)
+16. [Quick Reference: Complete Client Setup Script](#quick-reference-complete-client-setup-script)
 
 ---
 
@@ -662,81 +661,6 @@ curl -x http://YOUR_CLIENT_SERVER_IP:10801 https://ifconfig.me
 ```
 
 This should return the VPN server's IP.
-
----
-
-## Troubleshooting
-
-### Xray won't start
-
-```bash
-# Check the logs
-sudo journalctl -u xray -n 50 --no-pager
-
-# Validate the config
-sudo /usr/local/bin/xray run -test -config /usr/local/etc/xray/config.json
-```
-
-Common issues:
-- Invalid JSON (trailing commas, missing brackets)
-- Wrong UUID format
-- Mismatched public key / short ID
-
-### Proxy works but some sites don't load
-
-The HTTP proxy only handles HTTP/HTTPS traffic. For full system tunneling (including DNS and raw TCP), you'd need a SOCKS5 inbound or transparent proxy with iptables rules.
-
-Add a SOCKS5 inbound alongside the HTTP one in the `inbounds` array:
-
-```json
-{
-  "port": 10802,
-  "listen": "127.0.0.1",
-  "protocol": "socks",
-  "settings": {
-    "udp": true
-  }
-}
-```
-
-### Check your exit IP
-
-```bash
-# Through the proxy
-curl -x http://127.0.0.1:10801 https://ifconfig.me
-
-# Direct (without proxy)
-curl https://ifconfig.me
-```
-
-### Xray is running but connection fails
-
-1. Verify the VPN server is reachable: `ping YOUR_VPN_SERVER_IP`
-2. Verify port 443 is open on the VPN server: `nc -zv YOUR_VPN_SERVER_IP 443`
-3. Check that the UUID, public key, and short ID match exactly between 3X-UI and the client config
-4. Ensure Reality is enabled (not TLS or XTLS) in 3X-UI
-
-### 3X-UI panel is not accessible
-
-If `http://YOUR_SERVER_IP:PORT/panel/` returns nothing, the panel is likely using a **randomized URL path**. Run `x-ui` in SSH to access the admin menu, where you can view or reset the panel URL, port, and credentials.
-
-### Disable the proxy temporarily
-
-```bash
-unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY no_proxy NO_PROXY
-```
-
-### Full uninstall script (client side)
-
-```bash
-sudo systemctl stop xray
-sudo systemctl disable xray
-sudo bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ remove
-sudo rm -f /etc/profile.d/proxy.sh
-sudo rm -f /etc/apt/apt.conf.d/95proxy
-sudo rm -f /etc/systemd/system.conf.d/proxy.conf
-sudo systemctl daemon-reexec
-```
 
 ---
 
