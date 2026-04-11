@@ -9,54 +9,54 @@ This guide explains how to set up a self-hosted VPN using the **VLESS + XTLS-Rea
 - You are in Russia or a similarly restricted region and need a reliable, hard-to-block solution
 
 **What you will need:**
-- A VPS in an unrestricted country (Europe, USA, etc.) for the VPN server — see [VPS Server Requirements](#vps-server-requirements) for provider recommendations
+- A VPS in an unrestricted country (Europe, USA, etc.) for the VPN server — see [Choosing a VPS](#choosing-a-vps) for provider recommendations
 - Optionally, a second VPS close to your location (e.g., Moscow) if you want a local proxy entry point
 
 ## Table of Contents
 
-**Chapter 1 — VPN Server Setup**
+**Part 1 — Setting Up the VPN Server**
 
 1. [How It Works](#how-it-works)
-2. [VPS Server Requirements](#vps-server-requirements)
-3. [Install 3X-UI Panel](#install-3x-ui-panel)
+2. [Choosing a VPS](#choosing-a-vps)
+3. [Install the 3X-UI Management Panel](#install-the-3x-ui-management-panel)
    - [Connect to Your Server via SSH](#connect-to-your-server-via-ssh)
    - [Update the System](#update-the-system)
    - [Install Curl](#install-curl)
-   - [Install the 3X-UI Panel](#install-the-3x-ui-panel)
-   - [Initial Credentials and Panel URL](#initial-credentials-and-panel-url)
-4. [Server Security](#server-security)
-   - [Install fail2ban](#install-fail2ban)
-   - [Create a New User with Sudo Privileges](#create-a-new-user-with-sudo-privileges)
+   - [Run the Installation Script](#run-the-installation-script)
+   - [Set Credentials and Panel URL](#set-credentials-and-panel-url)
+4. [Harden Server Security](#harden-server-security)
+   - [Block Brute-Force Attempts with fail2ban](#block-brute-force-attempts-with-fail2ban)
+   - [Create a Non-Root Admin User](#create-a-non-root-admin-user)
    - [Disable Root SSH Login](#disable-root-ssh-login)
-5. [Create VLESS + XTLS-Reality Protocol in 3X-UI](#create-vless--xtls-reality-protocol-in-3x-ui)
-   - [Access the Web Panel](#access-the-web-panel)
-   - [Add a New Connection](#add-a-new-connection)
-   - [Configure the Inbound](#configure-the-inbound)
-   - [Save](#save)
-   - [Get Connection Details](#get-connection-details)
+5. [Create a VPN Client in 3X-UI](#create-a-vpn-client-in-3x-ui)
+   - [Open the Web Panel](#open-the-web-panel)
+   - [Add a New Inbound](#add-a-new-inbound)
+   - [Fill In the Settings](#fill-in-the-settings)
+   - [Save and Create](#save-and-create)
+   - [Copy Your Connection URL](#copy-your-connection-url)
 
-**Chapter 2 — Connect from Phone/PC**
+**Part 2 — Connecting Your Phone or PC**
 
 6. [Windows — Invisible Man XRay](#windows--invisible-man-xray)
 7. [macOS — FoXray](#macos--foxray)
 8. [iOS — FoXray](#ios--foxray)
 9. [Android — NekoBox](#android--nekobox)
 
-**Chapter 3 — Use Xray from Linux**
+**Part 3 — Routing a Linux Server Through the VPN**
 
 10. [Install Xray Core](#install-xray-core)
-11. [Create the Xray Config](#create-the-xray-config)
-12. [Enable and Start Xray](#enable-and-start-xray)
-13. [Configure System-Wide Proxy](#configure-system-wide-proxy)
-14. [Persistence Summary](#persistence-summary)
-15. [Expose Proxy to Remote Clients](#expose-proxy-to-remote-clients) *(optional)*
-16. [Quick Reference: Complete Client Setup Script](#quick-reference-complete-client-setup-script)
+11. [Write the Configuration File](#write-the-configuration-file)
+12. [Start Xray and Verify](#start-xray-and-verify)
+13. [Route All Traffic Through the Proxy](#route-all-traffic-through-the-proxy)
+14. [What Persists After Reboot](#what-persists-after-reboot)
+15. [Share the Proxy with Other Devices](#share-the-proxy-with-other-devices) *(optional)*
+16. [One-Command Setup Script](#one-command-setup-script)
 
 ---
 
-# Chapter 1 — VPN Server Setup
+# Part 1 — Setting Up the VPN Server
 
-Everything in this chapter happens on your **VPN server** — the machine that will act as the tunnel endpoint.
+Everything in this part happens on your **VPN server** — the remote machine that acts as the tunnel endpoint.
 
 ---
 
@@ -74,7 +74,7 @@ Your proxy traffic is disguised as regular browser HTTPS traffic using a real TL
 
 ---
 
-## VPS Server Requirements
+## Choosing a VPS
 
 > Skip this section if you already have a VPS server.
 
@@ -114,7 +114,7 @@ HostVDS server (Europe / USA)
    Internet
 ```
 
-→ Follow Chapter 1 to set up the VPN server, then Chapter 2 to connect from your device using a GUI client app.
+→ Follow Part 1 to set up the VPN server, then Part 2 to connect from your device using a GUI client app.
 
 ---
 
@@ -135,7 +135,7 @@ HostVDS server (Europe / USA)
    Internet
 ```
 
-→ Follow Chapter 1 to set up the VPN server, then Chapter 3 to configure system-wide proxy on the Linux server.
+→ Follow Part 1 to set up the VPN server, then Part 3 to configure system-wide proxy on the Linux server.
 
 ---
 
@@ -164,7 +164,7 @@ HostVDS server (Europe / USA)
 - The FirstVDS proxy forwards all traffic through an encrypted **VLESS + XTLS-Reality tunnel** to the HostVDS VPN server abroad
 - From the outside, the tunnel looks like normal HTTPS traffic to google.com — DPI cannot distinguish it
 
-→ Follow Chapter 1 to set up the HostVDS server, then Chapter 3 to configure the FirstVDS server as the proxy, and [Expose Proxy to Remote Clients](#expose-proxy-to-remote-clients) to allow your devices to connect to it.
+→ Follow Part 1 to set up the HostVDS server, then Part 3 to configure the FirstVDS server as the proxy, and [Share the Proxy with Other Devices](#share-the-proxy-with-other-devices) to allow your devices to connect to it.
 
 ---
 
@@ -174,7 +174,7 @@ After purchasing a VPS, you'll receive:
 
 ---
 
-## Install 3X-UI Panel
+## Install the 3X-UI Management Panel
 
 ### Connect to Your Server via SSH
 
@@ -196,7 +196,7 @@ apt update && apt upgrade -y
 apt install curl -y
 ```
 
-### Install the 3X-UI Panel
+### Run the Installation Script
 
 Run the official installation script from GitHub:
 
@@ -206,7 +206,7 @@ bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.
 
 > This same script can be used to update the panel to the latest version at any time.
 
-### Initial Credentials and Panel URL
+### Set Credentials and Panel URL
 
 After installation completes, it will ask if you want to make modifications — answer **Y** (yes).
 
@@ -232,11 +232,11 @@ The panel is now installed. You can manage it with these commands:
 
 ---
 
-## Server Security
+## Harden Server Security
 
-### Install fail2ban
+### Block Brute-Force Attempts with fail2ban
 
-This blocks IP addresses after too many failed login attempts:
+This automatically bans IP addresses after too many failed login attempts:
 
 ```bash
 apt install fail2ban -y
@@ -244,7 +244,7 @@ systemctl start fail2ban
 systemctl enable fail2ban
 ```
 
-### Create a New User with Sudo Privileges
+### Create a Non-Root Admin User
 
 ```bash
 adduser YOUR_USERNAME
@@ -290,9 +290,9 @@ From now on, connect using: `ssh YOUR_USERNAME@YOUR_SERVER_IP`
 
 ---
 
-## Create VLESS + XTLS-Reality Protocol in 3X-UI
+## Create a VPN Client in 3X-UI
 
-### Access the Web Panel
+### Open the Web Panel
 
 Open in your browser:
 
@@ -304,12 +304,12 @@ http://YOUR_SERVER_IP:YOUR_PORT/YOUR_PATH/
 
 Log in with the username and password you created (or the random ones generated during installation).
 
-### Add a New Connection
+### Add a New Inbound
 
 1. Go to **Inbounds**
 2. Click **Add Inbound**
 
-### Configure the Inbound
+### Fill In the Settings
 
 **General settings:**
 
@@ -353,11 +353,11 @@ Log in with the username and password you created (or the random ones generated 
 
 > Note: The XTLS and Reality toggles in 3X-UI are mutually exclusive. "XTLS" here means the older protocol versions. Reality is what you want.
 
-### Save
+### Save and Create
 
 Click **Create**. Your VLESS + XTLS-Reality inbound is ready!
 
-### Get Connection Details
+### Copy Your Connection URL
 
 Click the **Info** icon next to your client to see the connection URL. It will look like:
 
@@ -369,11 +369,11 @@ Save this URL — you'll need it for client configuration. You can also click th
 
 ---
 
-# Chapter 2 — Connect from Phone/PC
+# Part 2 — Connecting Your Phone or PC
 
 Use a GUI app to connect directly to your VLESS + XTLS-Reality server. No separate proxy setup is needed — just import the connection URL and click connect.
 
-You need the connection URL (or individual values: server IP, UUID, public key, short ID) from Chapter 1.
+You need the connection URL (or individual values: server IP, UUID, public key, short ID) from Part 1.
 
 ---
 
@@ -418,11 +418,11 @@ You need the connection URL (or individual values: server IP, UUID, public key, 
 
 ---
 
-# Chapter 3 — Use Xray from Linux
+# Part 3 — Routing a Linux Server Through the VPN
 
-This chapter covers installing Xray core on an Ubuntu server, creating an HTTP proxy that tunnels traffic through your VLESS VPN server, and routing all system traffic through it.
+This part covers installing Xray core on an Ubuntu server, creating an HTTP proxy that tunnels traffic through your VLESS VPN server, and routing all system traffic through it.
 
-You need the connection details (server IP, UUID, public key, short ID) from Chapter 1.
+You need the connection details (server IP, UUID, public key, short ID) from Part 1.
 
 ---
 
@@ -432,7 +432,7 @@ You need the connection details (server IP, UUID, public key, short ID) from Cha
 sudo bash -c "$(curl -L https://github.com/XTLS/Xray-install/raw/main/install-release.sh)" @ install
 ```
 
-## Create the Xray Config
+## Write the Configuration File
 
 Replace the placeholder values below with your actual server details from the 3X-UI connection URL.
 
@@ -503,7 +503,7 @@ EOF
 | `YOUR_PUBLIC_KEY` | The Public Key generated in 3X-UI |
 | `YOUR_SHORT_ID` | The ShortId from 3X-UI |
 
-## Enable and Start Xray
+## Start Xray and Verify
 
 ```bash
 sudo systemctl daemon-reload
@@ -511,13 +511,13 @@ sudo systemctl enable xray
 sudo systemctl start xray
 ```
 
-Verify it's running:
+Check that it's running:
 
 ```bash
 sudo systemctl status xray --no-pager
 ```
 
-Test the connection:
+Test the proxy is working:
 
 ```bash
 curl -x http://127.0.0.1:10801 -s -o /dev/null -w "HTTP status: %{http_code}\n" https://www.google.com
@@ -525,19 +525,19 @@ curl -x http://127.0.0.1:10801 -s -o /dev/null -w "HTTP status: %{http_code}\n" 
 
 You should see `HTTP status: 200`.
 
-Check your exit IP:
+Check that traffic exits through the VPN:
 
 ```bash
 curl -x http://127.0.0.1:10801 https://ifconfig.me
 ```
 
-This should return your VPN server's IP, not the client server's IP.
+This should return your VPN server's IP, not the local server's IP.
 
-## Configure System-Wide Proxy
+## Route All Traffic Through the Proxy
 
-### Proxy for All Login Shells
+### Shell Sessions
 
-Create `/etc/profile.d/proxy.sh`:
+Create `/etc/profile.d/proxy.sh` so every new terminal session uses the proxy automatically:
 
 ```bash
 sudo tee /etc/profile.d/proxy.sh > /dev/null << 'EOF'
@@ -558,7 +558,7 @@ source /etc/profile.d/proxy.sh
 
 > Both lowercase and uppercase variants are needed because different tools read different ones — curl and wget use lowercase, some Java/Python libraries use uppercase.
 
-### Proxy for APT (Optional)
+### APT Package Manager (Optional)
 
 ```bash
 sudo tee /etc/apt/apt.conf.d/95proxy > /dev/null << 'EOF'
@@ -567,9 +567,9 @@ Acquire::https::Proxy "http://127.0.0.1:10801";
 EOF
 ```
 
-### Proxy for All Systemd Services (Optional)
+### Background System Services (Optional)
 
-This ensures background services (Docker, cron jobs, nginx, etc.) also use the proxy:
+This ensures services started by systemd (Docker, cron jobs, nginx, etc.) also use the proxy:
 
 ```bash
 sudo mkdir -p /etc/systemd/system.conf.d
@@ -582,9 +582,9 @@ EOF
 sudo systemctl daemon-reexec
 ```
 
-## Persistence Summary
+## What Persists After Reboot
 
-Everything above persists across reboots automatically:
+Everything above survives reboots automatically:
 
 | Component | File | Persists? |
 |-----------|------|-----------|
@@ -595,11 +595,11 @@ Everything above persists across reboots automatically:
 
 ---
 
-## Expose Proxy to Remote Clients
+## Share the Proxy with Other Devices
 
-> **Optional.** By default, Xray listens on `127.0.0.1:10801` (local only). Follow this section if you want other machines (e.g., your home PC or other devices on your network) to connect through this server's proxy. This is used in Setup 3 from Chapter 1.
+> **Optional.** By default, Xray listens on `127.0.0.1:10801` (local only). Follow this section if you want other machines (e.g., your home PC or phones) to connect through this server's proxy. This is used in Setup 3 from Part 1.
 
-### Change Listen Address
+### Allow Connections from Outside
 
 Edit `/usr/local/etc/xray/config.json` and change:
 
@@ -613,7 +613,7 @@ Restart Xray:
 sudo systemctl restart xray
 ```
 
-### Configure Firewall
+### Open the Firewall Port
 
 **Option A — Open to everyone (no IP restriction)**
 
@@ -646,7 +646,7 @@ sudo ufw enable
 sudo ufw status
 ```
 
-### Connect from Your Home Machine
+### Test from Another Device
 
 Set your system proxy to:
 
@@ -664,7 +664,7 @@ This should return the VPN server's IP.
 
 ---
 
-## Quick Reference: Complete Client Setup Script
+## One-Command Setup Script
 
 Copy and customize this script for fast deployment on a fresh Ubuntu 24 server:
 
