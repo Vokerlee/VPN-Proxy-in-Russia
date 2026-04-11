@@ -433,6 +433,8 @@ You need the connection URL (or individual values: server IP, UUID, public key, 
 4. The new profile should appear in the list
 5. Tap the toggle on the profile to connect and confirm the VPN connection request
 
+> **Troubleshooting — Google services unreachable:** If Google or other services remain inaccessible after connecting, try enabling **Fake DNS** in Hiddify settings. Fake DNS is a technique where the VPN intercepts all DNS queries and returns a synthetic (fake) IP address for every domain — the app then maps that fake IP back to the real hostname when establishing the connection through the tunnel. This prevents DNS leaks and ensures that apps which resolve domain names before the VPN is fully active still get routed correctly. To enable it: open Hiddify → **Settings** → **Advanced** → turn on **Fake DNS**.
+
 > **Note:** NekoBox for Android ([MatsuriDayo/NekoBoxForAndroid](https://github.com/MatsuriDayo/NekoBoxForAndroid)) is no longer actively maintained and may be broken — Hiddify is the recommended alternative.
 >
 > The key difference is the underlying core engine: NekoBox runs on **Xray core** (the same engine that 3X-UI uses on the server), while Hiddify is powered by **sing-box** — a separate open-source project with a different codebase but overlapping protocol support. In practice, both handle VLESS+XTLS-Reality connections just fine. The distinction matters mainly when troubleshooting: if the server-side Xray config uses a feature or a parameter that sing-box interprets slightly differently, behavior may diverge. Since 3X-UI generates a standard `vless://` URI, this is rarely an issue for typical setups.
