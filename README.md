@@ -10,6 +10,7 @@ Set up a personal VLESS + REALITY server, connect your devices, and verify where
 | Create an inbound and copy your connection link | [VLESS + REALITY settings](docs/server-inbound.md) |
 | Make the server exit over IPv4 | [ForceIPv4 in the panel](docs/force-ipv4.md) |
 | Connect a Windows PC or phone | [Client setup](docs/clients.md) |
+| Understand Windows proxy ports and the Connect button | [Ports and connection modes](docs/ports-and-modes.md) |
 | Connect a Linux machine using Xray | [Linux Xray client](docs/linux-xray.md) |
 | Let another device use your local proxy | [Share a proxy](docs/share-proxy.md) |
 
