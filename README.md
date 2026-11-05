@@ -13,6 +13,7 @@ Set up a personal VLESS + REALITY server, connect your devices, and verify where
 | Understand Windows proxy ports and the Connect button | [Ports and connection modes](docs/ports-and-modes.md) |
 | Fix a timeout, handshake error, or wrong exit address | [Troubleshooting](docs/troubleshooting.md) |
 | Connect a Linux machine using Xray | [Linux Xray client](docs/linux-xray.md) |
+| Understand Xray as a programmer or network engineer | [Inside Xray](docs/xray-internals.md) |
 | Let another device use your local proxy | [Share a proxy](docs/share-proxy.md) |
 
 For a new installation, follow server setup, inbound settings, then client setup. For an existing server, start with client setup and keep the existing server parameters.
