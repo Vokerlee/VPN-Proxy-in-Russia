@@ -1,241 +1,121 @@
-[← Guide index](../README.md)
+[← Guide index](../README.md) · Next: [Create the inbound](server-inbound.md)
 
-# Server setup
+# Install and prepare the VPN server
 
-## How It Works
+**Where:** an Ubuntu VPS outside your filtered network. **Result:** a working 3x-ui panel and a server ready to accept VPN connections.
 
-VLESS with XTLS-Reality uses a unique identification method during the TLS handshake to distinguish authorized clients from outsiders. When the server recognizes the client as "its own," it functions as a proxy. When unrecognized traffic arrives, the connection is redirected to a real website (e.g., google.com) and mimics its behavior.
+UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11-06**. Record your panel and Xray versions before making changes; they have independent release numbers. Existing working installations do not need a reinstall.
 
-Your proxy traffic is disguised as regular browser HTTPS traffic using a real TLS certificate. This makes proxy detection virtually impossible for deep packet inspection (DPI) systems.
+## 1. Choose the deployment
 
-**Why VLESS + XTLS-Reality over WireGuard or Shadowsocks?**
+| You need | Deploy |
+|---|---|
+| A VPN for a phone or Windows PC | One VPS, then [Hiddify](clients.md) on each device |
+| Proxy access for Linux programs | One VPS, then the [Linux client](linux-xray.md) |
+| One proxy endpoint for several devices | The VPS plus a separate [restricted proxy host](share-proxy.md) |
 
-- WireGuard is already being blocked in some regions
-- Shadowsocks is an older protocol with known detection signatures
-- VLESS + XTLS-Reality is the most modern obfuscation and encryption protocol available
+Start with Ubuntu 24.04 LTS, one CPU core, about 1 GiB RAM, a dedicated IPv4 address, and enough transfer allowance. These are practical starting values, not a capacity guarantee. IPv6 on the VPS is optional. HostVDS and FirstVDS are examples used by this project; check current locations, traffic limits, payment methods, and network reachability before purchasing. No particular provider guarantees an unblocked route.
 
----
+## 2. Connect over SSH
 
-## Choosing a VPS
-
-> Skip this section if you already have a VPS server.
-
-You need a VPS server in a country of your choice (Europe, US, etc.). Requirements:
-
-- **OS:** Ubuntu 20.04 / 22.04 / 24.04
-- **Minimum specs:** 1 CPU core, 512 MB RAM, 10 GB disk
-- **Unlimited traffic** (important for VPN usage)
-- **Dedicated IPv4 address**
-
-**Recommended providers:**
-
-| Use case | Provider | Notes |
-|----------|----------|-------|
-| VPN server (Europe / USA) | [HostVDS](https://hostvds.com) | Good selection of European and US locations, affordable plans, KVM virtualization, Ubuntu supported; accepts **Mir**, **Mastercard**, and **crypto** |
-| Proxy server (Moscow / Russia) | [FirstVDS](https://firstvds.ru) | Russian data centers, low latency from Moscow, budget-friendly, Ubuntu supported |
-
-> Any other VPS provider will also work (Hetzner, DigitalOcean, Vultr, OVH, etc.).
-
-**Possible setups — choose what fits your situation:**
-
----
-
-**Setup 1 — VPN server only, direct connection from a personal device**
-
-Use this when you just want to bypass restrictions on your phone, laptop, or PC.
-
-```
-Your device (phone / PC)
-       │
-       │  VLESS + XTLS-Reality tunnel, encrypted
-       ▼
-HostVDS server (Europe / USA)
-  └─ runs 3X-UI + VLESS inbound on port 443
-       │
-       ▼
-   Internet
-```
-
-→ Follow Part 1 to set up the VPN server, then Part 2 to connect from your device using a GUI client app.
-
----
-
-**Setup 2 — VPN server only, system-wide proxy on a Linux server**
-
-Use this when you want an entire Linux server (e.g., a cloud VM) to route all its traffic through the VPN — no separate proxy VDS needed.
-
-```
-Linux server (any location)
-  └─ runs Xray HTTP proxy on 127.0.0.1:10801
-       │
-       │  VLESS + XTLS-Reality tunnel, encrypted
-       ▼
-HostVDS server (Europe / USA)
-  └─ runs 3X-UI + VLESS inbound on port 443
-       │
-       ▼
-   Internet
-```
-
-→ Follow Part 1 to set up the VPN server, then Part 3 to configure system-wide proxy on the Linux server.
-
----
-
-**Setup 3 — Two-server setup with a Russian proxy**
-
-Use this when you are based in Russia and want all your devices to go through the VPN via a single local entry point.
-
-```
-Your devices (Russia)
-       │
-       │  direct connection, low latency
-       ▼
-FirstVDS server (Moscow, Russia)
-  └─ runs Xray HTTP proxy on port 10801
-       │
-       │  VLESS + XTLS-Reality tunnel, encrypted
-       ▼
-HostVDS server (Europe / USA)
-  └─ runs 3X-UI + VLESS inbound on port 443
-       │
-       ▼
-   Internet
-```
-
-- Your devices connect to the **FirstVDS proxy** using a short local hop (low latency, no censorship friction)
-- The FirstVDS proxy forwards all traffic through an encrypted **VLESS + XTLS-Reality tunnel** to the HostVDS VPN server abroad
-- From the outside, the tunnel looks like normal HTTPS traffic to google.com — DPI cannot distinguish it
-
-→ Follow Part 1 to set up the HostVDS server, then Part 3 to configure the FirstVDS server as the proxy, and [Share the Proxy with Other Devices](share-proxy.md) to allow your devices to connect to it.
-
----
-
-After purchasing a VPS, you'll receive:
-- Server IP address
-- Root password (or SSH key)
-
----
-
-## Install the 3X-UI Management Panel
-
-### Connect to Your Server via SSH
+Your VPS provider supplies an IP and a root password or SSH key:
 
 ```bash
 ssh root@YOUR_SERVER_IP
 ```
 
-When asked about the fingerprint, type `yes` and press Enter. Then enter your password.
+Compare the first-connection host fingerprint with the provider's console when available. Enter the password at the prompt; do not put it in the command or publish it in a screenshot.
 
-### Update the System
-
-```bash
-apt update && apt upgrade -y
-```
-
-### Install Curl
+The following installation commands run **on the VPS**, initially as root:
 
 ```bash
-apt install curl -y
+apt update
+apt upgrade -y
+apt install -y curl ca-certificates
 ```
 
-### Run the Installation Script
+If a reboot is required, reconnect afterward before continuing.
 
-Run the official installation script from GitHub:
+## 3. Install 3x-ui
+
+Use the [official 3x-ui repository](https://github.com/MHSanaei/3x-ui) and its [release instructions](https://github.com/MHSanaei/3x-ui/releases). Download the installer before running it so it can be inspected:
 
 ```bash
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+curl -fL https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh -o /tmp/3x-ui-install.sh
+less /tmp/3x-ui-install.sh
+bash /tmp/3x-ui-install.sh
 ```
 
-> This same script can be used to update the panel to the latest version at any time.
+Press `q` to leave `less`. Running the installer grants it root access. Use an official stable release, and record the installed version rather than assuming the latest panel and every client engine are compatible.
 
-### Set Credentials and Panel URL
+At the installer prompts:
 
-After installation completes, it will ask if you want to customize the port — answer **Y** (yes).
+1. Choose a panel port when offered. Use an unused port, for example `27297`.
+2. Follow the certificate/HTTPS setup offered by your installer version. A trusted certificate for a hostname avoids browser certificate warnings. A panel certificate and REALITY transport security are separate things.
+3. Copy the printed **panel URL, username, password, and URL path** to a password manager.
+4. Open that exact URL in a browser. Keep the URL path; opening only the IP and port may return 404.
+5. Sign in and check the dashboard's panel and Xray versions.
 
-![3X-UI installation — port customization prompt](../images/3x-ui-installation.png)
+The panel port is an administration port. Do not put it in the VPN client's server-port field. See [the port map](ports-and-modes.md#the-ports-you-will-see).
 
-- **Port:** Choose a port for the web panel (e.g., `14288`; use a high port up to 65535)
+If you lose the panel URL or credentials, run `x-ui` over SSH and use the menu's settings/reset options. Do not assume the installer always chooses the same defaults.
 
-The username and password are generated automatically. When installation finishes, it prints the panel URL and the generated credentials — copy them immediately.
+## 4. Check port availability and firewalls
 
-![3X-UI installation complete — credentials and panel URL](../images/3x-ui-credentials.png)
-
-To change the username and password, log in to the panel at `https://YOUR_SERVER_IP:YOUR_PORT/YOUR_PATH/` and update them in the settings.
-
-> **Note:** If you skip the modification step (answer **N**), both the port and URL path will also be randomized. The installer still prints all values to the terminal — copy them before closing the session. You can also retrieve or reset them at any time by running `x-ui` in the terminal.
-
-The panel is now installed. You can manage it with these commands:
-
-| Command | Action |
-|---------|--------|
-| `x-ui` | Enter admin menu |
-| `x-ui start` | Start the panel |
-| `x-ui stop` | Stop the panel |
-| `x-ui restart` | Restart the panel |
-| `x-ui status` | Show panel status |
-| `x-ui enable` | Enable auto-start on boot |
-| `x-ui disable` | Disable auto-start on boot |
-| `x-ui log` | View logs |
-| `x-ui update` | Update the panel |
-
----
-
-## Harden Server Security
-
-### Block Brute-Force Attempts with fail2ban
-
-This automatically bans IP addresses after too many failed login attempts:
+Before assigning the public VPN port, inspect listeners:
 
 ```bash
-apt install fail2ban -y
-systemctl start fail2ban
-systemctl enable fail2ban
+ss -lntp
 ```
 
-### Create a Non-Root Admin User
+Use TCP `443` for a new REALITY inbound if it is free. Existing web servers may already own it; choose another free TCP port, such as `8443`, or plan the coexistence explicitly. A nonstandard port is valid, but networks may filter it differently. Opening TCP 443 does not make a listener on 8443 reachable.
+
+Allow the selected VPN TCP port in **both** the provider's firewall/security group and the host firewall, if enabled. UDP 443 is not required for the RAW/TCP inbound in this guide.
+
+For an existing UFW installation, inspect the current rules before adding one:
 
 ```bash
-adduser YOUR_USERNAME
+ufw status verbose
+ufw allow 443/tcp
 ```
 
-Enter a strong password and optionally fill in user details (or leave them blank).
+Replace `443` if you selected another VPN port. Before enabling a new firewall, allow your actual SSH port and arrange access to the panel from your administration IP. Do not enable a default-deny firewall from a remote session before protecting SSH access. If UFW is absent, inspect the existing nftables/iptables rules rather than installing a second firewall blindly.
 
-Add the new account to the sudo group:
+## 5. Keep administration recoverable
+
+Create a separate administrator:
 
 ```bash
-usermod -aG sudo YOUR_USERNAME
+adduser YOUR_ADMIN_NAME
+usermod -aG sudo YOUR_ADMIN_NAME
 ```
 
-Switch to the new account:
+In a **second terminal**, verify `ssh YOUR_ADMIN_NAME@YOUR_SERVER_IP` works and that `sudo -v` succeeds. Keep the first session open while changing SSH access. Set up and test an SSH key before disabling password authentication.
+
+For SSH brute-force protection on Ubuntu:
 
 ```bash
-su - YOUR_USERNAME
+apt install -y fail2ban
+cat > /etc/fail2ban/jail.d/sshd.local <<'EOF'
+[sshd]
+enabled = true
+backend = systemd
+EOF
+systemctl enable --now fail2ban
+fail2ban-client status sshd
 ```
 
-### Disable Root SSH Login
+If you choose to disable root SSH login, set `PermitRootLogin no` in the effective SSH server configuration, check `sshd -t`, then reload `ssh`. Ubuntu include files can override settings; verify the effective result with `sshd -T`. Test a new administrator login before closing the original session.
 
-Edit the SSH config:
+## 6. Verify services before creating a client
 
 ```bash
-sudo nano /etc/ssh/sshd_config
+systemctl is-active x-ui
+systemctl --failed --no-pager
+/usr/local/x-ui/x-ui -v
+/usr/local/x-ui/bin/xray-linux-amd64 version
 ```
 
-Find the line `PermitRootLogin` and set it to:
+Paths and executable names can differ by architecture or installation method. Xray may run as a child of `x-ui`, without a separate `xray.service`. An active panel alone does not prove the VPN listener is running.
 
-```
-PermitRootLogin no
-```
-
-Save with `Ctrl+X`, then `Y`, then `Enter`.
-
-Restart SSH:
-
-```bash
-sudo service sshd restart
-```
-
-From now on, connect using: `ssh YOUR_USERNAME@YOUR_SERVER_IP`
-
----
-
-[← Guide index](../README.md)
+**Success:** the panel opens, you know the selected public VPN port, and SSH still works. Continue with [inbound creation](server-inbound.md).
