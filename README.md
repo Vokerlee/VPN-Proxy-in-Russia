@@ -8,6 +8,7 @@ Set up a personal VLESS + REALITY server, connect your devices, and verify where
 |---|---|
 | Choose a VPS and install 3x-ui | [Server setup](docs/server-setup.md) |
 | Create an inbound and copy your connection link | [VLESS + REALITY settings](docs/server-inbound.md) |
+| Make the server exit over IPv4 | [ForceIPv4 in the panel](docs/force-ipv4.md) |
 | Connect a Windows PC or phone | [Client setup](docs/clients.md) |
 | Connect a Linux machine using Xray | [Linux Xray client](docs/linux-xray.md) |
 | Let another device use your local proxy | [Share a proxy](docs/share-proxy.md) |
