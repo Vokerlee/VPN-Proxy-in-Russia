@@ -12,6 +12,8 @@ These labels refer to **3x-ui 3.8.5**. Inbounds accept clients; outbounds carry 
 2. In the main left sidebar, click **Inbounds**.
 3. Click **Add Inbound**. On a narrow screen, open the sidebar with the menu button first.
 
+![3x-ui buttons: Inbounds, then Add Inbound](../images/3x-ui-add-inbound.svg)
+
 ## 2. Set the listener
 
 | Field | Set it to | Check |
@@ -47,6 +49,8 @@ curl -I --connect-timeout 5 --max-time 15 https://www.google.com/
 
 For an existing inbound, do **not** regenerate keys or short IDs: that invalidates existing profiles. A client's REALITY public key is not the website's certificate key.
 
+![REALITY form: RAW/TCP, REALITY, Get New Key, Vision and Create](../images/3x-ui-reality-settings.svg)
+
 ## 4. Set the client account
 
 Some forms reveal Flow only after selecting REALITY.
@@ -64,6 +68,8 @@ Some forms reveal Flow only after selecting REALITY.
 
 Click **Create** / **Save**, then apply or restart Xray if the panel prompts for it. This can interrupt existing VPN sessions briefly.
 
+![3x-ui client row: expand the inbound and open Info or Share](../images/3x-ui-client-info.svg)
+
 ## 5. Export the connection
 
 1. In **Inbounds**, expand the inbound's client list if needed.
@@ -80,6 +86,8 @@ vless://YOUR_UUID@YOUR_SERVER_IP:443?encryption=none&flow=xtls-rprx-vision&secur
 Check server IP, VPN port, UUID, Flow, REALITY public key, short ID, SNI, fingerprint, and transport. A correct IP with the wrong key or short ID can establish TCP and still fail REALITY authentication.
 
 Create another client account for another person/device when you need separate revocation or usage accounting. You can reuse the same inbound; a second listener port is not required.
+
+![Client details actions: Copy VLESS URL or Show QR code](../images/3x-ui-client-share.svg)
 
 ## 6. Verify the listener
 

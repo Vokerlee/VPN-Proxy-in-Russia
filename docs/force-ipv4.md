@@ -28,6 +28,8 @@ Do not change **Routing → Domain Strategy** to `ForceIPv4`: that field serves 
 
 If you cannot find Outbounds, check the panel version on its dashboard. In 3.8.5 an alternative is **Xray Settings → Advanced → Outbounds**, above the JSON editor, but that alternative does involve editing JSON. Do not assume a tutorial's tabs match every release.
 
+![3x-ui button path: Outbounds, direct Edit, ForceIPv4, Save](../images/3x-ui-force-ipv4.svg)
+
 ## What the choices mean
 
 | Choice | Behavior for a destination hostname |

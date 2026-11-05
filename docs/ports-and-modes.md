@@ -63,6 +63,8 @@ Keep their ports separate. A second program cannot bind the same address, port, 
 
 A system proxy also has limits. Some programs ignore it, some use their own proxy settings, and services using WinHTTP can have a separate configuration. UDP applications do not become HTTP-proxied just because the setting is enabled. Do not describe this mode as “every packet is now inside the VPN.”
 
+![Windows proxy buttons: Set up, address 127.0.0.1, port 12334, Save](../images/windows-proxy.svg)
+
 ## VPN / TUN mode: move the traffic selection into routing
 
 In **Settings → Inbound → Service mode**, select **VPN / TUN** if you need applications that ignore the HTTP proxy to use the client. Windows may ask for administrator permission. On phones, the OS presents a VPN permission dialog.

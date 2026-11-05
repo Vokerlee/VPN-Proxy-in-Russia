@@ -19,6 +19,8 @@ The profile name is cosmetic. Check that you selected the intended server, espec
 
 Treat the link like a password. It contains the account UUID and enough parameters to connect. A REALITY public key is public by design, but the complete URI still grants account access.
 
+![Hiddify buttons: New profile, Add from clipboard, select the profile](../images/hiddify-import.svg)
+
 ## Choose how much traffic Hiddify should handle
 
 Open **Settings → Inbound → Service mode**. The three choices solve different problems:
@@ -32,6 +34,8 @@ Open **Settings → Inbound → Service mode**. The three choices solve differen
 For the first test, choose **Proxy**. This keeps a running Invisible Man, another VPN, and Windows' current proxy selection untouched. Two clients may be open together, but they must not bind the same local port or keep replacing each other's system proxy.
 
 On Android/iOS the normal VPN mode uses the operating system's VPN permission dialog. Allow the configuration when you intentionally connect; you do not enter a desktop localhost proxy into the phone's Wi-Fi settings for this mode.
+
+![Hiddify service mode buttons and what each mode changes](../images/hiddify-modes.svg)
 
 ## Start with a small, understandable configuration
 
@@ -61,6 +65,8 @@ Other ports, WARP/extra-security chains, balancer settings, and TUN stack/MTU ca
 
 After changing connection settings, disconnect and reconnect **Hiddify** so its running configuration is rebuilt. You do not need to close another client merely to test Hiddify on a different port.
 
+![Hiddify starting settings: Fake DNS off, Region Other, proxy port 12334](../images/hiddify-settings.svg)
+
 ## Press Connect, then prove the route
 
 Click Hiddify's main **Connect** button. In manual Proxy mode, the local listener should now be available on `127.0.0.1:12334`.
@@ -78,6 +84,8 @@ Look for `ip=` and `loc=`. The IP should be the VPS's outgoing address, with its
 Now open a browser. If the command works but the browser still uses your ordinary connection, check the service mode. In manual mode, that is expected. Select **Settings → Inbound → Service mode → System Proxy**, reconnect, and retry the browser when you want Hiddify to take over Windows' system proxy. See [what Windows changes](ports-and-modes.md#windows-selects-a-proxy-it-does-not-merge-them).
 
 If the test fails, keep the profile and collect the error before changing server keys. Continue with [troubleshooting](troubleshooting.md).
+
+![Connect the profile, run an explicit HTTPS proxy request, and check the exit IP](../images/hiddify-connect.svg)
 
 ## Advanced recovery when the normal settings are not enough
 

@@ -36,6 +36,8 @@ apt install -y curl ca-certificates
 
 If a reboot is required, reconnect afterward before continuing.
 
+![Installer walkthrough: run the installer and save its complete output](../images/3x-ui-installation.svg)
+
 ## 3. Install 3x-ui
 
 Use the [official 3x-ui repository](https://github.com/MHSanaei/3x-ui) and its [release instructions](https://github.com/MHSanaei/3x-ui/releases). Download the installer before running it so it can be inspected:
@@ -59,6 +61,8 @@ At the installer prompts:
 The panel port is an administration port. Do not put it in the VPN client's server-port field. See [the port map](ports-and-modes.md#the-ports-you-will-see).
 
 If you lose the panel URL or credentials, run `x-ui` over SSH and use the menu's settings/reset options. Do not assume the installer always chooses the same defaults.
+
+![Panel login walkthrough: full URL, credentials, and Login](../images/3x-ui-panel-login.svg)
 
 ## 4. Check port availability and firewalls
 
