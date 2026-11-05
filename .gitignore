@@ -1,0 +1,9 @@
+# Local credentials/configs and diagnostic artifacts must stay out of Git.
+/.secrets/
+/client*.json
+/private*.txt
+*.backup-*
+*.tmp-*
+__pycache__/
+*.py[cod]
+/images/.preview-*
