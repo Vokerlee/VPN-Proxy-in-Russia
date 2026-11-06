@@ -119,7 +119,7 @@ The server and account are ready. Open the generated `hiddify-profile.txt` in a 
 
 **[Now follow Step 4: install Hiddify, import this link, and connect →](clients.md)**
 
-That page gives the starting settings and the browser check. You do not need to create another account in 3x-ui or run a preference-repair script first.
+That page gives the browser check and optional recovery settings if the connection fails. You do not need to create another account in 3x-ui or run a preference-repair script first.
 
 ![Hiddify: add the generated profile from the clipboard](../images/hiddify-import.svg)
 
@@ -140,7 +140,7 @@ A stopped helper tells you which stage needs attention. It does not roll back pa
 | Browser cannot open the panel | Keep the SSH forward running; use its local port and the generated URL path |
 | Hiddify errors after import | Follow the [handshake and generated-config checks](troubleshooting.md), including the documented recovery helper |
 
-After a successful connection, return to [server administration](server-setup.md#5-keep-administration-recoverable) to create and test a non-root administrator and plan your SSH hardening. Those access-control changes are intentionally not made blindly during first-time remote provisioning.
+**Optional, after the connection works:** read [server administration improvements](server-setup.md#5-optional-improve-server-administration-later) if you want a separate administrator account and tighter SSH access. The helper leaves these choices to you.
 
 <details>
 <summary>For reviewers: what has and has not been tested</summary>

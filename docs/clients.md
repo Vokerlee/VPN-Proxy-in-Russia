@@ -4,7 +4,7 @@
 
 **Hiddify** is the app you install on your device to connect to your VPN server. A **connection profile** is the private `vless://...` link containing the server address and your account settings. Get that link from **3x-ui**, the server’s browser dashboard, or from the person who manages your VPN.
 
-**Follow the four sections below.** They cover installation, import, starting settings, and your first connection. Everything after **Your first connection is complete** is optional troubleshooting. Button labels below are from Hiddify **5.5.5**.
+**Follow sections 1–3:** install, import, and connect. Try the defaults first. Everything after **Your first connection is complete** is optional troubleshooting. Button labels below are from Hiddify **5.5.5**.
 
 ## 1. Install Hiddify
 
@@ -22,9 +22,29 @@ On a phone, you can scan the account’s QR code instead of copying the link. Bo
 
 ![Hiddify: New profile, Add from clipboard, select Personal VPN](../images/hiddify-import.svg)
 
-## 3. Set these starting options
+## 3. Connect and check a website
 
-These visible settings helped restore the connection checked for this guide. Set them before the first test; leave other settings at their defaults.
+**Already using another VPN?** To check Hiddify while keeping that connection untouched, use the [optional manual proxy test](#press-connect-then-prove-the-route) below instead of activating another VPN/TUN connection.
+
+1. **On a desktop**, open **Settings → Inbound → Service mode** and select **VPN / TUN**. This is the mode for using the VPN with your normal applications; TUN is its virtual network connection. On a phone, use the normal VPN mode.
+2. Return to the home screen, select your profile, and press **Connect**.
+3. Accept the operating system’s VPN or administrator permission request.
+4. Open `https://www.cloudflare.com/cdn-cgi/trace` in your browser. Find the line starting with **`ip=`**. It should show your server’s outgoing address, rather than your ordinary internet address.
+5. Open a website you wanted to use through the VPN.
+
+If the address is unfamiliar, open the same test URL with Hiddify disconnected and compare. A server may have a different outgoing address from its login address, particularly when it also has IPv6. If the browser cannot load the page or still shows your ordinary address, start with [the settings that helped here](#if-the-connection-fails-try-these-settings).
+
+![Hiddify: Connect, grant VPN permission, open an IP-check page](../images/hiddify-connect.svg)
+
+## Your first connection is complete
+
+**You can stop here when the address check and your websites work.** You do not need to edit hidden preferences, compare network engines, or run a script.
+
+The sections below are optional. Use them only for a failed connection or when switching from an older client.
+
+## If the connection fails: try these settings
+
+**Optional recovery: skip if the connection works with its defaults.** These visible settings helped restore the connection checked for this guide. Apply them, disconnect Hiddify, reconnect, and repeat the browser check. Keep other settings at their defaults.
 
 | Open | Set |
 |---|---|
@@ -35,26 +55,6 @@ These visible settings helped restore the connection checked for this guide. Set
 DNS turns website names into IP addresses. **Fake DNS** is an extra feature that substitutes artificial addresses; leave it off for this setup. **Other** avoids adding country-based rules that can send some requests outside your VPN. **IPv4 only** simplifies the address types used on your device. The server can still choose an IPv6 exit; changing that is [an optional server setting](force-ipv4.md).
 
 ![Hiddify: Fake DNS off, Region Other, IPv4 only](../images/hiddify-settings.svg)
-
-## 4. Connect and check a website
-
-**Already using another VPN?** To check Hiddify while keeping that connection untouched, use the [optional manual proxy test](#press-connect-then-prove-the-route) below instead of activating another VPN/TUN connection.
-
-1. **On a desktop**, open **Settings → Inbound → Service mode** and select **VPN / TUN**. This is the mode for using the VPN with your normal applications; TUN is its virtual network connection. On a phone, use the normal VPN mode.
-2. Return to the home screen, select your profile, and press **Connect**.
-3. Accept the operating system’s VPN or administrator permission request.
-4. Open `https://www.cloudflare.com/cdn-cgi/trace` in your browser. Find the line starting with **`ip=`**. It should show your server’s outgoing address, rather than your ordinary internet address.
-5. Open a website you wanted to use through the VPN.
-
-If the address is unfamiliar, open the same test URL with Hiddify disconnected and compare. A server may have a different outgoing address from its login address, particularly when it also has IPv6. If the browser cannot load the page or still shows your ordinary address, follow [troubleshooting](troubleshooting.md).
-
-![Hiddify: Connect, grant VPN permission, open an IP-check page](../images/hiddify-connect.svg)
-
-## Your first connection is complete
-
-**You can stop here when the address check and your websites work.** You do not need to edit hidden preferences, compare network engines, or run a script.
-
-The sections below are optional. Use them only for a failed connection or when switching from an older client.
 
 ## Press Connect, then prove the route
 

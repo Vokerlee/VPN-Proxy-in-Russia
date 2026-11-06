@@ -8,7 +8,7 @@ An **inbound** is the server entry point that accepts a device's connection. **V
 
 The dashboard runs **Xray**, the network engine that handles the connections. These labels refer to **3x-ui 3.8.5**. The panel's HTTP/HTTPS port is separate from the inbound's VPN port.
 
-**Do this page if you need a connection account.** Already have an enabled account and its exported VLESS link? Skip this page and [open Step 4: connect your device](clients.md). Otherwise, follow sections 1–6 in order. The reference links at the end are optional.
+**Do this page if you need a connection account.** Already have an enabled account and its exported VLESS link? Skip this page and [open Step 4: connect your device](clients.md). Otherwise, follow sections 1–5 in order. The terminal checks and reference links are optional.
 
 ## 1. Open the correct form
 
@@ -47,6 +47,9 @@ Do not replace a working listener just to match the examples. Preserve its actua
 | SpiderX, when offered | `/` | Keep the exported value |
 | Sniffing | Off for the initial setup | Inspects initial traffic to identify its destination; unnecessary for this simple setup |
 
+<details>
+<summary>Optional: check whether the example target website is reachable. Use this if connections fail.</summary>
+
 **TLS** is the encryption used by HTTPS websites. The REALITY target must provide suitable TLS and be reachable from your rented server (VPS). On that server, test the example target:
 
 ```bash
@@ -54,6 +57,8 @@ curl -I --connect-timeout 5 --max-time 15 https://www.google.com/
 ```
 
 You should receive HTTP response headers rather than a timeout or connection error. This checks website reachability; the device test in Step 4 will check the actual VPN connection.
+
+</details>
 
 For an existing inbound, do **not** regenerate keys or short IDs: that invalidates existing profiles. A client's REALITY public key is not the website's certificate key.
 
@@ -99,7 +104,12 @@ Create another client account for another person/device when you need separate r
 
 ![Client details actions: Copy VLESS URL or Show QR code](../images/3x-ui-client-share.svg)
 
-## 6. Verify the listener
+## 6. Optional: check the server listener from the terminal
+
+**Skip if the saved inbound is enabled and Xray shows as running in the panel.** If it fails to start, the commands below help explain why.
+
+<details>
+<summary>Open the terminal listener and log checks</summary>
 
 On the VPS, replacing `443` with the actual inbound port:
 
@@ -110,6 +120,8 @@ journalctl -u x-ui --since '10 minutes ago' --no-pager
 
 **Check:** Xray owns the intended public listener, the client is enabled, and the exported link matches it.
 
+</details>
+
 For an IPv4 exit address, use the separate [ForceIPv4 guide](force-ipv4.md). For failed handshakes, follow [troubleshooting](troubleshooting.md).
 
 ## Versioned references
@@ -118,6 +130,6 @@ For an IPv4 exit address, use the separate [ForceIPv4 guide](force-ipv4.md). For
 - [Xray REALITY configuration](https://xtls.github.io/en/config/transport.html#realityobject)
 - [RAW/TCP transport](https://xtls.github.io/en/config/transports/raw.html)
 
-**Step 3 is complete when:** you have an enabled account, its private connection link, and a listening server port.
+**Step 3 is complete when:** your inbound and account are enabled, Xray is running, and you have copied the private connection link.
 
 **[Next step: import the account into Hiddify and connect →](clients.md)**

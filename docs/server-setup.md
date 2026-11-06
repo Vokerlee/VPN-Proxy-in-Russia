@@ -10,9 +10,14 @@ UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11
 
 **Do this page if your server does not yet have a working 3x-ui dashboard.** If you can already log in to 3x-ui, skip installation and [open Step 3: create your connection account](server-inbound.md).
 
-Follow sections 1–4 and 6 for setup. Section 5 is optional administration advice; it is labeled before its commands. Public HTTPS panel access is an advanced alternative, kept closed below.
+**Required here:** connect over SSH, install and open the dashboard, and choose the VPN port (sections 2–4). The other sections are optional background, security improvements, or extra checks. They are closed below so you can follow the main path without reading them.
 
-## 1. Choose the deployment
+## 1. The ordinary setup: one server, one app
+
+Use your existing rented server (**VPS**) and install **Hiddify**, the VPN app, on each device you want to connect. Windows and Linux desktops follow the same path. You do not need another server.
+
+<details>
+<summary>Optional: other deployment choices and resource notes. Skip for an ordinary personal VPN.</summary>
 
 A **VPS** is your rented remote server. **Hiddify** is the app you will install on your devices to use it. A **proxy** forwards network requests for another program.
 
@@ -25,6 +30,8 @@ A **VPS** is your rented remote server. **Hiddify** is the app you will install 
 Choose one row for your needs. For an ordinary Linux desktop, follow the same Hiddify path as on Windows; you do not need the standalone Xray chapter. The shared server installation below is the same for all three choices. If you already have a server, keep it and check its resources rather than ordering another one.
 
 Use a supported Ubuntu release available from your provider, one CPU core, about 1 GiB RAM, a public IPv4 address, and enough transfer allowance. Ubuntu 22.04 and 24.04 are examples, not a requirement to reinstall a different working version. These resource values are practical starting points, not a capacity guarantee. IPv6 on the VPS is optional. HostVDS and FirstVDS are examples used by this project; check current locations, traffic limits, payment methods, and network reachability before purchasing. No particular provider guarantees an unblocked route.
+
+</details>
 
 ## 2. Connect over SSH
 
@@ -169,9 +176,12 @@ Substitute 8443 if you selected that port. Keep the current SSH rules. If the se
 
 </details>
 
-## 5. Keep administration recoverable
+## 5. Optional: improve server administration later
 
-**Optional for the first connection.** These steps improve ongoing administration. You may go straight to section 6 and return here after the VPN works. If you already have a tested administrator and SSH keys, keep them; you do not need another account.
+**Skip for now if you want to finish the VPN setup first.** These changes help long-term administration; they are not required to establish the VPN connection.
+
+<details>
+<summary>Optional security improvements: administrator account, fail2ban, and SSH login restrictions</summary>
 
 Create a separate administrator:
 
@@ -194,16 +204,17 @@ Check SSH protection with `fail2ban-client status sshd`. If it lists the `sshd` 
 
 If you choose to disable root SSH login, set `PermitRootLogin no` in the effective SSH server configuration, check `sshd -t`, then reload `ssh`. Ubuntu include files can override settings; verify the effective result with `sshd -T`. Test a new administrator login before closing the original session.
 
-## 6. Verify services before creating a client
+</details>
+
+## 6. Optional: check the service from the terminal
+
+**Skip if the dashboard opens normally.** If it does not, run on the server:
 
 ```bash
 systemctl is-active x-ui
-systemctl --failed --no-pager
-/usr/local/x-ui/x-ui -v
-/usr/local/x-ui/bin/xray-linux-amd64 version
 ```
 
-Paths and executable names can differ by architecture or installation method. Xray may run as a child of `x-ui`, without a separate `xray.service`. The VPN listener is created in Step 3, so you will check its port there.
+The expected result is `active`. For any other result, use [the server checks](troubleshooting.md#server-checks). You do not need to collect version numbers or read logs before moving to the next page.
 
 **Step 2 is complete when:** the panel opens, you know the selected public VPN port, and SSH still works.
 
