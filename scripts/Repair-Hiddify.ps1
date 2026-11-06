@@ -79,4 +79,4 @@ try {
 Write-Output ('Saved backup: ' + $backup)
 Write-Output 'Preferences updated. Open Hiddify, select the intended profile, and Connect.'
 Write-Output 'Manual mode leaves Windows proxy selection alone. Test 127.0.0.1:12334 explicitly.'
-Write-Output 'This script did not stop Invisible Man, start Hiddify, or change Windows networking.'
+Write-Output 'This script did not stop any VPN app, start Hiddify, or change Windows networking.'

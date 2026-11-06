@@ -77,7 +77,7 @@ failed to find an available destination
 4. Record the **actual client core version**, not just the GUI version.
 5. Test the same profile with a known compatible current core, using [the temporary client helper](automation.md#test-a-real-authenticated-tunnel).
 
-The investigation reproduced an Xray **25.1.30** client failing against **26.9.9**, while **26.10.31** connected using the same profile and provider. Invisible Man's upstream 3.2.5 bundled the older core. A broken import and an incompatible TLS handshake can look similar, but reimporting a valid URI does not modernize the core.
+The investigation reproduced an Xray **25.1.30** client failing against **26.9.9**, while **26.10.31** connected using the same profile and provider. [Invisible Man - XRay Client](clients.md#switching-from-invisible-man---xray-client), a Windows VPN/proxy app used in the original guide, bundled that older engine in release 3.2.5. A broken import and an incompatible TLS handshake can look similar, but reimporting a valid URI does not modernize the core.
 
 Newer REALITY servers have imposed ClientHello/key-share requirements that affected old Xray clients and some sing-box clients. A generic “latest client” label is not a compatibility test. Hiddify 5.5.5's native core succeeded in the final tests; do not generalize older sing-box reports to every Hiddify build. See [the versioned technical explanation](xray-internals.md#why-a-valid-profile-can-stop-working-after-an-update).
 

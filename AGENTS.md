@@ -6,7 +6,7 @@ This repository is both a human VPN walkthrough and a small set of opt-in setup/
 
 The default reader path is manual and starts with no server: choose/rent a server, install its browser dashboard, create a connection account, then install/connect the client app. Keep automation explicitly optional. Do not make setup scripts, preview/apply flags, PowerShell execution policy, or agent instructions a prerequisite for the ordinary walkthrough.
 
-Define names before relying on them: VPS means a rented remote server; root is an administrator account; 3x-ui is the browser dashboard; Xray is the network engine; Hiddify is the connection app; a profile is the private connection link. Introduce ports, SSH and proxy modes where the reader needs them. Do not send a beginner to an expert glossary to complete a required step.
+Define names before relying on them: VPS means a rented remote server; root is an administrator account; 3x-ui is the browser dashboard; Xray is the network engine; Hiddify is the connection app; a profile is the private connection link. Introduce ports, SSH and proxy modes where the reader needs them. Do not send a beginner to an expert glossary to complete a required step. Each guide must also make sense when opened directly: define an app or technical term at its first substantive use on that page. Use full product names, including Invisible Man - XRay Client. Keep migration-only app references out of the ordinary beginner steps. Explain a setting through its effect and the reader’s next action; avoid arguments about what a test does not prove unless the limitation changes that action.
 
 Support Windows and Linux as administration/client platforms without calling the guide Windows-only. Ubuntu 24.04 was an example/test environment, not a universal server requirement; describe actual helper dependencies and supported Ubuntu/Debian deployments separately from the ordinary manual guide. Preserve the original sequential, practical writing style.
 
@@ -73,7 +73,7 @@ Keep a working SSH session during any separately authorized access-control chang
 
 ## Existing clients and desktop networking
 
-- Never stop/restart Invisible Man or another running VPN client, replace its configuration, or alter Windows proxy/routes unless the user explicitly requests that action. A separate local port is sufficient for an isolated test.
+- Never stop/restart Invisible Man - XRay Client (the Windows Xray-based VPN app used in the original guide) or another running VPN client, replace its configuration, or alter Windows proxy/routes unless the user explicitly requests that action. A separate local port is sufficient for an isolated test.
 - The temporary client test terminates only the child it starts. Do not extend it to discover/kill existing clients or claim it tests their GUI integration.
 - `Repair-Hiddify.ps1` defaults to preview, requires Hiddify to be closed before applying, and preserves a backup. Let the user close the app; the helper must never kill it. Manual mode keeps another client's Windows proxy selection separate.
 - A Hiddify build containing Xray libraries does not prove it has an executable Xray traffic backend. Check the actual implementation/core behavior. Preserve the version-specific nuance in `docs/clients.md`.

@@ -35,7 +35,7 @@ Treat the link like a password. It contains the account UUID and enough paramete
 | **System Proxy** | You want browsers and applications that follow Windows proxy settings to use Hiddify | Hiddify selects its local proxy in Windows |
 | **VPN / TUN** | You need applications that ignore HTTP proxy settings to use the tunnel | Hiddify uses a virtual interface and routing; Windows may request elevation |
 
-For the first test, choose **Proxy**. This keeps a running Invisible Man, another VPN, and Windows' current proxy selection untouched. Two clients may be open together, but they must not bind the same local port or keep replacing each other's system proxy.
+For the first test, choose **Proxy**. This starts Hiddify’s local proxy without changing Windows’ selected proxy or stopping another VPN app. Two clients may be open together, but they must not bind the same local port or keep replacing each other's system proxy.
 
 On Android/iOS the normal VPN mode uses the operating system's VPN permission dialog. Allow the configuration when you intentionally connect; you do not enter a desktop localhost proxy into the phone's Wi-Fi settings for this mode.
 
@@ -123,7 +123,7 @@ flutter.enable-fake-dns        false
 flutter.service-mode          proxy
 ```
 
-Use [the repair helper](automation.md#repair-hiddify-preferences-on-windows) to preview and, if needed, apply those settings. It requires Hiddify to be closed, backs up its preferences, never stops processes, and does not change Invisible Man or Windows' selected proxy. A backup is useful because disabling the API can affect API-based monitoring or integrations. Revert if you need those features, then test changes individually.
+Use [the repair helper](automation.md#repair-hiddify-preferences-on-windows) to preview and, if needed, apply those settings. It requires Hiddify to be closed, backs up its preferences, never stops another VPN app, and leaves Windows’ selected proxy unchanged. A backup is useful because disabling the API can affect API-based monitoring or integrations. Revert if you need those features, then test changes individually.
 
 You can make this advanced recovery change without a script too. On Windows, close Hiddify yourself, press **Win+R**, open `%APPDATA%\Hiddify\hiddify`, and make a private backup copy of `shared_preferences.json`. Open the original with a text editor. Update the listed existing keys, or add missing keys to its top-level JSON object using JSON commas and the boolean value `false` (not the string `"false"`). Keep every unrelated preference. Save it, reopen Hiddify, reconnect, and test. If the file no longer parses or the change does not help, close Hiddify and restore your backup.
 
@@ -131,11 +131,13 @@ This is an advanced fallback for the recorded problem, not a requirement that ev
 
 The effective file under `%APPDATA%\Hiddify\hiddify\data\current-config.json` is diagnostic output, not the persistent place to make this repair. Hiddify regenerates it.
 
-## Leave Invisible Man installed, but use a maintained client for this setup
+## Switching from Invisible Man - XRay Client
 
-**Optional background for existing Invisible Man users.** New Hiddify users can skip this section.
+**Optional: read this only if you already use Invisible Man - XRay Client.** New Hiddify users can skip this section.
 
-Invisible Man's upstream latest release checked on **2026-11-06** was **3.2.5**, dated **2025-02-02**, with Xray **25.1.30**. It is treated here as a legacy client without a current upstream release, not as the recommended client for a new server. That does not mean the executable can never work against any server.
+[**Invisible Man - XRay Client**](https://github.com/InvisibleManVPN/InvisibleMan-XRayClient) is a Windows VPN/proxy app used in the original guide. It provides a graphical interface around **Xray-core**, the software that makes the network connections. Hiddify is the alternative app used in this updated walkthrough; you do not need to install both.
+
+As checked on **2026-11-06**, the project’s latest published release was **3.2.5**, dated **2025-02-02**, and bundled Xray **25.1.30**. That bundled engine failed against the newer server in the comparison below, so this guide uses Hiddify for new connections. If your existing installation works, you can keep it; test Hiddify separately before switching.
 
 With the same exported profile and provider, the investigation reproduced:
 
@@ -158,7 +160,7 @@ Write down panel version, server Xray version, client app version, client core v
 
 ## References
 
-- [Invisible Man 3.2.5 release](https://github.com/InvisibleManVPN/InvisibleMan-XRayClient/releases/tag/v3.2.5)
+- [Invisible Man - XRay Client 3.2.5 release](https://github.com/InvisibleManVPN/InvisibleMan-XRayClient/releases/tag/v3.2.5)
 - [Hiddify 5.5.5 settings screens](https://github.com/hiddify/hiddify-app/tree/v5.5.5/lib/features/settings/overview/sections)
 - [Hiddify 5.5.5 configuration preferences](https://github.com/hiddify/hiddify-app/blob/v5.5.5/lib/features/settings/data/config_option_repository.dart)
 - [Checked Hiddify core's Xray backend](https://github.com/hiddify/hiddify-sing-box/blob/1614c5edb52dd44a4cc079201ba1e790fdfad8a0/protocol/hiddify/xray/outbound.go)

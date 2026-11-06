@@ -137,7 +137,7 @@ curl.exe --noproxy localhost,127.0.0.1 --proxy http://127.0.0.1:12334 --connect-
 
 Find `ip=` in the response. It should be the VPS's IPv4 egress address. Now select **System Proxy** and reconnect if you want Windows' proxy-aware programs to use Hiddify. Choose **VPN/TUN** if your application ignores system proxies, and accept the OS permission request. The [client walkthrough](clients.md) covers the complete settings and the [ports guide](ports-and-modes.md) explains the differences.
 
-You can leave Invisible Man open on a different port. Do not let both applications automatically fight over the same Windows proxy setting. The old Invisible Man core is not the baseline client for the newer server in this guide.
+If another VPN app is already running, keep its local proxy port different from Hiddify’s. For the first test, leave Hiddify in manual **Proxy** mode so it does not replace Windows’ current proxy selection. If you are switching from an older app, read the [Invisible Man - XRay Client compatibility notes](clients.md#switching-from-invisible-man---xray-client); that app is the Windows Xray-based client used in the original guide.
 
 Copy the generated credentials/profile to your private password manager before deleting the working folder. `.secrets/` is deliberately not committed to Git. Do not paste those files into a public issue or screenshot.
 

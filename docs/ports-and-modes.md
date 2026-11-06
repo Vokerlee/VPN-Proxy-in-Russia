@@ -15,7 +15,7 @@ Follow one browser request from your desk to a website, and those numbers become
 | Place | Example endpoint | What it does |
 |---|---|---|
 | Your Windows PC | `127.0.0.1:12334` | Hiddify's local mixed HTTP/SOCKS proxy |
-| The same PC | `127.0.0.1:10801` | An existing Invisible Man or standalone Xray proxy; its actual setting may differ |
+| The same PC | `127.0.0.1:10801` | An example second local proxy; the optional standalone Linux Xray guide uses this port |
 | Your VPS | `YOUR_SERVER_IP:443` | The public VLESS + REALITY inbound; 8443 is another possible configured port |
 | Your VPS | `127.0.0.1:27297` | Private administration panel in the default walkthrough; reached through SSH |
 | Your computer | `127.0.0.1:18080` | Browser access forwarded over SSH to that private panel |
@@ -64,7 +64,7 @@ When you select **System Proxy** and Connect, Hiddify also updates the Windows u
 
 The UI wording differs slightly on Windows 10. Microsoft documents the [Windows proxy settings](https://support.microsoft.com/en-us/windows/experience/connectivity-networking/use-a-proxy-server-in-windows).
 
-Suppose Invisible Man listens on 10801 and Hiddify on 12334. They can both stay open. Windows' normal manual-proxy selection points at one endpoint, though individual applications may override it. Selecting 12334 does not send browser traffic through both clients in sequence. If both apps automatically manage system proxy settings, whichever changes the selection later can take over.
+Suppose another VPN app provides a local proxy on 10801 and Hiddify provides one on 12334. They can both stay open. Windows' normal manual-proxy selection points at one endpoint, though individual applications may override it. Selecting 12334 does not send browser traffic through both clients in sequence. If both apps automatically manage system proxy settings, whichever changes the selection later can take over.
 
 Keep their ports separate. A second program cannot bind the same address, port, and transport already owned by the first. To test Hiddify without disturbing another app, keep Hiddify in manual mode and use the explicit curl command above.
 
