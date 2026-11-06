@@ -74,7 +74,7 @@ You get:
 - Generated UUID, REALITY keys, short ID, panel credentials, and panel URL path.
 - **ForceIPv4** on the server’s outgoing path, so hostname-based website requests use IPv4.
 - A panel bound to **127.0.0.1:27297** on the VPS, accessed through SSH rather than exposed as public HTTP.
-- An allow rule for the VPN port if **UFW**, Ubuntu’s firewall-management tool, was already active. Existing SSH rules and custom/provider firewalls are not reset.
+- The selected VPN port allowed in an existing UFW firewall, if active. UFW is Ubuntu’s firewall-management tool; the helper does not install or enable it. Existing SSH rules and custom/provider firewalls are not reset.
 - A private `server.json` and `hiddify-profile.txt` saved under the repository's ignored `.secrets/` folder.
 
 The helper checks that the server listener starts and probes its public TCP port from your computer. A reachable socket is still not an authenticated VPN test; importing the profile and running the final request below completes that check.

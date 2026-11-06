@@ -129,28 +129,45 @@ If you lose the panel URL or credentials, run `x-ui` over SSH and use the menu's
 
 ![Panel login walkthrough: full URL, credentials, and Login](../images/3x-ui-panel-login.svg)
 
-## 4. Check port availability and firewalls
+## 4. Choose the VPN port
 
-A **listener** is a running program waiting for connections on a port. A **firewall** decides which incoming connections are allowed. The next chapter creates a REALITY inbound—the VPN listener for your devices. It uses **TCP**, the connection transport selected in that form.
+Use **443** for the VPN connection if that port is free. A **port** is a numbered network entry point; it lets the server distinguish VPN connections from SSH and dashboard access.
 
-On the server, list ports already in use:
+**On the server**, check whether another program already uses 443:
 
 ```bash
-ss -lntp
+ss -lntp 'sport = :443'
 ```
 
-Look for `:443` in the **Local Address:Port** column. If there is no listener on that port, use TCP `443` for your new VPN inbound. Existing web servers may already own it; choose another free TCP port, such as `8443`, or plan the coexistence explicitly. A nonstandard port is valid, but networks may filter it differently. Opening TCP 443 does not make a listener on 8443 reachable.
+- **Only the column headings appear:** port 443 is free. Use **443** in the next chapter.
+- **A row appears:** another program is using 443. Keep it running and check **8443** with `ss -lntp 'sport = :8443'`. If that is free, use **8443** in the next chapter.
 
-Allow the selected VPN TCP port in **both** the provider's firewall/security group and the host firewall, if enabled. UDP 443 is not required for the RAW/TCP inbound in this guide.
+Save the selected number. In 3x-ui you will enter it as the inbound’s **Port**. The exported connection link will then include it automatically.
 
-**UFW** is Ubuntu’s common firewall-management tool. If your server uses it, check its state and allow the chosen VPN port:
+**In your provider’s dashboard**, check whether this server has incoming network restrictions, usually called **Firewall**, **Security group**, or **Network rules**. If it does, allow incoming **TCP** on your selected VPN port. TCP is the connection type used by this setup. If your provider already allows incoming connections, there is no rule to add there.
+
+You do not need to install or enable UFW for this walkthrough. Keep your existing SSH access; the private dashboard uses that same SSH connection.
+
+<details>
+<summary>Optional: this server already has its own firewall. Skip if you have not configured one and your server image does not include one.</summary>
+
+A provider firewall and a firewall running on the server are separate. If the server already filters incoming traffic, allow the VPN port there too. Use its existing management tool; do not install a second firewall just for this guide.
+
+For an existing **UFW** installation (Ubuntu’s firewall-management tool), inspect its state:
 
 ```bash
 ufw status verbose
+```
+
+If it says **inactive**, do not enable it as part of this step. If it says **active**, allow your selected port, for example:
+
+```bash
 ufw allow 443/tcp
 ```
 
-Replace `443` if you selected another VPN port. Before enabling a new firewall, allow your actual SSH port. The private dashboard in this guide uses that same SSH access; it needs no public panel-port rule. Do not enable a default-deny firewall from a remote session before protecting SSH access. If UFW is absent, inspect the existing nftables/iptables rules rather than installing a second firewall blindly.
+Substitute 8443 if you selected that port. Keep the current SSH rules. If the server uses nftables or iptables instead, update its existing policy with that tool. Do not reset the rules on a remotely managed server.
+
+</details>
 
 ## 5. Keep administration recoverable
 
