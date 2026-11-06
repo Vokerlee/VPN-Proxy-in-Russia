@@ -61,6 +61,10 @@ FIGURES = [
         ("Start the selected profile", "Connect", "In manual mode, Windows' proxy selection stays unchanged."),
         ("Make an explicit proxy request", "HTTPS exit test", "PowerShell: curl.exe --proxy http://127.0.0.1:12334 ..."),
         ("Read the response", "ip=THE_VPS_EXIT_IP", "An IPv6 result may be the VPS's legitimate outgoing address.")]),
+    ("3x-ui-first-visit", "Your first visit to the prepared panel", "3x-ui 3.8.5", ["Dashboard", "Inbounds", "Clients", "Outbounds", "Routing", "Xray Settings"], "Inbounds", [
+        ("Sign in through the forwarded local URL", "Login", "Use the generated panel account, not the SSH root password."),
+        ("Open the existing listener", "Inbounds  >  Personal VPN", "The setup helper already created it; do not add a duplicate."),
+        ("Expand the first-device client", "Info / Share  >  Copy", "Or use the generated private hiddify-profile.txt export.")]),
 ]
 
 

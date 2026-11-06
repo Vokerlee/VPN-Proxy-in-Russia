@@ -99,7 +99,7 @@ Open the generated `server.json` locally and find `panel_username` and `panel_pa
 
 In the sidebar, click **Inbounds**. You should see **Personal VPN**, enabled, with the VPN port recorded in `server.json`. The account already exists: you do not need to click Add Inbound again.
 
-![Where the new inbound appears in the 3x-ui sidebar](../images/3x-ui-add-inbound.svg)
+![First visit to 3x-ui: Login, Inbounds, Personal VPN, then the first-device share action](../images/3x-ui-first-visit.svg)
 
 To inspect IPv4 egress, use **Outbounds → direct → Edit → Strategy**. The setting was already applied by the helper; the [ForceIPv4 guide](force-ipv4.md) explains how to check it manually. Depending on the panel/core migration, its effective value can be stored under socket options even when a form displays the legacy field.
 

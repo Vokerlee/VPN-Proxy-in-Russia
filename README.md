@@ -8,6 +8,10 @@ Have a fresh VPS IPv4 address and its root password? Start with the [illustrated
 
 Already have a working panel? Keep it. Follow the individual walkthroughs below; the fresh-server helper deliberately refuses to overwrite an existing installation.
 
+![3x-ui first visit: Login, open the prepared Personal VPN inbound, and find the client share action](images/3x-ui-first-visit.svg)
+
+The [quick start](docs/quick-start.md) walks through those clicks and the final exit-IP test. If you prefer configuring everything by hand, the server and inbound chapters show each field and button separately.
+
 ## Start here
 
 | Your task | Guide |
