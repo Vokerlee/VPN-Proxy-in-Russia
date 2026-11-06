@@ -98,7 +98,7 @@ python3 scripts/vpn_profile.py config --output .secrets/client.json --port 10801
 
 Paste the link at the hidden prompt. Or add `--link-file .secrets/profile.txt`. The generated file listens on **127.0.0.1 only** and contains the account credentials, so do not publish it. The helper's default port is **10809**; the command above explicitly selects the Linux walkthrough's **10801**.
 
-Existing output is refused. If you deliberately want to replace it, `--overwrite` first saves a uniquely named backup. No service is restarted. To install the result as a Linux service configuration, follow [the Linux walkthrough](linux-xray.md#give-xray-the-connection-link).
+Existing output is refused. If you deliberately want to replace it, `--overwrite` first saves a uniquely named backup. No service is restarted. To install the result as a Linux service configuration, follow [the Linux walkthrough](linux-xray.md#put-your-account-settings-in-a-client-file).
 
 ## Test a real authenticated tunnel
 

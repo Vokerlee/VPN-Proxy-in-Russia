@@ -16,8 +16,8 @@ FIGURES = [
         ("Run the official installer", "Choose an unused panel port", "The administration port is separate from the VPN listener."),
         ("Save the complete result", "Panel URL + credentials", "Store the URL path, username and password privately.")]),
     ("3x-ui-panel-login", "Open the administration panel", "3x-ui 3.8.5", [], "", [
-        ("Paste the full panel URL", "https://PANEL_HOST:PANEL_PORT/PATH/", "Keep the URL path printed by the installer."),
-        ("Enter the panel credentials", "Username + password", "These are not the client's UUID or REALITY keys."),
+        ("Keep the SSH forwarding window open", "http://127.0.0.1:18080/YOUR_PATH/", "Open this on your computer. Replace YOUR_PATH with the saved panel path."),
+        ("Enter the panel credentials", "Username + password", "Use the panel login, not the root password."),
         ("Sign in", "Login", "Confirm the panel and Xray versions on the dashboard.")]),
     ("3x-ui-add-inbound", "Create the public VPN listener", "3x-ui 3.8.5", ["Dashboard", "Inbounds", "Clients", "Outbounds", "Routing", "Xray Settings"], "Inbounds", [
         ("Open the main sidebar", "Inbounds", "Use the menu button if the sidebar is collapsed."),

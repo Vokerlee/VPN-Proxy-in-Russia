@@ -8,6 +8,8 @@ You can use Hiddify on Linux, just as on other desktop systems. This optional ch
 
 Run this walkthrough on the **Linux client machine**, not on a VPS where 3x-ui already manages Xray. It creates a separate client service with an HTTP proxy on `127.0.0.1:10801`. Programs that ignore proxy settings will still use their normal route; this is not a TUN/transparent-routing guide.
 
+**Optional chapter: skip it for a normal Linux desktop VPN.** [Hiddify works on Linux](clients.md) and is the main guide’s client. Continue here only if you want a standalone proxy for terminal programs or a machine without a desktop.
+
 ## Install the official core
 
 Use the [official Xray installer](https://github.com/XTLS/Xray-install), inspect it, and install the core:
@@ -27,37 +29,31 @@ systemctl status xray --no-pager
 
 Keep client/server REALITY compatibility in mind. The [temporary client test](automation.md#test-a-real-authenticated-tunnel) lets you test a profile before installing it as the persistent service configuration.
 
-## Give Xray the connection link
+## Put your account settings in a client file
 
-Have the real [VLESS URL from 3x-ui](server-inbound.md#5-export-the-connection) ready. From this repository's root, make a private output folder and run:
+Have your private [VLESS link from 3x-ui](server-inbound.md#5-export-the-connection) ready. **Choose one method:** edit the example below manually, or use the optional helper in the closed box. Both create the same client file; do not do both.
 
-```bash
-mkdir -m 700 .secrets
-python3 scripts/vpn_profile.py config --output .secrets/client.json --port 10801
-```
+### Manual method
 
-If the folder already exists, check its permissions. Paste the URI at the hidden prompt. The helper maps its parameters into the client configuration, so you do not have to retype the UUID, SNI, key, short ID, or nonstandard server port. It supports the guide's RAW/TCP + REALITY + Vision setup; it will reject another transport rather than silently misconfigure it.
-
-Before replacing a pre-existing service config, make a backup with a fresh name. For a new installation with the default file, for example:
+On the **Linux client**, create a private folder and open the file:
 
 ```bash
-sudo cp -a /usr/local/etc/xray/config.json /usr/local/etc/xray/config.json.before-guide
-xray_service_user=$(systemctl show xray -p User --value)
-xray_service_group=$(systemctl show xray -p Group --value)
-[ -n "$xray_service_user" ] || xray_service_user=root
-if [ -z "$xray_service_group" ]; then
-    xray_service_group=$(id -gn "$xray_service_user")
-fi
-sudo install -o root -g "$xray_service_group" -m 640 .secrets/client.json /usr/local/etc/xray/config.json
-sudo /usr/local/bin/xray run -test -config /usr/local/etc/xray/config.json
+mkdir -p -m 700 "$HOME/.config/vpn-guide"
+nano "$HOME/.config/vpn-guide/client.json"
 ```
 
-If the original file does not exist, skip the backup command. If `config.json.before-guide` already exists, choose another backup name; do not overwrite your recovery copy. The commands read the service account/group so an unprivileged Xray service can read the config without exposing it to every user. If `id` fails because your custom unit uses a dynamic account, stop here and inspect that unit rather than substituting an unrelated group. If the syntax test fails, restore the backup before restarting the service.
+Paste the configuration below. Replace the placeholders with the values from your account. Also replace the example server port and `serverName` if your profile uses different ones.
 
-<details>
-<summary>See the shape of the generated configuration</summary>
+| In the client file | From your VLESS link |
+|---|---|
+| `address` | Server address after `@` |
+| Remote `port` | Port after the server address, for example `443` or `8443` |
+| `id` | Account UUID between `vless://` and `@` |
+| `serverName` | `sni=` value |
+| `publicKey` | `pbk=` value; never the server’s private key |
+| `shortId` | `sid=` value |
 
-The helper writes a local HTTP inbound and one VLESS outbound. This placeholder example explains the important fields; use your exported profile to generate the real values:
+This example is for RAW/TCP + REALITY + Vision, the connection type created in the main guide. Keep the local inbound port **10801** unless it is already occupied. It is separate from the remote server port.
 
 ```json
 {
@@ -96,9 +92,41 @@ The helper writes a local HTTP inbound and one VLESS outbound. This placeholder 
 }
 ```
 
-The local port and the VPS port can have different values. The example HTTP inbound does not provide a general UDP tunnel. Adding an arbitrary `udp: true` field would not change that.
+In nano, press **Ctrl+O**, **Enter**, then **Ctrl+X** to save and exit. Keep this file private; it contains your account credentials.
+
+<details>
+<summary>Optional alternative: generate that file from the link with a repository helper. Skip if you edited it above.</summary>
+
+With Python 3.8+ available, run from this repository’s root:
+
+```bash
+mkdir -p -m 700 "$HOME/.config/vpn-guide"
+python3 scripts/vpn_profile.py config --output "$HOME/.config/vpn-guide/client.json" --port 10801
+```
+
+Paste the link at the hidden prompt. The helper fills the account fields and rejects unsupported connection types. It refuses to overwrite an existing file unless you explicitly request it. See [the helper guide](automation.md#generate-a-client-configuration) for options.
 
 </details>
+
+### Install the file — required after either method
+
+Before replacing a pre-existing service config, make a backup with a fresh name. For a new installation with the default file, for example:
+
+```bash
+sudo cp -a /usr/local/etc/xray/config.json /usr/local/etc/xray/config.json.before-guide
+xray_service_user=$(systemctl show xray -p User --value)
+xray_service_group=$(systemctl show xray -p Group --value)
+[ -n "$xray_service_user" ] || xray_service_user=root
+if [ -z "$xray_service_group" ]; then
+    xray_service_group=$(id -gn "$xray_service_user")
+fi
+sudo install -o root -g "$xray_service_group" -m 640 "$HOME/.config/vpn-guide/client.json" /usr/local/etc/xray/config.json
+sudo /usr/local/bin/xray run -test -config /usr/local/etc/xray/config.json
+```
+
+If the original file does not exist, skip the backup command. If `config.json.before-guide` already exists, choose another backup name; do not overwrite your recovery copy. The commands read the service account/group so an unprivileged Xray service can read the config without exposing it to every user. If `id` fails because your custom unit uses a dynamic account, stop here and inspect that unit rather than substituting an unrelated group. If the syntax test fails, restore the backup before restarting the service.
+
+The local HTTP inbound carries HTTP and HTTPS CONNECT requests; it is not a general UDP tunnel.
 
 ## Start it, then make a real request
 
@@ -120,6 +148,8 @@ curl --noproxy '' --proxy http://127.0.0.1:10801 --connect-timeout 5 --max-time 
 Find `ip=`. It should be the VPS's exit address. A successful listener test alone does not establish that the account authenticated. If this request fails, inspect `journalctl -u xray --since '10 minutes ago' --no-pager` and follow [troubleshooting](troubleshooting.md).
 
 ## Let selected programs use it automatically
+
+**Optional: skip this section if your explicit proxy command is all you need.** Choose only the applications you want to configure below; shell variables, APT, and a systemd service are separate choices.
 
 The safest first step is one shell session:
 

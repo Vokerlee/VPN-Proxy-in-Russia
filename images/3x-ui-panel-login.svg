@@ -9,17 +9,17 @@
 <rect x="44" y="152" width="1046" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="69" cy="181" r="16" fill="#0b62b9"/>
 <text x="64" y="187" font-size="16" fill="white" font-weight="700">1</text>
-<text x="95" y="183" font-size="17" fill="#172b4d" font-weight="400">Paste the full panel URL</text>
-<rect x="95" y="194" width="338.0" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
-<text x="108" y="215" font-size="15" fill="#074985" font-weight="700">https://PANEL_HOST:PANEL_PORT/PATH/</text>
-<text x="95" y="243" font-size="13" fill="#53657d" font-weight="400">Keep the URL path printed by the installer.</text>
+<text x="95" y="183" font-size="17" fill="#172b4d" font-weight="400">Keep the SSH forwarding window open</text>
+<rect x="95" y="194" width="320.40000000000003" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
+<text x="108" y="215" font-size="15" fill="#074985" font-weight="700">http://127.0.0.1:18080/YOUR_PATH/</text>
+<text x="95" y="243" font-size="13" fill="#53657d" font-weight="400">Open this on your computer. Replace YOUR_PATH with the saved panel path.</text>
 <rect x="44" y="267" width="1046" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="69" cy="296" r="16" fill="#0b62b9"/>
 <text x="64" y="302" font-size="16" fill="white" font-weight="700">2</text>
 <text x="95" y="298" font-size="17" fill="#172b4d" font-weight="400">Enter the panel credentials</text>
 <rect x="95" y="309" width="197.20000000000002" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
 <text x="108" y="330" font-size="15" fill="#074985" font-weight="700">Username + password</text>
-<text x="95" y="358" font-size="13" fill="#53657d" font-weight="400">These are not the client&#x27;s UUID or REALITY keys.</text>
+<text x="95" y="358" font-size="13" fill="#53657d" font-weight="400">Use the panel login, not the root password.</text>
 <rect x="44" y="382" width="1046" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="69" cy="411" r="16" fill="#0b62b9"/>
 <text x="64" y="417" font-size="16" fill="white" font-weight="700">3</text>
