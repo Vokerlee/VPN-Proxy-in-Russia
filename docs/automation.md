@@ -6,7 +6,7 @@
 
 Once you know which step you want to automate, the helpers can handle repetitive tasks such as generating a configuration or checking a connection. A helper is not an extra requirement for using the VPN.
 
-The fresh-server bootstrap installs software only when explicitly applied. The diagnostic and client-preference helpers do not install software. None of the helpers changes a provider firewall or stops existing clients. Run them from the repository root. Python helpers require **Python 3.10+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
+The fresh-server bootstrap installs software only when explicitly applied. The diagnostic and client-preference helpers do not install software. None of the helpers changes a provider firewall or stops existing clients. Run them from the repository root. Python helpers require **Python 3.8+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
 
 ## Start with only a VPS IP and root password
 

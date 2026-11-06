@@ -25,6 +25,8 @@ Port 443 has a familiar HTTPS convention; that does not mean your local proxy mu
 
 `127.0.0.1` means **this machine**. It is your PC when entered in Windows, and the VPS when entered over SSH. Changing it to `0.0.0.0` changes who can reach the listener; it does not make the proxy more effective.
 
+![Separate paths and example ports for VPN traffic and SSH-forwarded panel access](../images/ports-paths.svg)
+
 ## Manual Proxy mode: start a listener, then choose an application
 
 In Hiddify, select **Settings → Inbound → Service mode → Proxy**, then Connect.
@@ -76,6 +78,8 @@ Conceptually, the app starts the core, creates or attaches a virtual network int
 TUN is broader than System Proxy, but it still follows configured routes, per-app choices, and bypass rules. Do not assume “kill switch,” “all DNS protected,” or “every address family captured” without checking those policies.
 
 Avoid enabling two route-managing TUN clients at once unless you deliberately understand their interaction. You can still keep another application's window open without having it manage routes.
+
+![Manual, System Proxy and TUN modes route different scopes of application traffic](../images/connection-modes.svg)
 
 ## What Disconnect changes
 

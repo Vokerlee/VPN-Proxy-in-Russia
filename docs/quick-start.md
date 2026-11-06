@@ -24,7 +24,7 @@ ssh -V
 
 If Windows says the command is missing, install **OpenSSH Client** through Windows' Optional features, then reopen the terminal. The Windows launcher does not require local Python.
 
-On Linux/macOS, have OpenSSH and Python 3.10+ available. The automatic server setup expects root SSH access on port 22; a custom SSH port is supported by a flag. The server needs internet/package access. Provider security-group changes may still require its website because a root password does not grant that separate account access.
+On Linux/macOS, have OpenSSH and Python 3.8+ available. The automatic server setup expects root SSH access on port 22; a custom SSH port is supported by a flag. The server needs internet/package access. Provider security-group changes may still require its website because a root password does not grant that separate account access.
 
 ## See the plan, then let SSH ask for the password
 
@@ -108,6 +108,8 @@ In the sidebar, click **Inbounds**. You should see **Personal VPN**, enabled, wi
 To inspect IPv4 egress, use **Outbounds → direct → Edit → Strategy**. The setting was already applied by the helper; the [ForceIPv4 guide](force-ipv4.md) explains how to check it manually. Depending on the panel/core migration, its effective value can be stored under socket options even when a form displays the legacy field.
 
 When you close the SSH-forwarding terminal, browser access stops. The VPN service remains running on the VPS. Reopen the same forwarding command whenever you need to administer the panel. If local port 18080 is occupied, use another unused local port in the `-L` command and in the browser URL.
+
+![The browser panel uses an SSH-forwarded administration path, separate from VPN traffic](../images/ports-paths.svg)
 
 ## Bring the profile into Hiddify
 

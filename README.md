@@ -4,6 +4,8 @@ This guide takes you from having nothing set up to connecting your computer or p
 
 The idea is simple: your device connects to that server, and the server connects to websites for you. You control the server and the accounts that can use it. Network filtering can still affect the connection; the guide includes checks to help you find and fix problems.
 
+![Your computer or phone connects through your rented server to the website](images/connection-path.svg)
+
 ## What you need
 
 - **A computer for the initial setup.** Windows or Linux both work; you do not need to install Linux on your Windows computer. You can connect a phone afterward too.
@@ -11,6 +13,8 @@ The idea is simple: your device connects to that server, and the server connects
 - **The server's login details.** The provider supplies an IP address and either a password or an SSH key. The main administrator account is usually called **root**. You get these details after creating the server.
 
 We use Ubuntu as the server's operating system. You do not need one specific Ubuntu version: choose a supported release available from your provider. The version used for the examples is not a requirement for your own computer or server.
+
+![Four setup stages: get a server, install its dashboard, create an account, connect your device](images/setup-roadmap.svg)
 
 ## Follow these steps in order
 

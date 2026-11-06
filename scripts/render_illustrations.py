@@ -110,12 +110,83 @@ def render(name,title,version,nav,selected,steps):
     return "\n".join(out)
 
 
+SCHEMES = [
+    ("connection-path", "What you are building", "Your device reaches websites through the server you control.", [
+        ("After connecting", [("Your computer or phone", "Runs the connection app"),
+                              ("Your rented server", "Carries the protected connection"),
+                              ("The website", "Sees the server's exit address")])]),
+    ("setup-roadmap", "The whole setup in four steps", "Start at the first step you have not completed. Scripts are optional.", [
+        ("The manual walkthrough", [("1. Get a server", "Choose Ubuntu and save login details"),
+                                    ("2. Install its dashboard", "Open the dashboard in a browser"),
+                                    ("3. Create an account", "Copy the private connection link"),
+                                    ("4. Connect your device", "Import the link and check the result")])]),
+    ("ports-paths", "VPN traffic and panel access take different paths", "These are example ports, not values every installation must use.", [
+        ("Website traffic through the VPN", [("Browser / application", "Uses the selected local proxy"),
+                                               ("This computer :12334", "Hiddify's local proxy listener"),
+                                               ("VPS :443 or :8443", "Public VPN listener"),
+                                               ("Website :443", "The destination's HTTPS service")]),
+        ("Private browser access to the server dashboard", [("Browser :18080", "Your computer's forwarded port"),
+                                                             ("SSH to VPS :22", "Encrypted administration connection"),
+                                                             ("VPS loopback :27297", "Private dashboard listener")])]),
+    ("connection-modes", "One Connect button, three scopes", "Choose the scope deliberately; a running app does not automatically capture every request.", [
+        ("Proxy / manual mode", [("Chosen application", "Explicitly uses the local proxy"),
+                                  ("Local proxy", "Forwards this application's requests"),
+                                  ("Rented server", "Opens the destination connection")]),
+        ("System Proxy mode", [("Proxy-aware apps", "Follow Windows' proxy setting"),
+                                ("Selected local proxy", "One chosen endpoint, not two merged clients"),
+                                ("Rented server", "Carries the selected requests")]),
+        ("VPN / TUN mode", [("Routed app traffic", "Subject to route and bypass rules"),
+                            ("Virtual interface", "Captures traffic using OS networking"),
+                            ("Rented server", "Carries the configured traffic")])]),
+    ("troubleshooting-path", "Find the first stage that fails", "A successful early check does not prove that the later stages work.", [
+        ("Follow the request", [("1. Local app", "Is the intended proxy listening?"),
+                                 ("2. Server port", "Can this network reach the VPN port?"),
+                                 ("3. Account handshake", "Does the profile authenticate?"),
+                                 ("4. Website request", "Does HTTPS work through the proxy?")]),
+        ("Then check the application you actually use", [("Explicit proxy test works", "The profile and that route are usable"),
+                                                         ("Browser still unchanged", "Check system proxy or application rules"),
+                                                         ("IP is unexpected", "Compare direct and server egress")])]),
+]
+
+
+def render_scheme(name, title, subtitle, rows):
+    height=180+len(rows)*175+42
+    out=[f'<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="{height}" viewBox="0 0 1120 {height}" role="img" aria-labelledby="title desc">',
+         f'<title id="title">{escape(title)}</title>',
+         f'<desc id="desc">{escape(subtitle)} Conceptual network and setup diagram.</desc>',
+         '<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#236bb0"/></marker></defs>',
+         '<g font-family="DejaVu Sans,Arial,sans-serif">',rect(0,0,1120,height,"#f4f7fb"),
+         rect(20,20,1080,112,"#14283f"),text(44,60,title,26,"#ffffff","700"),
+         text(44,98,subtitle,15,"#c7d7eb")]
+    for row,(label,nodes) in enumerate(rows):
+        y=162+row*175
+        out.append(text(40,y,label,17,"#203c5a","700"))
+        gap=38
+        width=(1040-gap*(len(nodes)-1))/len(nodes)
+        for n,(heading,body) in enumerate(nodes):
+            x=40+n*(width+gap)
+            out.append(rect(x,y+18,width,118,"#ffffff","#9bb8d7"))
+            for line_no,line in enumerate(textwrap.wrap(heading,max(12,int((width-28)/9)))):
+                out.append(text(x+14,y+47+line_no*21,line,17,"#114b91","700"))
+            heading_lines=len(textwrap.wrap(heading,max(12,int((width-28)/9))))
+            start_y=y+55+(heading_lines-1)*21
+            for line_no,line in enumerate(textwrap.wrap(body,max(16,int((width-28)/7.5)))):
+                out.append(text(x+14,start_y+line_no*18+20,line,14,"#53657d"))
+            if n<len(nodes)-1:
+                out.append(f'<line x1="{x+width+4}" y1="{y+77}" x2="{x+width+gap-5}" y2="{y+77}" stroke="#236bb0" stroke-width="2.5" marker-end="url(#arrow)"/>')
+    out.append(text(40,height-20,"Conceptual scheme. Follow the adjacent guide for exact settings, button paths and verification.",14,"#53657d"))
+    out.extend(["</g>","</svg>\n"])
+    return "\n".join(out)
+
+
 def main():
     folder=ROOT/"images"
     folder.mkdir(exist_ok=True)
     for entry in FIGURES:
         (folder/(entry[0]+".svg")).write_text(render(*entry),encoding="utf-8")
-    print(f"Rendered {len(FIGURES)} navigation diagrams in {folder.relative_to(ROOT)}")
+    for entry in SCHEMES:
+        (folder/(entry[0]+".svg")).write_text(render_scheme(*entry),encoding="utf-8")
+    print(f"Rendered {len(FIGURES)} button diagrams and {len(SCHEMES)} visual schemes in {folder.relative_to(ROOT)}")
 
 
 if __name__=="__main__":

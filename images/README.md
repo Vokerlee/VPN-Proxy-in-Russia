@@ -1,6 +1,6 @@
 # Images in this guide
 
-The SVGs are original, version-labeled **navigation diagrams**, not captured screenshots. They show button names and the order of actions rather than claiming pixel-perfect layouts. They contain only placeholder values. The old screenshots were removed from the current tree because their layouts and credential displays no longer made a reliable guide; Git history retains them.
+The SVGs are original **navigation diagrams and conceptual network schemes**, not captured screenshots. Button diagrams are version-labeled. They show button names and the order of actions rather than claiming pixel-perfect layouts. They contain only placeholder values. The old screenshots were removed from the current tree because their layouts and credential displays no longer made a reliable guide; Git history retains them.
 
 The 3x-ui diagrams describe 3.8.5; Hiddify diagrams describe 5.5.5. Windows shows the Windows 11 navigation path. Source-backed text next to each image explains alternatives when labels move.
 

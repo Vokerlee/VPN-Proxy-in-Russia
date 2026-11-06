@@ -6,6 +6,8 @@ This is the failure that started this update. SSH worked. Ping worked. The serve
 
 Those observations were not contradictory. They described different layers. The quickest way out is to test one layer at a time, keeping a note of what each result actually proves.
 
+![Check the local listener, remote port, account handshake and website request in order](../images/troubleshooting-path.svg)
+
 ## First, choose the symptom that matches yours
 
 | What you see | Start here |

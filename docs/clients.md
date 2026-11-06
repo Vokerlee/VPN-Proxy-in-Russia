@@ -39,6 +39,8 @@ On Android/iOS the normal VPN mode uses the operating system's VPN permission di
 
 ![Hiddify service mode buttons and what each mode changes](../images/hiddify-modes.svg)
 
+![Visual comparison of manual proxy, system proxy and routed VPN modes](../images/connection-modes.svg)
+
 ## Start with a small, understandable configuration
 
 The older guide suggested enabling Fake DNS whenever a website failed. That is too broad. First make the ordinary tunnel work; add special routing and DNS features later, one at a time.
