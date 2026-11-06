@@ -6,11 +6,11 @@ You have rented a Linux server and saved its login details. If you have not, sta
 
 We will install **3x-ui**, a browser-based dashboard for managing connection accounts. Later, **Xray**, the network engine it manages, will carry the traffic. You do not need to learn either program's internals to install the panel.
 
-UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11-06**. Record your panel and Xray versions before making changes; they have independent release numbers. Existing working installations do not need a reinstall.
+UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11-06**. For troubleshooting, record both the panel and Xray versions; they have independent release numbers. Existing working installations do not need a reinstall.
 
 **Do this page if your server does not yet have a working 3x-ui dashboard.** If you can already log in to 3x-ui, skip installation and [open Step 3: create your connection account](server-inbound.md).
 
-**Required here:** connect over SSH, install and open the dashboard, and choose the VPN port (sections 2–4). The other sections are optional background, security improvements, or extra checks. They are closed below so you can follow the main path without reading them.
+**Required here:** connect over SSH, install and open the dashboard, and choose the VPN port (sections 2–4). The other sections are optional background, security improvements, or extra checks. Longer alternatives are closed below so you can follow the main path without reading them.
 
 ## 1. The ordinary setup: one server, one app
 
@@ -51,25 +51,30 @@ The following installation commands run **on the VPS**, initially as root:
 
 ```bash
 apt update
-apt upgrade -y
 apt install -y curl ca-certificates
 ```
 
-If a reboot is required, reconnect afterward before continuing.
+These commands refresh the package list and install curl, the download tool used below, with trusted certificate data.
+
+<details>
+<summary>Optional: update the server’s other installed packages</summary>
+
+Run `apt upgrade -y` if you want to update existing packages now. If an update requires a reboot, reboot and reconnect before continuing. This package upgrade is separate from installing the VPN panel.
+
+</details>
 
 ![Installer walkthrough: run the installer and save its complete output](../images/3x-ui-installation.svg)
 
 ## 3. Install 3x-ui
 
-Use the [official 3x-ui repository](https://github.com/MHSanaei/3x-ui) and its [release instructions](https://github.com/MHSanaei/3x-ui/releases). Download the installer before running it so it can be inspected:
+Use the [official 3x-ui repository](https://github.com/MHSanaei/3x-ui) and its [release instructions](https://github.com/MHSanaei/3x-ui/releases). Download and run the installer:
 
 ```bash
 curl -fL https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh -o /tmp/3x-ui-install.sh
-less /tmp/3x-ui-install.sh
 bash /tmp/3x-ui-install.sh
 ```
 
-Press `q` to leave `less`. Running the installer grants it root access. Use an official stable release, and record the installed version rather than assuming the latest panel and every client engine are compatible.
+The installer runs with administrator access, so use the official source linked above. **Optional review:** after downloading and before running it, `less /tmp/3x-ui-install.sh` lets you read the script; press `q` to exit. Record the installed version if you later need troubleshooting help.
 
 ### Required: install the panel and save its login details
 
