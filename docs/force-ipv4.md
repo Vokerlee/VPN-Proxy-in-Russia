@@ -2,7 +2,9 @@
 
 # Make the VPN server use an IPv4 exit
 
-**Where:** 3x-ui on the VPS. **Result:** destination hostnames use IPv4 on the server's direct outbound.
+The address a website sees after you connect is the server's **exit address**. It can be IPv4 (a dotted address such as `203.0.113.10`) or IPv6 (an address with colons, such as `2001:db8::10`).
+
+If you want websites to see the server's IPv4 address, change the outgoing connection setting in **3x-ui**, the server's browser dashboard. This does not require changing your own computer's operating system or disabling IPv6 everywhere.
 
 A client may connect to `YOUR_SERVER_IPV4:443` and still show the VPS's IPv6 address in an IP check. There are two separate connections:
 

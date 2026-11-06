@@ -105,6 +105,10 @@ flutter.service-mode          proxy
 
 Use [the repair helper](automation.md#repair-hiddify-preferences-on-windows) to preview and, if needed, apply those settings. It requires Hiddify to be closed, backs up its preferences, never stops processes, and does not change Invisible Man or Windows' selected proxy. A backup is useful because disabling the API can affect API-based monitoring or integrations. Revert if you need those features, then test changes individually.
 
+You can make this advanced recovery change without a script too. On Windows, close Hiddify yourself, press **Win+R**, open `%APPDATA%\Hiddify\hiddify`, and make a private backup copy of `shared_preferences.json`. Open the original with a text editor. Update the listed existing keys, or add missing keys to its top-level JSON object using JSON commas and the boolean value `false` (not the string `"false"`). Keep every unrelated preference. Save it, reopen Hiddify, reconnect, and test. If the file no longer parses or the change does not help, close Hiddify and restore your backup.
+
+This is an advanced fallback for the recorded problem, not a requirement that every new user edit a preferences file. The helper is an optional way to avoid manual JSON mistakes.
+
 The effective file under `%APPDATA%\Hiddify\hiddify\data\current-config.json` is diagnostic output, not the persistent place to make this repair. Hiddify regenerates it.
 
 ## Leave Invisible Man installed, but use a maintained client for this setup

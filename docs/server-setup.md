@@ -58,11 +58,43 @@ Press `q` to leave `less`. Running the installer grants it root access. Use an o
 
 At the installer prompts:
 
-1. Choose a panel port when offered. Use an unused port, for example `27297`.
-2. Follow the certificate/HTTPS setup offered by your installer version. A trusted certificate for a hostname avoids browser certificate warnings. A panel certificate and REALITY transport security are separate things.
-3. Copy the printed **panel URL, username, password, and URL path** to a password manager.
-4. Open that exact URL in a browser. Keep the URL path; opening only the IP and port may return 404.
-5. Sign in and check the dashboard's panel and Xray versions.
+1. If asked for a database, keep **SQLite**, the simple built-in choice for a personal server.
+2. Choose an unused administration-panel port, for example **27297**, when offered. A port is a numbered network entry point; the panel port will be separate from the VPN connection port.
+3. Choose how to protect the panel's browser login, as explained below.
+4. Copy the printed **panel URL, username, password, and URL path** into a password manager. These are newly generated panel credentials, separate from the server's SSH/root password.
+5. Open the exact panel URL in your browser. Keep its path; opening only the IP and port may return 404.
+6. Enter the generated panel username/password and click **Login**. You should reach the dashboard.
+
+### Open the panel with HTTPS
+
+HTTPS encrypts the browser connection to the panel. Its certificate proves which server the browser reached. This is separate from the REALITY setting you will later use for VPN connections.
+
+The checked 3x-ui installer offers **Let's Encrypt IP certificate** for a server without a domain name. Choose that label, enter the server's public IP when requested, and follow the prompts. A domain name is a website-style name such as `panel.example.com`; it is not required for this IP-certificate option.
+
+Certificate issuance needs incoming **TCP port 80** reachable from the certificate authority. Allow it in the provider's firewall and in an existing host firewall if necessary. If another program already uses port 80, do not stop it blindly; use an appropriate existing web-server setup or the private-access option below. The installer configures renewal for its short-lived IP certificate, so keep that renewal path working.
+
+When the installer prints an `https://...` URL, use that URL. Also allow the chosen panel TCP port from your administration IP if your firewall blocks it. If certificate setup failed, do not assume the panel now has trusted HTTPS merely because the installer finished.
+
+### Or keep the panel private through SSH
+
+This is useful if you do not want a public panel port or cannot use certificate issuance. In the installer, choose **Skip SSL / HTTP only** only when you will immediately use this private-access setup. Run on the server:
+
+```bash
+/usr/local/x-ui/x-ui setting -listenIP 127.0.0.1
+systemctl restart x-ui
+```
+
+This binds the panel to the server's own loopback address, which is not reachable directly from the internet. On **your computer**, open a second terminal and run:
+
+```bash
+ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:18080:127.0.0.1:YOUR_PANEL_PORT YOUR_LOGIN_USER@YOUR_SERVER_IP
+```
+
+Replace the panel port, login user, and server IP with the values you saved. Leave this terminal open. It forwards your computer's local port 18080 securely over SSH to the panel.
+
+Open `http://127.0.0.1:18080/YOUR_PANEL_PATH/` in your computer's browser, using the saved panel path. Log in with the generated **panel credentials**, not the SSH password. The browser-to-localhost address is HTTP, while the hop to the VPS is carried inside encrypted SSH. You do not need to open a public firewall port for the panel in this arrangement.
+
+These are manual steps; no repository script is required. The [optional setup helper](quick-start.md) chooses private SSH-forwarded access for you when you explicitly use it.
 
 The panel port is an administration port. Do not put it in the VPN client's server-port field. See [the port map](ports-and-modes.md#the-ports-you-will-see).
 

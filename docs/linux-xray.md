@@ -1,8 +1,10 @@
 [← Guide index](../README.md) · [Server inbound](server-inbound.md) · [Share the proxy](share-proxy.md)
 
-# Give Linux a local Xray proxy
+# Use your VPN connection from a Linux terminal
 
-You do not need a desktop VPN window to send a Linux program through the VPS. A small Xray process can listen on localhost, and a program such as curl or APT can explicitly use it.
+You can use Hiddify on Linux, just as on other desktop systems. This optional chapter shows another approach for command-line programs and servers.
+
+**Xray** is the network engine that carries the connection. Here you will run it directly, without a desktop app. It provides a **local proxy**, a program on this Linux machine that forwards another program's requests through the remote server. Programs such as curl or the APT package manager can explicitly use it.
 
 Run this walkthrough on the **Linux client machine**, not on a VPS where 3x-ui already manages Xray. It creates a separate client service with an HTTP proxy on `127.0.0.1:10801`. Programs that ignore proxy settings will still use their normal route; this is not a TUN/transparent-routing guide.
 
