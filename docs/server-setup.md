@@ -12,9 +12,11 @@ UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11
 
 | You need | Deploy |
 |---|---|
-| A VPN for a phone or Windows PC | One VPS, then [Hiddify](clients.md) on each device |
-| Proxy access for Linux programs | One VPS, then the [Linux client](linux-xray.md) |
+| A normal VPN on Windows, Linux, macOS, or a phone | One VPS, then [Hiddify](clients.md) on each device |
+| An optional proxy for Linux terminal programs or a server without a desktop | One VPS, then the [standalone Xray client](linux-xray.md) |
 | One proxy endpoint for several devices | The VPS plus a separate [restricted proxy host](share-proxy.md) |
+
+Choose one row for your needs. For an ordinary Linux desktop, follow the same Hiddify path as on Windows; you do not need the standalone Xray chapter. The shared server installation below is the same for all three choices. If you already have a server, keep it and check its resources rather than ordering another one.
 
 Use a supported Ubuntu release available from your provider, one CPU core, about 1 GiB RAM, a public IPv4 address, and enough transfer allowance. Ubuntu 22.04 and 24.04 are examples, not a requirement to reinstall a different working version. These resource values are practical starting points, not a capacity guarantee. IPv6 on the VPS is optional. HostVDS and FirstVDS are examples used by this project; check current locations, traffic limits, payment methods, and network reachability before purchasing. No particular provider guarantees an unblocked route.
 
