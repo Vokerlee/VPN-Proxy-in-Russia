@@ -4,9 +4,9 @@
 
 **Use this page when a check fails.** Choose your symptom from the table below, then read that section. These are diagnostic branches, not additional steps every working setup needs.
 
-This is the failure that started this update. SSH worked. Ping worked. The server listened on the right port. Yet one client timed out and another printed a REALITY verification error.
+A server can answer ping or let you log in while its VPN connection fails. Those are different connections, so start with the symptom below.
 
-Those observations were not contradictory. They described different layers. The quickest way out is to test one layer at a time, keeping a note of what each result actually proves.
+**Hiddify** is the app on your device. **3x-ui** is the server’s browser dashboard, and **Xray** is the network engine it manages. A network engine is also called a **core**. Your rented server is the **VPS**, and its **exit address** is the address websites see when you use it.
 
 ![Check the local listener, remote port, account handshake and website request in order](../images/troubleshooting-path.svg)
 
@@ -49,21 +49,21 @@ If you see “address already in use,” give the clients different ports. Chang
 
 ## Ping works, so test the VPN port next
 
-An ICMP reply only establishes a limited kind of reachability. It does not prove that TCP 443/8443 is reachable, or that REALITY authentication works.
+Ping sends a small network probe using ICMP. The VPN uses a different connection type, TCP, on its configured port. Test that actual port next.
 
-From Windows, substitute the actual VPN port:
+From Windows PowerShell, substitute the actual VPN port:
 
 ```powershell
 Test-NetConnection YOUR_SERVER_IP -Port 443
 ```
 
-If `TcpTestSucceeded` is false, compare the port in the exported profile, the server listener, the host firewall, and the provider security group. Use a mobile hotspot as a comparison when possible. A successful test from another country or another provider does not prove your current path works.
+If `TcpTestSucceeded` is false, compare the port in the exported profile, the server listener, the host firewall, and the provider security group. Use a mobile hotspot as a comparison when possible. Run the check from the device and network where the VPN fails; a mobile hotspot comparison can help reveal a network-specific block.
 
-A TLS-looking response from the REALITY port is also not an authenticated tunnel test. Unauthenticated connections can be forwarded to the configured target website. The next step is a real HTTPS request through a client using the account's parameters.
+If the port is reachable, try [a webpage request through Hiddify](clients.md#press-connect-then-prove-the-route). REALITY can forward an unauthenticated connection to its configured target website, so merely receiving a website response directly from the server port does not check your VPN account.
 
 ## The TCP port opens, but REALITY fails
 
-These messages put the investigation at the authentication/transport layer:
+REALITY is the protected connection type selected in the server account. These messages mean connection setup failed; read the surrounding log entries too, because the last message alone may not identify the cause:
 
 ```text
 REALITY: processed invalid connection
@@ -73,19 +73,19 @@ failed to find an available destination
 
 1. Compare IP, VPN port, UUID, Flow, transport, REALITY public key, short ID, SNI, and fingerprint with the panel's export.
 2. Check account enablement, expiry, quota, and IP restrictions.
-3. Check the VPS clock with `timedatectl status`; check the client clock too. A clock check is relevant, but it is not evidence that clock drift caused this particular failure.
-4. Record the **actual client core version**, not just the GUI version.
+3. Check the server clock with `timedatectl status` and the device’s date/time settings. Correct either clock if it is wrong.
+4. Record the app version and its **network engine/core version**. The app’s About or Logs page may show both; an app and its engine can have different version numbers.
 5. Test the same profile with a known compatible current core, using [the temporary client helper](automation.md#test-a-real-authenticated-tunnel).
 
-The investigation reproduced an Xray **25.1.30** client failing against **26.9.9**, while **26.10.31** connected using the same profile and provider. [Invisible Man - XRay Client](clients.md#switching-from-invisible-man---xray-client), a Windows VPN/proxy app used in the original guide, bundled that older engine in release 3.2.5. A broken import and an incompatible TLS handshake can look similar, but reimporting a valid URI does not modernize the core.
+The tests recorded for this guide found that Xray client **25.1.30** failed against Xray server **26.9.9**, while client **26.10.31** connected with the same account link and provider. [Invisible Man - XRay Client](clients.md#switching-from-invisible-man---xray-client), a Windows VPN/proxy app used in the original guide, bundled that older engine in release 3.2.5. If your engine is similarly outdated, update the client and retest; copying the account link again leaves the engine unchanged.
 
-Newer REALITY servers have imposed ClientHello/key-share requirements that affected old Xray clients and some sing-box clients. A generic “latest client” label is not a compatibility test. Hiddify 5.5.5's native core succeeded in the final tests; do not generalize older sing-box reports to every Hiddify build. See [the versioned technical explanation](xray-internals.md#why-a-valid-profile-can-stop-working-after-an-update).
+Some newer REALITY servers require changes to the initial encrypted connection setup, which older engines may lack. Hiddify 5.5.5 connected successfully in the recorded tests. The [technical explanation](xray-internals.md#why-a-valid-profile-can-stop-working-after-an-update) covers the version-specific details.
 
 ## The profile works, but the app's generated configuration fails
 
-A profile carries the account and transport parameters. The app adds DNS, rules, selectors, caches, monitoring, and mode-specific integration. That extra configuration is part of the system you are testing.
+A profile contains the account’s connection settings. Hiddify adds its own settings, including DNS (website name lookups) and rules that choose which traffic uses the VPN. Those additions can explain why a valid account link works in one test but fails in the app.
 
-In this investigation, the installed Hiddify Windows core repeatedly connected with a small configuration, while the complete generated configuration failed. Rebuilding the app configuration with **Region Other**, **Fake DNS off**, **independent DNS cache off**, and **Clash API off** restored the app's actual proxy. Several settings changed together, so this does not identify one universal culprit.
+In this investigation, the installed Hiddify Windows core repeatedly connected with a small configuration, while the complete generated configuration failed. Rebuilding the app configuration with **Region Other**, **Fake DNS off**, **independent DNS cache off**, and **Clash API off** restored the app's actual proxy. Because several options changed together, re-enable them one at a time if you want to find which option affects your device.
 
 Use the [Hiddify recovery walkthrough](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough). Start with the visible UI options. For hidden preferences, the repair helper previews changes and saves a backup. Re-enable features individually, testing after each one; note which change reintroduces the symptom.
 
@@ -140,4 +140,4 @@ Temporarily use an informative log level if the app offers it, then restore the 
 
 A useful report contains the versions, client OS, selected mode, VPN port, local proxy port, exact error, and results of a direct request and an explicitly proxied request. It also says whether the same profile works with another core or provider.
 
-That small record tells the next person where to start. “Server pings, VPN broken” does not yet separate the seven different systems involved.
+This gives the person helping you a specific failed check to investigate, along with the versions and settings needed to repeat it.

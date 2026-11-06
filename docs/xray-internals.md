@@ -119,7 +119,7 @@ Server outbound resolver→ chooses the destination address at egress
 
 A remote DNS setting on the client does not automatically control all three. Fake DNS adds a mapping from synthetic addresses back to domain names; it only works properly when the relevant DNS and traffic paths pass through the machinery maintaining that mapping. It is not a universal repair for a TLS authentication error. See [Xray DNS](https://xtls.github.io/en/config/dns.html) and [FakeDNS](https://xtls.github.io/en/config/fakedns.html).
 
-This is why the IPv6 exit surprised us. The client reached the VPS over IPv4, but a hostname request still allowed the VPS to choose IPv6. [ForceIPv4 on the server's actual freedom outbound](force-ipv4.md) controls that hostname-resolution decision. A literal IPv6 destination and a routing rule blocking IPv6 are separate cases.
+This explains how a connection to an IPv4 server address can produce an IPv6 exit. The client reached the VPS over IPv4, but a hostname request still allowed the VPS to choose IPv6. [ForceIPv4 on the server's actual freedom outbound](force-ipv4.md) controls that hostname-resolution decision. A literal IPv6 destination and a routing rule blocking IPv6 are separate cases.
 
 ## Routing is ordered policy, not a list of wishes
 
@@ -135,7 +135,7 @@ Configuration compatibility and wire compatibility are different contracts. A pa
 
 A concrete example: the [REALITY change adopted in the 26.9.8/26.9.9 period](https://github.com/XTLS/REALITY/commit/8cdf7bf9c7f09cb9814bf08c3eb877f68b85fba8) rejects older/atypical ClientHello key-share layouts that omit the expected X25519MLKEM768 share before an optional standalone X25519 share. Client implementation and fingerprint handling therefore matter. A string named `chrome` is not a frozen byte sequence across engines or releases.
 
-The [sing-box compatibility report](https://github.com/SagerNet/sing-box/issues/4520) tracks affected implementations and experimental fixes. That report does not mean every Hiddify release is permanently incompatible: Hiddify carries its own modified engine, and the installed 5.5.5 native core passed the tests in this investigation.
+**sing-box** is another proxy engine; **Hiddify**, the VPN app in the practical guide, uses a modified version of it. The [sing-box compatibility report](https://github.com/SagerNet/sing-box/issues/4520) tracks affected implementations and experimental fixes. For the recorded setup, Hiddify 5.5.5’s own engine connected successfully. Compare actual engine versions and results when applying that report to another installation.
 
 The reproduced comparison used the same profile, provider, destination, and server: Xray **25.1.30** failed; **26.10.31** succeeded against server **26.9.9**. That is evidence for a core-dependent failure, not evidence that the UUID needed regeneration. A separate comparison then showed Hiddify's plain profile working while its full generated configuration failed; the [recorded settings repair](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) addressed that second problem.
 
