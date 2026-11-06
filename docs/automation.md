@@ -4,12 +4,23 @@
 
 You should not have to copy a public key by eye, guess whether a test used the proxy, or edit a preferences file while an app is rewriting it. These helpers handle those mechanical steps while leaving the network choices visible.
 
-They do not install software, change a provider firewall, stop existing clients, or decide that a server upgrade is compatible. Run them from the repository root. Python helpers require **Python 3.10+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
+The fresh-server bootstrap installs software only when explicitly applied. The diagnostic and client-preference helpers do not install software. None of the helpers changes a provider firewall or stops existing clients. Run them from the repository root. Python helpers require **Python 3.10+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
+
+## Start with only a VPS IP and root password
+
+Follow the [illustrated quick start](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
+
+The launchers use the operating system's OpenSSH client. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. A busy 443 falls back to 8443; provider-firewall work is reported as a separate action when needed.
+
+The private panel is reached through the SSH-forward command printed at completion. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
+
+The pinned remote payload is `scripts/provision_remote.py`; it is not a workstation setup program and refuses direct invocation without the launcher's supplied options. Review the code and pinned installer before applying it. This path installs 3x-ui and its bundled Xray version; it does not silently upgrade an existing installation or promise automatic compatibility with every future client.
 
 ## Pick the helper for the job
 
 | Your next step | Helper | Changes by default |
 |---|---|---|
+| Prepare a fresh VPS from its IP and root password | `scripts/Setup-Vpn.ps1` or `python3 scripts/bootstrap_server.py` | Plan only; apply provisions the fresh VPS |
 | Check the VPS service, listener and effective settings | `bash scripts/server-check.sh` | None; local checks only |
 | Inspect a private share link | `python3 scripts/vpn_profile.py inspect` | None; values that grant access are hidden |
 | Create a Linux/standalone Xray client file | `python3 scripts/vpn_profile.py config` | Writes only the explicit output file |

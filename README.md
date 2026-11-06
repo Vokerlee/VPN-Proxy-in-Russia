@@ -2,6 +2,12 @@
 
 Set up a personal VLESS + REALITY server, connect your devices, and verify where their traffic exits. This setup can help with network filtering, but reachability depends on the provider, network, client engine, and server version.
 
+## Start with the two details your provider sent you
+
+Have a fresh VPS IPv4 address and its root password? Start with the [illustrated quick start](docs/quick-start.md). The helper prepares the server and the first profile, then shows exactly how to open 3x-ui and connect Hiddify. Windows has a PowerShell launcher; Linux/macOS has a Python launcher. Preview first, apply when ready.
+
+Already have a working panel? Keep it. Follow the individual walkthroughs below; the fresh-server helper deliberately refuses to overwrite an existing installation.
+
 ## Start here
 
 | Your task | Guide |
