@@ -48,7 +48,7 @@ FIGURES = [
     ("hiddify-settings", "Build a simple starting configuration", "Hiddify 5.5.5", ["Settings", "DNS", "Routing", "Inbound"], "DNS", [
         ("Settings > DNS", "Fake DNS: Off", "Start with ordinary DNS; add special features after the tunnel works."),
         ("Settings > Routing > Region", "Other", "Temporarily avoid country-specific bypass rules while diagnosing."),
-        ("Settings > Inbound > Local proxy", "Port: 12334", "Keep another client's 10801 listener separate.")]),
+        ("Settings > Routing > ...", "IPv6 routing: IPv4 only", "The server exit address is a separate setting.")]),
     ("hiddify-modes", "Choose what Connect will change", "Hiddify 5.5.5", ["Settings", "Inbound", "Service mode"], "Service mode", [
         ("Test without taking over Windows", "Proxy (manual)", "Applications must explicitly choose 127.0.0.1:12334."),
         ("Use Windows' proxy selection", "System Proxy", "Proxy-aware applications follow the local Hiddify listener."),
@@ -57,10 +57,10 @@ FIGURES = [
         ("Under Manual proxy setup", "Set up / Edit", "Make sure Hiddify is already connected."),
         ("Enable Use a proxy server", "127.0.0.1  |  12334", "Use the local client port, not the VPS port or control API port."),
         ("Apply the selected endpoint", "Save", "This selects one system proxy; it does not combine two clients.")]),
-    ("hiddify-connect", "A green button is only the beginning", "Hiddify 5.5.5", ["Home", "Personal VPN", "Proxy mode"], "Personal VPN", [
-        ("Start the selected profile", "Connect", "In manual mode, Windows' proxy selection stays unchanged."),
-        ("Make an explicit proxy request", "HTTPS exit test", "PowerShell: curl.exe --proxy http://127.0.0.1:12334 ..."),
-        ("Read the response", "ip=THE_VPS_EXIT_IP", "An IPv6 result may be the VPS's legitimate outgoing address.")]),
+    ("hiddify-connect", "Connect and check a website", "Hiddify 5.5.5", ["Home", "Personal VPN", "VPN / TUN"], "Personal VPN", [
+        ("Select your profile in VPN / TUN mode", "Connect", "Accept the operating system VPN or administrator permission request."),
+        ("Open an IP-check page in your browser", "cloudflare.com/cdn-cgi/trace", "Find the line starting with ip= and compare it with your server exit."),
+        ("Try the website you wanted to use", "Open your website", "If the address check and website work, your first connection is complete.")]),
     ("3x-ui-first-visit", "Your first visit to the prepared panel", "3x-ui 3.8.5", ["Dashboard", "Inbounds", "Clients", "Outbounds", "Routing", "Xray Settings"], "Inbounds", [
         ("Sign in through the forwarded local URL", "Login", "Use the generated panel account, not the SSH root password."),
         ("Open the existing listener", "Inbounds  >  Personal VPN", "The setup helper already created it; do not add a duplicate."),

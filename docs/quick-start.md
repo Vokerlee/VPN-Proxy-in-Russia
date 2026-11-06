@@ -115,29 +115,13 @@ When you close the SSH-forwarding terminal, browser access stops. The VPN servic
 
 ## Bring the profile into Hiddify
 
-Install Hiddify from its [official download page](https://github.com/hiddify/hiddify-app/releases/latest).
+The server and account are ready. Open the generated `hiddify-profile.txt` in a text editor and copy the whole `vless://...` line. This is your private connection profile.
 
-Start with the normal visible settings below. **Skip preference repair if the connection works.** If it fails after the ordinary checks, the [optional Windows preference repair](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) explains both manual editing and the helper.
+**[Now follow Step 4: install Hiddify, import this link, and connect →](clients.md)**
 
-Open Hiddify and import the account:
+That page gives the starting settings and the browser check. You do not need to create another account in 3x-ui or run a preference-repair script first.
 
-1. Open the generated `hiddify-profile.txt` in a text editor and copy the whole `vless://...` line.
-2. Open Hiddify, click **+ / New profile → Add from clipboard**, and select **Personal VPN**.
-3. In **Settings → Inbound → Service mode**, choose **Proxy** for the first test. Keep the mixed/local port enabled at **12334**.
-4. In **Settings → DNS**, start with **Fake DNS off**. In **Settings → Routing**, select **Region → Other** while diagnosing. Leave TLS tricks and optional chaining off.
-5. Click **Connect**. **On Windows**, make an explicit request from PowerShell:
-
-```powershell
-curl.exe --noproxy localhost,127.0.0.1 --proxy http://127.0.0.1:12334 --connect-timeout 5 --max-time 15 https://www.cloudflare.com/cdn-cgi/trace
-```
-
-![Hiddify: add the profile from the clipboard](../images/hiddify-import.svg)
-
-**On Linux/macOS**, use the [equivalent Hiddify terminal test](clients.md#press-connect-then-prove-the-route). On phones, use VPN mode and open the test URL in the browser instead. Do not run the Windows command on a phone.
-
-Find `ip=` in the response. It should be the VPS's IPv4 egress address. Now select **System Proxy** and reconnect if you want Windows' proxy-aware programs to use Hiddify. Choose **VPN/TUN** if your application ignores system proxies, and accept the OS permission request. The [client walkthrough](clients.md) covers the complete settings and the [ports guide](ports-and-modes.md) explains the differences.
-
-If another VPN app is already running, keep its local proxy port different from Hiddify’s. For the first test, leave Hiddify in manual **Proxy** mode so it does not replace Windows’ current proxy selection. If you are switching from an older app, read the [Invisible Man - XRay Client compatibility notes](clients.md#switching-from-invisible-man---xray-client); that app is the Windows Xray-based client used in the original guide.
+![Hiddify: add the generated profile from the clipboard](../images/hiddify-import.svg)
 
 Copy the generated credentials/profile to your private password manager before deleting the working folder. `.secrets/` is deliberately not committed to Git. Do not paste those files into a public issue or screenshot.
 

@@ -30,10 +30,10 @@
 <rect x="272" y="382" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="297" cy="411" r="16" fill="#0b62b9"/>
 <text x="292" y="417" font-size="16" fill="white" font-weight="700">3</text>
-<text x="323" y="413" font-size="17" fill="#172b4d" font-weight="400">Settings &gt; Inbound &gt; Local proxy</text>
-<rect x="323" y="424" width="180" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
-<text x="336" y="445" font-size="15" fill="#074985" font-weight="700">Port: 12334</text>
-<text x="323" y="473" font-size="13" fill="#53657d" font-weight="400">Keep another client&#x27;s 10801 listener separate.</text>
+<text x="323" y="413" font-size="17" fill="#172b4d" font-weight="400">Settings &gt; Routing &gt; ...</text>
+<rect x="323" y="424" width="232.4" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
+<text x="336" y="445" font-size="15" fill="#074985" font-weight="700">IPv6 routing: IPv4 only</text>
+<text x="323" y="473" font-size="13" fill="#53657d" font-weight="400">The server exit address is a separate setting.</text>
 <text x="34" y="549" font-size="14" fill="#53657d" font-weight="400">Follow the adjacent guide for checks and version-specific alternatives. All values shown are placeholders.</text>
 </g>
 </svg>
