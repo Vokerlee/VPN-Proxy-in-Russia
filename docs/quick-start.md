@@ -107,7 +107,18 @@ When you close the SSH-forwarding terminal, browser access stops. The VPN servic
 
 ## Bring the profile into Hiddify
 
-Install Hiddify from its [official download page](https://github.com/hiddify/hiddify-app/releases/latest), then:
+Install Hiddify from its [official download page](https://github.com/hiddify/hiddify-app/releases/latest).
+
+For the exact Windows recovery baseline tested in this guide, launch Hiddify once so it creates its preferences, then **close Hiddify yourself**. From this repository's PowerShell terminal, preview and apply the preference helper:
+
+```powershell
+.\scripts\Repair-Hiddify.ps1
+.\scripts\Repair-Hiddify.ps1 -Apply -ServiceMode Manual
+```
+
+If needed, use the same reviewed per-process execution-policy approach described above for this file. The helper backs up preferences, disables the optional DNS/routing/API features involved in the investigated failure, and never stops another client. Read [the setting explanations](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) before applying it to a customized installation. This Windows preference repair is not a required phone step.
+
+Now open Hiddify again and import the account:
 
 1. Open the generated `hiddify-profile.txt` in a text editor and copy the whole `vless://...` line.
 2. Open Hiddify, click **+ / New profile → Add from clipboard**, and select **Personal VPN**.

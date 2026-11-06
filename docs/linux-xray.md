@@ -40,11 +40,17 @@ Before replacing a pre-existing service config, make a backup with a fresh name.
 
 ```bash
 sudo cp -a /usr/local/etc/xray/config.json /usr/local/etc/xray/config.json.before-guide
-sudo install -m 600 .secrets/client.json /usr/local/etc/xray/config.json
+xray_service_user=$(systemctl show xray -p User --value)
+xray_service_group=$(systemctl show xray -p Group --value)
+[ -n "$xray_service_user" ] || xray_service_user=root
+if [ -z "$xray_service_group" ]; then
+    xray_service_group=$(id -gn "$xray_service_user")
+fi
+sudo install -o root -g "$xray_service_group" -m 640 .secrets/client.json /usr/local/etc/xray/config.json
 sudo /usr/local/bin/xray run -test -config /usr/local/etc/xray/config.json
 ```
 
-If the original file does not exist, skip the backup command. If `config.json.before-guide` already exists, choose another backup name; do not overwrite your recovery copy. If the syntax test fails, restore the backup before restarting the service.
+If the original file does not exist, skip the backup command. If `config.json.before-guide` already exists, choose another backup name; do not overwrite your recovery copy. The commands read the service account/group so an unprivileged Xray service can read the config without exposing it to every user. If `id` fails because your custom unit uses a dynamic account, stop here and inspect that unit rather than substituting an unrelated group. If the syntax test fails, restore the backup before restarting the service.
 
 <details>
 <summary>See the shape of the generated configuration</summary>
@@ -101,7 +107,7 @@ systemctl status xray --no-pager
 ss -lnt 'sport = :10801'
 ```
 
-The service must be able to read its configuration. Check `systemctl cat xray` for the configured service user. If your installer runs Xray as an unprivileged account, grant that account read access to the private configuration using its group/ACL; do not make credentials world-readable to hide a permissions error.
+If the service reports a permissions error, inspect `systemctl cat xray` and confirm the configured user/group can traverse the configuration directory and read the file. The install command above grants the service group read access; do not change the file to world-readable.
 
 Now ask curl to use the proxy, overriding any existing `NO_PROXY` exemption:
 

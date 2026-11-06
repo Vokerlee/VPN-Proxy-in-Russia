@@ -154,6 +154,8 @@ Rebuild button illustrations with:
 python3 scripts/render_illustrations.py
 ```
 
+A successful inspect command prints the server and selected protocol fields while hiding UUID/key/short-ID values. A successful tunnel test prints the actual Xray version, a success message, and the endpoint response containing `ip=`. On a failure, use the linked troubleshooting step instead of treating a completed process as a working tunnel.
+
 Run the repository's offline checks with:
 
 ```bash
@@ -161,5 +163,7 @@ python3 -B -m unittest discover -s tests -v
 python3 -B scripts/check_docs.py
 bash -n scripts/server-check.sh
 ```
+
+On Windows, also run `.\tests\check-powershell.ps1` for syntax, fixture-only preview checks, and simulated running-app protection. It does not inspect or stop your VPN apps.
 
 No server password, live profile, panel session, or working VPN is needed for these checks. Live end-to-end behavior still needs a real authorized test; the offline checks do not pretend to establish it.
