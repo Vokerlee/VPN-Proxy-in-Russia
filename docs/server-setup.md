@@ -161,18 +161,15 @@ usermod -aG sudo YOUR_ADMIN_NAME
 
 In a **second terminal**, verify `ssh YOUR_ADMIN_NAME@YOUR_SERVER_IP` works and that `sudo -v` succeeds. Keep the first session open while changing SSH access. Set up and test an SSH key before disabling password authentication.
 
-For SSH brute-force protection on Ubuntu:
+**Optional: block repeated failed SSH logins with fail2ban.** On Ubuntu, install and start it:
 
 ```bash
-apt install -y fail2ban
-cat > /etc/fail2ban/jail.d/sshd.local <<'EOF'
-[sshd]
-enabled = true
-backend = systemd
-EOF
-systemctl enable --now fail2ban
-fail2ban-client status sshd
+apt install fail2ban -y
+systemctl start fail2ban
+systemctl enable fail2ban
 ```
+
+Check SSH protection with `fail2ban-client status sshd`. If it lists the `sshd` jail, protection is active. If it reports an error, inspect `systemctl status fail2ban --no-pager` and `journalctl -u fail2ban --no-pager`; do not assume installation alone enabled protection on every Ubuntu image.
 
 If you choose to disable root SSH login, set `PermitRootLogin no` in the effective SSH server configuration, check `sshd -t`, then reload `ssh`. Ubuntu include files can override settings; verify the effective result with `sshd -T`. Test a new administrator login before closing the original session.
 
