@@ -1,0 +1,98 @@
+# Working in this repository
+
+This repository is both a human VPN walkthrough and a small set of opt-in setup/diagnostic helpers. Start with `README.md`; read the guide relevant to the requested task before running its script. Keep user-facing documentation readable as a practical article with button illustrations, required values, expected results, and recovery steps. Put protocol/implementation depth in the separate expert guide.
+
+## Repository map
+
+```text
+README.md                       Short entry point and guide index
+AGENTS.md                       This repository's agent workflow
+.gitignore                      Excludes private profiles, exports, backups and test artifacts
+docs/
+  quick-start.md                Fresh VPS: IP/root authentication -> panel -> Hiddify
+  server-setup.md               Manual VPS preparation and recoverable administration
+  server-inbound.md             3x-ui VLESS/REALITY/Vision form and exported profile
+  force-ipv4.md                 Server egress selection through the UI, verification and undo
+  clients.md                    Hiddify walkthrough, tested settings, legacy-client compatibility
+  ports-and-modes.md            Windows proxy selection, local/public ports, Connect/TUN behavior
+  linux-xray.md                 Standalone Linux client, service permissions and program proxies
+  share-proxy.md                SSH forwarding and intentionally restricted proxy sharing
+  troubleshooting.md            Layer-by-layer failure isolation and the recorded investigation
+  automation.md                 Commands, prerequisites, output and rollback for each helper
+  xray-internals.md             Architecture, wire layers, REALITY, Vision, DNS and routing
+images/
+  *.svg                         Original version-labeled navigation diagrams, not screenshots
+  README.md                     Rebuild instructions and genuine screenshot capture/redaction list
+scripts/
+  Setup-Vpn.ps1                 Windows launcher; no local Python required; default plan only
+  bootstrap_server.py           Python launcher; default plan only; native OpenSSH authentication
+  provision_remote.py           Remote fresh-VPS payload; never run as local setup
+  Repair-Hiddify.ps1            Preference preview; explicit apply with backup; never stops apps
+  vpn_profile.py                Inspect, generate config, isolated authenticated tunnel test
+  server-check.sh               Read-only Linux VPS health/config summary
+  render_illustrations.py       Deterministic SVG navigation-diagram renderer
+  check_docs.py                 Offline local links, anchors, SVG and accidental-profile checks
+tests/
+  test_bootstrap.py             Input boundaries, fresh-install guard, payload/export behavior
+  test_vpn_profile.py           Profile validation, overwrite/backup and NO_PROXY regression
+  test_docs_and_server_check.py Guide navigation and diagnostic argument validation
+  check-powershell.ps1          Syntax/fixture checks; simulated process guard; no real app access
+.secrets/                       Ignored local exports; never add to Git
+```
+
+## Automatic setup when the user supplies a VPS IP and root access
+
+The automatic path targets a **fresh Ubuntu/Debian systemd VPS**. An explicit request to set up that server authorizes the documented setup steps; do not ask for repetitive confirmations already covered by that request. Tool/sandbox approvals still apply. A request to edit docs or inspect a repository is not permission to provision a server.
+
+1. Read `docs/quick-start.md` and `docs/automation.md`. Verify the requested host and whether it is fresh or already managed. Use the given SSH port if nonstandard.
+2. Run the local plan first:
+
+   ```bash
+   python3 scripts/bootstrap_server.py --host VPS_IPV4 --plan
+   ```
+
+3. For an authorized fresh setup, run the launcher with `--apply`. Use an interactive terminal/PTY for OpenSSH's host-key and password prompts. On a Windows machine without Python, use `scripts/Setup-Vpn.ps1 -ServerIp VPS_IPV4 -Apply`.
+4. OpenSSH must verify host identity using its normal known-host behavior. Never disable strict host-key checking or silently accept a changed key. The launchers let SSH read the root password; never add a password argument, write it into scripts/configs, or print it.
+5. The payload refuses existing `/usr/local/x-ui/x-ui` or `/etc/x-ui/x-ui.db` before installation. Do not bypass that guard, delete the installation to retry, or rotate an existing account's credentials. For an existing deployment, use the manual guide and read-only diagnostics, then make only changes authorized by the user.
+6. The helper installs pinned 3x-ui, creates one REALITY/Vision account, applies ForceIPv4 to the new direct outbound, selects a free public VPN port, and puts the panel on loopback. It adds only the selected VPN allow rule if UFW is already active; it does not enable/reset a firewall or harden SSH blindly.
+7. Save the returned private exports under `.secrets/` or another user-approved private location. The VPS's recovery result is `/root/vpn-guide-bootstrap-result.json`; installer logs are root-only. Do not paste these files or raw logs into public output.
+8. Check the actual selected port. A busy 443 can select 8443. If the external TCP check fails, report the exact provider/custom-firewall action; root access is not provider-account access. Do not claim authentication from a TCP success.
+9. Explain panel access with the printed SSH-forward command, the local browser URL **including the generated path**, and the separate panel credentials. The root password is not the new panel login. Keep the forward open while using the browser; no public panel HTTP port needs to be opened.
+10. Import the generated `hiddify-profile.txt` into the client and follow the complete settings/verification path. Test a real HTTPS request through the local proxy and compare egress. Report what was tested and what remains unverified.
+
+Keep a working SSH session during any separately authorized access-control change. Do not disable root login or password authentication before a replacement administrator/key has been tested.
+
+## Existing clients and desktop networking
+
+- Never stop/restart Invisible Man or another running VPN client, replace its configuration, or alter Windows proxy/routes unless the user explicitly requests that action. A separate local port is sufficient for an isolated test.
+- The temporary client test terminates only the child it starts. Do not extend it to discover/kill existing clients or claim it tests their GUI integration.
+- `Repair-Hiddify.ps1` defaults to preview, requires Hiddify to be closed before applying, and preserves a backup. Let the user close the app; the helper must never kill it. Manual mode keeps another client's Windows proxy selection separate.
+- A Hiddify build containing Xray libraries does not prove it has an executable Xray traffic backend. Check the actual implementation/core behavior. Preserve the version-specific nuance in `docs/clients.md`.
+
+## Version and evidence rules
+
+The checked UI baseline is **3x-ui 3.8.5** and **Hiddify 5.5.5**, dated **2026-11-06**. The bootstrap deliberately pins the panel release. Do not silently change that pin without rechecking installer variables, CLI flags, API paths, payload schema, UI instructions and integration behavior together.
+
+Use official release notes, documentation and version-pinned source for changing software behavior. Distinguish a reproduced result, a source-derived explanation, and a hypothesis. The recorded Hiddify repair changed several preferences together; it does not prove one universal root cause. Do not label REALITY undetectable or guarantee that every provider/engine version works.
+
+Never claim fresh-VPS provisioning was live-tested when only the offline suite was run. A disposable, user-authorized VPS integration run is separate from unit, syntax and dry-run checks.
+
+## Credentials, examples and illustrations
+
+Use placeholders or reserved documentation addresses such as `203.0.113.10` and `2001:db8::10`. Keep UUIDs, complete live VLESS links, QR codes, private keys, panel paths, passwords, tokens and subscription URLs out of tracked files and commit messages. Prefer a hidden prompt or a private input file to a literal URI in shell history.
+
+All current SVGs are explicitly labeled navigation diagrams. Rebuild them with `python3 scripts/render_illustrations.py`. Do not represent them as captured screenshots. Actual new screenshots need authorized access or contributor captures; follow `images/README.md` and redact credentials opaquely before adding them. Do not invent current UI buttons that the checked version does not expose.
+
+## Validation and commits
+
+Run the checks appropriate to changed files:
+
+```bash
+python3 -B -m unittest discover -s tests -v
+python3 -B scripts/check_docs.py
+bash -n scripts/server-check.sh
+```
+
+For PowerShell changes, run `tests/check-powershell.ps1` from Windows PowerShell. It uses repo-local fixtures and a mocked process lookup; it does not inspect or change real VPN apps. For diagram changes, regenerate the SVGs, check determinism, and visually inspect a rendered preview. Keep preview/test artifacts untracked.
+
+Make **one commit for every logical change**, as requested by the repository owner. Keep the working tree clean after a completed step, preserve unrelated edits, and do not squash this step-by-step history without a request. Do not push, deploy, or change branch policy unless authorized. Mention unpushed local commits before the working folder is deleted.

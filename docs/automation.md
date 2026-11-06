@@ -167,3 +167,7 @@ bash -n scripts/server-check.sh
 On Windows, also run `.\tests\check-powershell.ps1` for syntax, fixture-only preview checks, and simulated running-app protection. It does not inspect or stop your VPN apps.
 
 No server password, live profile, panel session, or working VPN is needed for these checks. Live end-to-end behavior still needs a real authorized test; the offline checks do not pretend to establish it.
+
+## Working with an assistant
+
+The repository includes [AGENTS.md](../AGENTS.md), which maps the guides and scripts and describes the authorized fresh-server setup workflow. An assistant can use it to carry out setup from the supplied VPS details while keeping existing installations and desktop clients separate. You can still follow every setup page yourself; the ordinary guides do not depend on an assistant.
