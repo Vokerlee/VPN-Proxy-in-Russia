@@ -20,7 +20,9 @@ We use Ubuntu as the server's operating system. You do not need one specific Ubu
 
 ### 1. Get a server
 
-Choose a provider, select a location outside the network restrictions you want to avoid, and create a small server with Ubuntu. The walkthrough explains what to select and which login details to save.
+For example, use **[HostVDS](https://hostvds.com/)** and choose a European or US location, a small plan, and Ubuntu. This is the provider used in the original guide; another suitable provider works too.
+
+The walkthrough includes a HostVDS example: **Servers → New Instance → region and plan → Operating Systems → Ubuntu → Deploy**, followed by the login details to save.
 
 **[Start here: choose and create your server →](docs/choose-server.md)**
 

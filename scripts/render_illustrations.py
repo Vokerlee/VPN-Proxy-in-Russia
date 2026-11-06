@@ -65,6 +65,11 @@ FIGURES = [
         ("Sign in through the forwarded local URL", "Login", "Use the generated panel account, not the SSH root password."),
         ("Open the existing listener", "Inbounds  >  Personal VPN", "The setup helper already created it; do not add a duplicate."),
         ("Expand the first-device client", "Info / Share  >  Copy", "Or use the generated private hiddify-profile.txt export.")]),
+    ("hostvds-new-server", "Example: create a server on HostVDS", "HostVDS navigation example; provider labels may change", ["Servers", "New Instance", "Configuration", "Operating Systems"], "Servers", [
+        ("Open the server list", "Servers  >  New Instance", "This starts the provider's server-creation form."),
+        ("Choose where it runs and its size", "Region + configuration", "Example: Europe / USA; a small personal-server plan."),
+        ("Choose the server operating system", "Operating Systems  >  Ubuntu", "Use a supported offered release and include public IPv4."),
+        ("Create it, then save its access details", "Deploy", "Wait for running status; check server details and registration email.")]),
 ]
 
 

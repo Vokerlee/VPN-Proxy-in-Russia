@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="686" viewBox="0 0 1120 686" role="img" aria-labelledby="title desc">
+<title id="title">Example: create a server on HostVDS</title>
+<desc id="desc">Numbered navigation illustration. This is not a captured screenshot. Exact positions may differ by version.</desc>
+<g font-family="DejaVu Sans,Arial,sans-serif">
+<rect x="0" y="0" width="1120" height="686" rx="12" fill="#f4f7fb" stroke="none"/>
+<rect x="20" y="20" width="1080" height="112" rx="12" fill="#14283f" stroke="none"/>
+<text x="44" y="60" font-size="27" fill="#ffffff" font-weight="700">Example: create a server on HostVDS</text>
+<text x="44" y="96" font-size="16" fill="#c7d7eb" font-weight="400">HostVDS navigation example; provider labels may change  |  Navigation diagram, not a screenshot</text>
+<rect x="28" y="152" width="216" height="460" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
+<text x="48" y="185" font-size="13" fill="#60738d" font-weight="700">NAVIGATION</text>
+<rect x="38" y="185" width="196" height="35" rx="12" fill="#dbeafe" stroke="none"/>
+<text x="49" y="205" font-size="14" fill="#114b91" font-weight="700">Servers</text>
+<text x="49" y="248" font-size="14" fill="#53657d" font-weight="400">New Instance</text>
+<text x="49" y="291" font-size="14" fill="#53657d" font-weight="400">Configuration</text>
+<text x="49" y="334" font-size="14" fill="#53657d" font-weight="400">Operating Systems</text>
+<rect x="272" y="152" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
+<circle cx="297" cy="181" r="16" fill="#0b62b9"/>
+<text x="292" y="187" font-size="16" fill="white" font-weight="700">1</text>
+<text x="323" y="183" font-size="17" fill="#172b4d" font-weight="400">Open the server list</text>
+<rect x="323" y="194" width="241.20000000000002" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
+<text x="336" y="215" font-size="15" fill="#074985" font-weight="700">Servers  &gt;  New Instance</text>
+<text x="323" y="243" font-size="13" fill="#53657d" font-weight="400">This starts the provider&#x27;s server-creation form.</text>
+<rect x="272" y="267" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
+<circle cx="297" cy="296" r="16" fill="#0b62b9"/>
+<text x="292" y="302" font-size="16" fill="white" font-weight="700">2</text>
+<text x="323" y="298" font-size="17" fill="#172b4d" font-weight="400">Choose where it runs and its size</text>
+<rect x="323" y="309" width="223.60000000000002" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
+<text x="336" y="330" font-size="15" fill="#074985" font-weight="700">Region + configuration</text>
+<text x="323" y="358" font-size="13" fill="#53657d" font-weight="400">Example: Europe / USA; a small personal-server plan.</text>
+<rect x="272" y="382" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
+<circle cx="297" cy="411" r="16" fill="#0b62b9"/>
+<text x="292" y="417" font-size="16" fill="white" font-weight="700">3</text>
+<text x="323" y="413" font-size="17" fill="#172b4d" font-weight="400">Choose the server operating system</text>
+<rect x="323" y="424" width="276.40000000000003" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
+<text x="336" y="445" font-size="15" fill="#074985" font-weight="700">Operating Systems  &gt;  Ubuntu</text>
+<text x="323" y="473" font-size="13" fill="#53657d" font-weight="400">Use a supported offered release and include public IPv4.</text>
+<rect x="272" y="497" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
+<circle cx="297" cy="526" r="16" fill="#0b62b9"/>
+<text x="292" y="532" font-size="16" fill="white" font-weight="700">4</text>
+<text x="323" y="528" font-size="17" fill="#172b4d" font-weight="400">Create it, then save its access details</text>
+<rect x="323" y="539" width="180" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
+<text x="336" y="560" font-size="15" fill="#074985" font-weight="700">Deploy</text>
+<text x="323" y="588" font-size="13" fill="#53657d" font-weight="400">Wait for running status; check server details and registration email.</text>
+<text x="34" y="664" font-size="14" fill="#53657d" font-weight="400">Follow the adjacent guide for checks and version-specific alternatives. All values shown are placeholders.</text>
+</g>
+</svg>

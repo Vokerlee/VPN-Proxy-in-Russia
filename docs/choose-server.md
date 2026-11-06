@@ -14,6 +14,25 @@ Choose the location where you want traffic to leave the VPN, such as a European 
 
 A second server in Russia is **not needed** for the ordinary setup. The [optional sharing chapter](share-proxy.md) describes cases where an intermediate proxy host is useful. Do not buy two servers just because a diagram in an advanced chapter shows two machines.
 
+## Example: create the server on HostVDS
+
+If you want a concrete place to start, use [HostVDS](https://hostvds.com/). The provider's [own walkthrough](https://hostvds.com/knowledge/6) uses this creation flow:
+
+1. Sign in, open **Servers**, and click **New Instance**.
+2. Choose an available European or US region for the VPN exit. Check the current region list; you do not need one particular city.
+3. Choose a small configuration—for a first personal setup, around **1 CPU / 1 GB RAM / 10 GB disk** is a starting point. Check the selected plan's current transfer allowance and public IPv4 option.
+4. Select **Operating Systems → Ubuntu**. Use a supported release offered there; 24.04 is not mandatory.
+5. Click **Deploy** and wait for the server to show as running in **Servers**.
+6. Open its access details and check your registration email for the IP and root credentials.
+
+Choose the plain Ubuntu operating-system image for the manual installation in this guide. HostVDS also offers application templates that may include 3x-ui already. If you deliberately use one, follow its supplied panel access instructions and skip reinstalling a panel that already exists.
+
+If no root password arrives, HostVDS documents **Servers → Actions: Security → Change root password → Save new password** in its [access troubleshooting guide](https://hostvds.com/knowledge/7). Keep the resulting password private.
+
+![HostVDS example buttons: Servers, New Instance, Ubuntu, and Deploy](../images/hostvds-new-server.svg)
+
+You now have the same starting point as a server bought elsewhere: an IP address, an administrative login, and a running Linux system. Continue with [installing the server dashboard](server-setup.md).
+
 ## Create a small Ubuntu server
 
 Provider dashboards use different labels, so use the matching action rather than expecting identical screenshots everywhere:
