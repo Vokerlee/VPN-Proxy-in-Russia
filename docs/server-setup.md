@@ -1,8 +1,10 @@
-[← Guide index](../README.md) · Next: [Create the inbound](server-inbound.md)
+[← Guide index](../README.md) · Previous: [Get a server](choose-server.md) · Next: [Create the inbound](server-inbound.md)
 
 # Install and prepare the VPN server
 
-**Where:** an Ubuntu VPS outside your filtered network. **Result:** a working 3x-ui panel and a server ready to accept VPN connections.
+You have rented a Linux server and saved its login details. If you have not, start with [getting a server](choose-server.md). You can perform the steps below from Windows or Linux; the commands run on the remote server after you log in.
+
+We will install **3x-ui**, a browser-based dashboard for managing connection accounts. Later, **Xray**, the network engine it manages, will carry the traffic. You do not need to learn either program's internals to install the panel.
 
 UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11-06**. Record your panel and Xray versions before making changes; they have independent release numbers. Existing working installations do not need a reinstall.
 
@@ -14,15 +16,19 @@ UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11
 | Proxy access for Linux programs | One VPS, then the [Linux client](linux-xray.md) |
 | One proxy endpoint for several devices | The VPS plus a separate [restricted proxy host](share-proxy.md) |
 
-Start with Ubuntu 24.04 LTS, one CPU core, about 1 GiB RAM, a dedicated IPv4 address, and enough transfer allowance. These are practical starting values, not a capacity guarantee. IPv6 on the VPS is optional. HostVDS and FirstVDS are examples used by this project; check current locations, traffic limits, payment methods, and network reachability before purchasing. No particular provider guarantees an unblocked route.
+Use a supported Ubuntu release available from your provider, one CPU core, about 1 GiB RAM, a public IPv4 address, and enough transfer allowance. Ubuntu 22.04 and 24.04 are examples, not a requirement to reinstall a different working version. These resource values are practical starting points, not a capacity guarantee. IPv6 on the VPS is optional. HostVDS and FirstVDS are examples used by this project; check current locations, traffic limits, payment methods, and network reachability before purchasing. No particular provider guarantees an unblocked route.
 
 ## 2. Connect over SSH
 
-Your VPS provider supplies an IP and a root password or SSH key:
+**SSH** is the secure connection you use to administer the server from a command window. Open **PowerShell** on Windows or a **terminal** on Linux/macOS. The SSH command is the same on both.
+
+Your provider supplies an IP address and a login method. If the login user is `root`, run:
 
 ```bash
 ssh root@YOUR_SERVER_IP
 ```
+
+Replace `YOUR_SERVER_IP` with the address from your provider. If the provider gave you a user such as `ubuntu`, use that name instead of `root`; after login, run `sudo -i` for the administrative installation commands below. If the provider supplied an SSH key or custom SSH port, follow its access instructions rather than assuming a root password exists.
 
 Compare the first-connection host fingerprint with the provider's console when available. Enter the password at the prompt; do not put it in the command or publish it in a screenshot.
 

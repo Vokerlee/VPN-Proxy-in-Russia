@@ -1,10 +1,12 @@
 [← Guide index](../README.md) · Previous: [Create the server inbound](server-inbound.md) · Next: [Understand the ports and modes](ports-and-modes.md)
 
-# Connect with Hiddify
+# Connect your computer or phone
 
-You have a connection link from 3x-ui. The next job is to teach your computer where to send traffic. Hiddify does both parts: it opens the encrypted tunnel, then offers a local proxy or a virtual network interface for your applications.
+**Hiddify** is the app on your computer or phone that connects to the VPN server. A **connection profile** is the private link containing that server's address and your account settings. If you created your server using this guide, copy that link from **3x-ui**, its browser dashboard. If someone gave you a working profile, you can start here without setting up another server.
 
-This walkthrough uses **Hiddify 5.5.5 on Windows** and the equivalent import flow on phones. Labels can move between releases; check **About** before comparing your screen with a guide. A green connection indicator is a useful start, but the exit test at the end is what proves the route works.
+The next job is to import the profile and decide which applications should use it. A **proxy** is a program that forwards network requests for another application. Hiddify can provide a local proxy or use your operating system's VPN routing.
+
+The illustrated labels are from **Hiddify 5.5.5**. The basic profile import applies on Windows, Linux, macOS, and phones; operating-system permissions and connection modes differ. Windows-specific verification commands below are explicitly labeled. Labels can move between releases; check **About** before comparing your screen with a guide. A green connection indicator is a useful start, but the exit test at the end is what proves the route works.
 
 ## Give the link a home
 

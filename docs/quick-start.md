@@ -1,10 +1,14 @@
 [← Guide index](../README.md) · [Manual server walkthrough](server-setup.md) · [What the helpers do](automation.md)
 
-# Start with a VPS IP and a root password
+# Optional: let a helper prepare a new server
 
-You have bought a small VPS. The provider has sent you an IPv4 address and a root password. You want a working account and a panel you can open—not an evening spent copying JSON.
+This is an optional alternative to the [manual setup walkthrough](server-setup.md). You can complete the whole main guide without running these helpers.
 
-This is the shortest path through the guide. The helper prepares a **fresh Ubuntu 24.04/Debian systemd VPS**, generates one VLESS + REALITY + Vision profile, chooses IPv4 egress, and tells you how to reach 3x-ui. It does not need a domain name or access to your provider account.
+A VPS is a rented remote server. If you do not have one yet, follow [choosing and creating a server](choose-server.md) first. Once the provider has supplied its IP and root login, a helper can automate the installation and account creation.
+
+The helper prepares a new Ubuntu or Debian server that uses systemd, the normal service manager on those distributions. It does not require Ubuntu 24.04 specifically. You can launch it from Windows, Linux, or macOS.
+
+It installs **3x-ui**, the server's browser dashboard, and generates a connection profile—a private link that tells a client app how to connect. The connection uses the VLESS + REALITY + Vision settings explained in the manual guide, with IPv4 egress. The desktop/phone app used below is **Hiddify**. It does not need a domain name or access to your provider account.
 
 An existing 3x-ui installation is a different situation. The helper recognizes it and stops before resetting it. If you already have a panel, use [the existing-server walkthrough](server-inbound.md) and [Hiddify setup](clients.md); do not erase a working VPS to make an installer happy.
 

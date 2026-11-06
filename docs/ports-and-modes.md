@@ -4,7 +4,9 @@
 
 You press Connect. The app turns green. Your browser may immediately use the VPS—or nothing in the browser may change at all. Both outcomes can be correct: the button starts the client, but the selected mode decides how your applications reach it.
 
-Follow one browser request from your desk to a website, and the port numbers become much less mysterious.
+A **port** is a numbered endpoint that lets several network programs share one machine's address. A **proxy** is a program that forwards a request for another application. Hiddify is the VPN app in this guide; it opens a proxy on your own computer, then carries selected requests to the remote server.
+
+Follow one browser request from your desk to a website, and those numbers become much less mysterious.
 
 ## The ports you will see
 

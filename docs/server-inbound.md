@@ -1,8 +1,10 @@
 [← Guide index](../README.md) · Previous: [Server setup](server-setup.md) · Next: [Client setup](clients.md)
 
-# Create a VLESS + REALITY inbound in 3x-ui
+# Create your first connection account
 
-**Where:** the server's web panel. **Result:** a private `vless://` connection link for one client.
+Open **3x-ui**, the browser dashboard installed on your server. Here you will create an account for one device and copy the private connection link into your VPN app.
+
+An **inbound** is the server entry point that accepts a device's connection. **VLESS + REALITY** is the connection type used in this walkthrough; the table below supplies its required settings. An **outbound** is the path the server uses afterward to reach a website.
 
 These labels refer to **3x-ui 3.8.5**. Inbounds accept clients; outbounds carry their traffic to websites. The panel's HTTP/HTTPS port is separate from the inbound's VPN port.
 

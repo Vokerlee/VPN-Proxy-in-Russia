@@ -2,6 +2,14 @@
 
 This repository is both a human VPN walkthrough and a small set of opt-in setup/diagnostic helpers. Start with `README.md`; read the guide relevant to the requested task before running its script. Keep user-facing documentation readable as a practical article with button illustrations, required values, expected results, and recovery steps. Put protocol/implementation depth in the separate expert guide.
 
+## Human-first documentation rules
+
+The default reader path is manual and starts with no server: choose/rent a server, install its browser dashboard, create a connection account, then install/connect the client app. Keep automation explicitly optional. Do not make setup scripts, preview/apply flags, PowerShell execution policy, or agent instructions a prerequisite for the ordinary walkthrough.
+
+Define names before relying on them: VPS means a rented remote server; root is an administrator account; 3x-ui is the browser dashboard; Xray is the network engine; Hiddify is the connection app; a profile is the private connection link. Introduce ports, SSH and proxy modes where the reader needs them. Do not send a beginner to an expert glossary to complete a required step.
+
+Support Windows and Linux as administration/client platforms without calling the guide Windows-only. Ubuntu 24.04 was an example/test environment, not a universal server requirement; describe actual helper dependencies and supported Ubuntu/Debian deployments separately from the ordinary manual guide. Preserve the original sequential, practical writing style.
+
 ## Repository map
 
 ```text
@@ -9,7 +17,8 @@ README.md                       Short entry point and guide index
 AGENTS.md                       This repository's agent workflow
 .gitignore                      Excludes private profiles, exports, backups and test artifacts
 docs/
-  quick-start.md                Fresh VPS: IP/root authentication -> panel -> Hiddify
+  choose-server.md              From zero: what a VPS is, how to rent it and save login details
+  quick-start.md                Optional automated VPS path: IP/root authentication -> panel -> Hiddify
   server-setup.md               Manual VPS preparation and recoverable administration
   server-inbound.md             3x-ui VLESS/REALITY/Vision form and exported profile
   force-ipv4.md                 Server egress selection through the UI, verification and undo

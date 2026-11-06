@@ -2,7 +2,9 @@
 
 # Let the scripts do the repetitive work
 
-You should not have to copy a public key by eye, guess whether a test used the proxy, or edit a preferences file while an app is rewriting it. These helpers handle those mechanical steps while leaving the network choices visible.
+**All scripts on this page are optional.** The [main walkthrough](../README.md) explains the manual path from renting a server to connecting an app.
+
+Once you know which step you want to automate, the helpers can handle repetitive tasks such as generating a configuration or checking a connection. A helper is not an extra requirement for using the VPN.
 
 The fresh-server bootstrap installs software only when explicitly applied. The diagnostic and client-preference helpers do not install software. None of the helpers changes a provider firewall or stops existing clients. Run them from the repository root. Python helpers require **Python 3.10+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
 
