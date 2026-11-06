@@ -4,9 +4,11 @@
 
 **Optional explanation.** The normal setup is in [Hiddify setup](clients.md). Read the sections relevant to your mode; you do not need to enable all three modes or apply every example.
 
-You press Connect. The app turns green. Your browser may immediately use the VPS—or nothing in the browser may change at all. Both outcomes can be correct: the button starts the client, but the selected mode decides how your applications reach it.
+Your rented remote server is called a **VPS**. You press Connect. The app turns green. Your browser may immediately use the VPS—or nothing in the browser may change at all. Both outcomes can be correct: the button starts the client, but the selected mode decides how your applications reach it.
 
 A **port** is a numbered endpoint that lets several network programs share one machine's address. A **proxy** is a program that forwards a request for another application. Hiddify is the VPN app in this guide; it opens a proxy on your own computer, then carries selected requests to the remote server.
+
+Hiddify’s network engine is also called its **core**. **DNS** turns website names into IP addresses. **SSH** is the secure terminal connection used here to manage the server and carry private dashboard access.
 
 Follow one browser request from your desk to a website, and those numbers become much less mysterious.
 
@@ -19,7 +21,7 @@ Follow one browser request from your desk to a website, and those numbers become
 | Your VPS | `YOUR_SERVER_IP:443` | The public VLESS + REALITY inbound; 8443 is another possible configured port |
 | Your VPS | `127.0.0.1:27297` | Private administration panel in the default walkthrough; reached through SSH |
 | Your computer | `127.0.0.1:18080` | Browser access forwarded over SSH to that private panel |
-| Your PC | `127.0.0.1:16756` | Example Clash control API port, not a browser proxy |
+| Your PC | `127.0.0.1:16756` | Clash API: a control interface for other software to manage the app; not a browser proxy |
 | A website | `website.example:443` | HTTPS at the final destination |
 
 These are examples, not globally reserved values for those apps. A program chooses its listener address and port. You can change a local proxy port if it is occupied, then update the applications that use it.
@@ -34,7 +36,7 @@ Port 443 has a familiar HTTPS convention; that does not mean your local proxy mu
 
 In Hiddify, select **Settings → Inbound → Service mode → Proxy**, then Connect.
 
-The app reads the selected profile, builds its routing/DNS configuration, starts the local core, and opens the enabled local proxy port. It may run background reachability checks. A connection to the VPS can be created on demand for each request; the status is not a promise that one permanent TCP tunnel already carries every program.
+The app reads the selected profile, prepares its routing and DNS settings, starts its network engine, and opens the local proxy port. It connects onward to the VPS when programs send requests to that proxy.
 
 Nothing requires Windows to adopt this proxy in manual mode. Test it explicitly:
 
@@ -68,13 +70,13 @@ Suppose another VPN app provides a local proxy on 10801 and Hiddify provides one
 
 Keep their ports separate. A second program cannot bind the same address, port, and transport already owned by the first. To test Hiddify without disturbing another app, keep Hiddify in manual mode and use the explicit curl command above.
 
-A system proxy also has limits. Some programs ignore it, some use their own proxy settings, and services using WinHTTP can have a separate configuration. UDP applications do not become HTTP-proxied just because the setting is enabled. Do not describe this mode as “every packet is now inside the VPN.”
+A system proxy also has limits. Some programs ignore it, some use their own proxy settings, and Windows services using the separate **WinHTTP** networking interface can have their own configuration. Games and other programs using **UDP**, a different transport from TCP, need a mode that can carry their traffic, such as VPN/TUN.
 
 ![Windows proxy buttons: Set up, address 127.0.0.1, port 12334, Save](../images/windows-proxy.svg)
 
 ## VPN / TUN mode: move the traffic selection into routing
 
-In **Settings → Inbound → Service mode**, select **VPN / TUN** if you need applications that ignore the HTTP proxy to use the client. Windows may ask for administrator permission. On phones, the OS presents a VPN permission dialog.
+**TUN** is a virtual network interface that the app uses to receive traffic selected by the operating system’s routes. In **Settings → Inbound → Service mode**, select **VPN / TUN** if you need applications that ignore the HTTP proxy to use the client. Windows may ask for administrator permission. On phones, the OS presents a VPN permission dialog.
 
 Conceptually, the app starts the core, creates or attaches a virtual network interface, configures routes/DNS according to its mode and rules, and sends captured traffic through the selected outbound. The connection to the VPS itself needs a path outside that capture; otherwise the tunnel would try to carry itself.
 
@@ -88,7 +90,7 @@ Avoid enabling two route-managing TUN clients at once unless you deliberately un
 
 Hiddify stops or tears down the connection it owns. Depending on mode, that includes closing listeners, reverting the system proxy it manages, or removing its virtual interface/routes. Cleanup can be affected by crashes, forced termination, and another application changing the same setting.
 
-If the internet stops working after closing a client, inspect Windows' proxy setting. A proxy aimed at a listener that no longer exists is a common cause. Select the running client you intend to use, or turn **Use a proxy server** off when you want a direct connection. Do not blindly erase corporate proxy/PAC settings.
+If the internet stops working after closing a client, inspect Windows' proxy setting. A proxy aimed at a listener that no longer exists is a common cause. Select the running client you intend to use, or turn **Use a proxy server** off when you want a direct connection. On a managed device, preserve any proxy settings supplied by your organization, including automatic configuration scripts (PAC files).
 
 ## Check the actual state in PowerShell
 
@@ -121,8 +123,8 @@ Do not import or reset WinHTTP settings just to repair a browser. Diagnose the a
 
 ## A note for WSL2 users
 
-WSL2 is another network environment, not simply a second Windows shell. A successful WSL Xray test is excellent evidence that the provider can carry that protocol, but it does not prove the Windows application's parser, core, proxy selection, or firewall behavior is correct.
+**WSL2** means Windows Subsystem for Linux version 2: it runs Linux programs in a separate environment inside Windows. If a test works there but fails in the Windows app, repeat the test with the Windows app’s own proxy. The two may use different engines and network settings.
 
-With mirrored networking, Windows and WSL can generally use localhost to reach one another's services. Under default NAT, a Linux process reaching a Windows service may need the Windows host address, and a loopback-only listener may not accept that path. Do not solve it by exposing an unauthenticated proxy to the whole LAN. See [Microsoft's WSL networking guide](https://learn.microsoft.com/en-us/windows/wsl/networking) before changing bind addresses.
+WSL’s **mirrored** mode shares more of Windows’ network behavior; **NAT** mode gives the Linux environment a separate virtual network. With mirrored networking, Windows and WSL can generally use localhost to reach one another’s services. Under default NAT, a Linux process reaching a Windows service may need the Windows host address, and a loopback-only listener may not accept that path. Do not solve it by exposing an unauthenticated proxy to the whole LAN. See [Microsoft's WSL networking guide](https://learn.microsoft.com/en-us/windows/wsl/networking) before changing bind addresses.
 
 For an unambiguous Windows test, run `curl.exe` from PowerShell against the Windows listener. For an unambiguous Linux test, run Linux curl against a Linux listener. Match the test to the thing you are trying to prove.

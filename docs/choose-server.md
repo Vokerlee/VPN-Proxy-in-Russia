@@ -4,6 +4,8 @@
 
 You do not need to buy a physical machine or leave a laptop running at home. You rent a small virtual server in a data center. Providers call this a **VPS**, **VDS**, or **cloud server**. For this guide, it is a remote Linux computer that stays online and carries your VPN traffic.
 
+The server’s **IP address** is its numeric address on the internet. **root** is its administrator account. **SSH** is the secure terminal connection you will use to manage it; an SSH key can be used instead of a login password.
+
 Your own computer remains as it is. You can rent and administer an Ubuntu server from Windows, Linux, or macOS.
 
 **Do this page only if you need a server.** Already have a running Ubuntu server and its login details? Skip this page and [open Step 2: install or open the dashboard](server-setup.md).
@@ -12,7 +14,7 @@ On this page, create **one** server using either the HostVDS example or another 
 
 ## Choose a provider and a location
 
-The original setup in this project used [HostVDS](https://hostvds.com/) for a server abroad. It is an example, not a requirement. Any provider with suitable Linux servers, a public IP, enough transfer allowance, and working access from your network can fit this guide.
+The original setup in this project used [HostVDS](https://hostvds.com/) for a server abroad. It is an example, not a requirement. Any provider with suitable Linux servers, a public IP, enough included data transfer, and working access from your network can fit this guide.
 
 Choose the location where you want traffic to leave the VPN, such as a European or US location offered by your provider. A nearby location may reduce latency, but an actual connection test is more useful than geography alone. Check current payment methods, included traffic, and whether the provider accepts customers from your location before purchasing.
 
@@ -46,7 +48,7 @@ Use these instead of the HostVDS steps, then continue with “Save the details�
 4. For the operating system, choose **Ubuntu Server**. A supported LTS release is a straightforward choice. Ubuntu 22.04 and 24.04 are examples; the guide does not require 24.04 specifically. Debian is another supported option for the optional setup helper, but this manual walkthrough uses Ubuntu commands.
 5. Choose a small general-purpose plan. One CPU core, about 1 GiB RAM, and around 10 GiB disk are reasonable starting values for a personal setup. Actual capacity depends on load and the panel version.
 6. Include a **public IPv4 address** and check the traffic allowance. You need an address your devices can reach from the internet, not only a private-network address.
-7. If offered, select a root password or an SSH key that you know how to use. Save the login information privately.
+7. If offered, select a root password or supply your SSH public key if that is your usual login method. Save the login information privately.
 8. Click **Create / Deploy / Order** and wait until the server shows **Running / Active**.
 
 You do not need Windows Server, a desktop environment, a hosting control-panel bundle, a GPU, or a domain name for the basic VPN. The server's Ubuntu version and your laptop's operating system are separate choices.

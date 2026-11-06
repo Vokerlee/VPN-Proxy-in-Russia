@@ -4,13 +4,17 @@
 
 **Optional: only for borrowing a proxy from another Linux machine.** For a normal desktop or phone VPN, [use Hiddify directly](clients.md) and skip this entire page. Choose **one** sharing method below; direct LAN access is an alternative to SSH forwarding.
 
+A **proxy** forwards another program’s network requests. **Hiddify** is the ordinary VPN app in this guide. This chapter instead shares a proxy provided by **Xray**, a standalone network engine on a Linux machine.
+
 Sometimes one Linux machine already has the right route, and a second device just needs to borrow it. You can do that without giving the whole internet an unauthenticated proxy port.
+
+A rented remote server is a **VPS**. Here, the **proxy host** is the Linux machine whose proxy you are borrowing, and the **borrowing device** is the computer running your browser.
 
 First complete the [Linux client walkthrough](linux-xray.md). The proxy host should already pass an HTTPS exit test through `127.0.0.1:10801`. Keep the public VPN server, this intermediate proxy host, and the device using it conceptually separate—even if one deployment combines some roles.
 
 ## The easy private path: forward it over SSH
 
-Leave Xray bound to loopback on the proxy host. On the device that wants access, run:
+**SSH** provides an encrypted connection between computers. **Loopback** (`127.0.0.1`) is an address reachable only on the machine itself. Leave Xray listening on that address on the proxy host. On the device that wants access, run:
 
 ```bash
 ssh -N -L 18081:127.0.0.1:10801 YOUR_ADMIN@YOUR_PROXY_HOST
@@ -35,7 +39,7 @@ Close the SSH forwarding session to remove this access. A phone can usually use 
 
 ## Share directly only on an intentionally restricted network
 
-If SSH forwarding is not suitable, the proxy host can listen on a LAN address. This is a separate exposure decision, not a required VPN setup step.
+If SSH forwarding is not suitable, the proxy host can listen on a **LAN** (local network) address. This is a separate exposure decision, not a required VPN setup step.
 
 Before changing the listener:
 
@@ -44,7 +48,7 @@ Before changing the listener:
 3. Preserve administration/SSH access. Inspect existing rule order rather than resetting a firewall remotely.
 4. Configure proxy authentication if the clients support it; an allowlist is not a substitute for authentication on an untrusted network.
 
-For example, with an already-managed UFW policy and no earlier broad allow rule for this port:
+For example, with an already-managed **UFW** firewall policy and no earlier broad allow rule for this port:
 
 ```bash
 sudo ufw allow from YOUR_TRUSTED_DEVICE_IP to any port 10801 proto tcp
@@ -66,7 +70,7 @@ Verify an allowed device works and a disallowed device cannot connect. Do not ad
 
 ## Know what the shared proxy protects
 
-An HTTP proxy can carry HTTPS CONNECT requests, so the website's TLS still protects HTTPS content. A bare LAN HTTP proxy does not itself encrypt the local hop or hide all connection metadata from that network. SSH forwarding protects that hop and keeps authentication in a familiar place.
+An HTTP proxy can carry HTTPS CONNECT requests, so the website’s TLS encryption still protects HTTPS content. A bare LAN HTTP proxy does not itself encrypt the local hop or hide all connection metadata from that network. SSH forwarding protects that hop and keeps authentication in a familiar place.
 
 This proxy is not a general UDP VPN. The borrowing program must use the proxy, and Windows System Proxy still only selects it for applications that honor that setting. For an entire device's routed traffic, use an appropriate VPN/TUN client and verify its routing policy.
 

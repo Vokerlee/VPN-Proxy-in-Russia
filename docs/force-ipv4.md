@@ -4,6 +4,8 @@
 
 **Optional: use this page only if you want an IPv4 exit address.** A working connection with an IPv6 exit does not require this change. After changing the form, run the verification section; the JSON reference is optional.
 
+This page changes **3x-ui**, the server’s browser dashboard. **Hiddify** is the app connecting from your device, and a **proxy** forwards an application’s requests through the server.
+
 The address a website sees after you connect is the server's **exit address**. It can be IPv4 (a dotted address such as `203.0.113.10`) or IPv6 (an address with colons, such as `2001:db8::10`).
 
 If you want websites to see the server's IPv4 address, change the outgoing connection setting in **3x-ui**, the server's browser dashboard. This does not require changing your own computer's operating system or disabling IPv6 everywhere.
@@ -14,7 +16,7 @@ A client may connect to `YOUR_SERVER_IPV4:443` and still show the VPS's IPv6 add
 Client -- IPv4 tunnel --> VPS -- IPv4 or IPv6 --> Website
 ```
 
-Hiddify's **IPv4 only** option does not select the address family of every server-side connection. Neither does `curl -4` by itself: when using an HTTP proxy, that flag can apply to the connection to the proxy, while the proxy resolves the website separately.
+Hiddify’s **IPv4 only** option applies on your device. To choose how the server reaches websites, change the server’s outbound as shown below. A command-line downloader such as curl also leaves the proxy to resolve the requested website when it sends a hostname through an HTTP proxy.
 
 ## Use the form: no JSON required
 
@@ -22,7 +24,7 @@ These instructions refer to **3x-ui 3.8.5**.
 
 1. Open the main left sidebar. On a narrow screen, click the menu button; scroll the sidebar if necessary.
 2. Click the separate **Outbounds** item. It is outside the **Xray Settings** submenu in this release.
-3. Find the row tagged **`direct`**, with protocol **`freedom`**. If you have custom routing, check which outbound actually carries your client traffic first.
+3. Find the row tagged **`direct`**, with protocol **`freedom`**. This is the **outbound**: the path Xray, the server’s network engine, uses to reach websites. If you have custom routing, check which outbound actually carries your client traffic first.
 4. Click **Edit** or the pencil action on that row.
 5. In the basic form, find **Strategy** / **Domain Strategy** and select **`ForceIPv4`**.
 6. Save the outbound and apply/save the Xray configuration. Restart Xray if the panel requests it; existing tunnels may reconnect.
@@ -69,6 +71,8 @@ The optional standalone Linux Xray guide uses **10801** instead; substitute that
 Refresh Hiddify's IP/connection information or reconnect after changing the server; a cached display is not a fresh exit test. If a fresh request still exits over IPv6, inspect the effective configuration and routing: you may have edited an outbound that the traffic never uses.
 
 ## JSON reference for administrators
+
+**Optional technical reference. Skip if you used the form above.** JSON is the text format used for the engine’s configuration.
 
 The UI is preferred for a panel-managed server. An effective configuration using the modern socket setting includes:
 

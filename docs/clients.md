@@ -38,13 +38,13 @@ DNS turns website names into IP addresses. **Fake DNS** is an extra feature that
 
 ## 4. Connect and check a website
 
+**Already using another VPN?** To check Hiddify while keeping that connection untouched, use the [optional manual proxy test](#press-connect-then-prove-the-route) below instead of activating another VPN/TUN connection.
+
 1. **On a desktop**, open **Settings → Inbound → Service mode** and select **VPN / TUN**. This is the mode for using the VPN with your normal applications; TUN is its virtual network connection. On a phone, use the normal VPN mode.
 2. Return to the home screen, select your profile, and press **Connect**.
 3. Accept the operating system’s VPN or administrator permission request.
 4. Open `https://www.cloudflare.com/cdn-cgi/trace` in your browser. Find the line starting with **`ip=`**. It should show your server’s outgoing address, rather than your ordinary internet address.
 5. Open a website you wanted to use through the VPN.
-
-**Already using another VPN?** To check Hiddify while keeping that connection untouched, use the [optional manual proxy test](#press-connect-then-prove-the-route) below instead of activating another VPN/TUN connection.
 
 If the address is unfamiliar, open the same test URL with Hiddify disconnected and compare. A server may have a different outgoing address from its login address, particularly when it also has IPv6. If the browser cannot load the page or still shows your ordinary address, follow [troubleshooting](troubleshooting.md).
 

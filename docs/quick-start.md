@@ -4,11 +4,11 @@
 
 This is an optional alternative to the [manual setup walkthrough](server-setup.md). You can complete the whole main guide without running these helpers.
 
-A VPS is a rented remote server. If you do not have one yet, follow [choosing and creating a server](choose-server.md) first. Once the provider has supplied its IP and root login, a helper can automate the installation and account creation.
+A **VPS** is a rented remote server; **root** is its administrator account. **SSH** is the secure terminal connection used to log in. The helper uses **OpenSSH**, the program providing that connection on your computer. If you do not have one yet, follow [choosing and creating a server](choose-server.md) first. Once the provider has supplied its IP and root login, a helper can automate the installation and account creation.
 
 The helper prepares a new Ubuntu or Debian server that uses systemd, the normal service manager on those distributions. It does not require Ubuntu 24.04 specifically. You can launch it from Windows, Linux, or macOS.
 
-It installs **3x-ui**, the server's browser dashboard, and generates a connection profile—a private link that tells a client app how to connect. The connection uses the VLESS + REALITY + Vision settings explained in the manual guide, with IPv4 egress. The desktop/phone app used below is **Hiddify**. It does not need a domain name or access to your provider account.
+It installs **3x-ui**, the server's browser dashboard, and generates a connection profile—a private link that tells a client app how to connect. The connection uses the VLESS + REALITY + Vision settings explained in the manual guide, with an IPv4 exit address—the address websites see. The desktop/phone app used below is **Hiddify**. It does not need a domain name or access to your provider account.
 
 An existing 3x-ui installation is a different situation. The helper recognizes it and stops before resetting it. If you already have a panel, use [the existing-server walkthrough](server-inbound.md) and [Hiddify setup](clients.md); do not erase a working VPS to make an installer happy.
 
@@ -72,9 +72,9 @@ You get:
 - One VLESS + RAW/TCP + REALITY inbound and one `xtls-rprx-vision` account.
 - Public VPN TCP port **443**, or **8443** if 443 is already occupied. It does not stop the existing listener.
 - Generated UUID, REALITY keys, short ID, panel credentials, and panel URL path.
-- **ForceIPv4** on the new direct/freedom outbound.
+- **ForceIPv4** on the server’s outgoing path, so hostname-based website requests use IPv4.
 - A panel bound to **127.0.0.1:27297** on the VPS, accessed through SSH rather than exposed as public HTTP.
-- An allow rule for the VPN port if UFW was already active. Existing SSH rules and custom/provider firewalls are not reset.
+- An allow rule for the VPN port if **UFW**, Ubuntu’s firewall-management tool, was already active. Existing SSH rules and custom/provider firewalls are not reset.
 - A private `server.json` and `hiddify-profile.txt` saved under the repository's ignored `.secrets/` folder.
 
 The helper checks that the server listener starts and probes its public TCP port from your computer. A reachable socket is still not an authenticated VPN test; importing the profile and running the final request below completes that check.
@@ -107,7 +107,7 @@ In the sidebar, click **Inbounds**. You should see **Personal VPN**, enabled, wi
 
 ![First visit to 3x-ui: Login, Inbounds, Personal VPN, then the first-device share action](../images/3x-ui-first-visit.svg)
 
-To inspect IPv4 egress, use **Outbounds → direct → Edit → Strategy**. The setting was already applied by the helper; the [ForceIPv4 guide](force-ipv4.md) explains how to check it manually. Depending on the panel/core migration, its effective value can be stored under socket options even when a form displays the legacy field.
+**Optional check:** to inspect the IPv4 exit setting, use **Outbounds → direct → Edit → Strategy**. The setting was already applied by the helper; the [ForceIPv4 guide](force-ipv4.md) explains how to check it manually. Depending on the panel/core migration, its effective value can be stored under socket options even when a form displays the legacy field.
 
 When you close the SSH-forwarding terminal, browser access stops. The VPN service remains running on the VPS. Reopen the same forwarding command whenever you need to administer the panel. If local port 18080 is occupied, use another unused local port in the `-L` command and in the browser URL.
 

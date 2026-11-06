@@ -14,6 +14,8 @@ Follow sections 1–4 and 6 for setup. Section 5 is optional administration advi
 
 ## 1. Choose the deployment
 
+A **VPS** is your rented remote server. **Hiddify** is the app you will install on your devices to use it. A **proxy** forwards network requests for another program.
+
 | You need | Deploy |
 |---|---|
 | A normal VPN on Windows, Linux, macOS, or a phone | One VPS, then [Hiddify](clients.md) on each device |
@@ -28,7 +30,7 @@ Use a supported Ubuntu release available from your provider, one CPU core, about
 
 **SSH** is the secure connection you use to administer the server from a command window. Open **PowerShell** on Windows or a **terminal** on Linux/macOS. The SSH command is the same on both.
 
-Your provider supplies an IP address and a login method. If the login user is `root`, run:
+Your provider supplies an IP address and a login method. If the login user is `root` (the administrator account), run:
 
 ```bash
 ssh root@YOUR_SERVER_IP
@@ -36,7 +38,7 @@ ssh root@YOUR_SERVER_IP
 
 Replace `YOUR_SERVER_IP` with the address from your provider. If the provider gave you a user such as `ubuntu`, use that name instead of `root`; after login, run `sudo -i` for the administrative installation commands below. If the provider supplied an SSH key or custom SSH port, follow its access instructions rather than assuming a root password exists.
 
-Compare the first-connection host fingerprint with the provider's console when available. Enter the password at the prompt; do not put it in the command or publish it in a screenshot.
+On the first connection, SSH shows a **host fingerprint**, an identifier for the server’s SSH key. Compare it with the provider’s console when available, then accept the matching key. Enter the password at the prompt; nothing appears while you type. Keep the password out of commands and screenshots.
 
 The following installation commands run **on the VPS**, initially as root:
 
@@ -129,24 +131,26 @@ If you lose the panel URL or credentials, run `x-ui` over SSH and use the menu's
 
 ## 4. Check port availability and firewalls
 
-Before assigning the public VPN port, inspect listeners:
+A **listener** is a running program waiting for connections on a port. A **firewall** decides which incoming connections are allowed. The next chapter creates a REALITY inbound—the VPN listener for your devices. It uses **TCP**, the connection transport selected in that form.
+
+On the server, list ports already in use:
 
 ```bash
 ss -lntp
 ```
 
-Use TCP `443` for a new REALITY inbound if it is free. Existing web servers may already own it; choose another free TCP port, such as `8443`, or plan the coexistence explicitly. A nonstandard port is valid, but networks may filter it differently. Opening TCP 443 does not make a listener on 8443 reachable.
+Look for `:443` in the **Local Address:Port** column. If there is no listener on that port, use TCP `443` for your new VPN inbound. Existing web servers may already own it; choose another free TCP port, such as `8443`, or plan the coexistence explicitly. A nonstandard port is valid, but networks may filter it differently. Opening TCP 443 does not make a listener on 8443 reachable.
 
 Allow the selected VPN TCP port in **both** the provider's firewall/security group and the host firewall, if enabled. UDP 443 is not required for the RAW/TCP inbound in this guide.
 
-For an existing UFW installation, inspect the current rules before adding one:
+**UFW** is Ubuntu’s common firewall-management tool. If your server uses it, check its state and allow the chosen VPN port:
 
 ```bash
 ufw status verbose
 ufw allow 443/tcp
 ```
 
-Replace `443` if you selected another VPN port. Before enabling a new firewall, allow your actual SSH port and arrange access to the panel from your administration IP. Do not enable a default-deny firewall from a remote session before protecting SSH access. If UFW is absent, inspect the existing nftables/iptables rules rather than installing a second firewall blindly.
+Replace `443` if you selected another VPN port. Before enabling a new firewall, allow your actual SSH port. The private dashboard in this guide uses that same SSH access; it needs no public panel-port rule. Do not enable a default-deny firewall from a remote session before protecting SSH access. If UFW is absent, inspect the existing nftables/iptables rules rather than installing a second firewall blindly.
 
 ## 5. Keep administration recoverable
 
@@ -182,7 +186,7 @@ systemctl --failed --no-pager
 /usr/local/x-ui/bin/xray-linux-amd64 version
 ```
 
-Paths and executable names can differ by architecture or installation method. Xray may run as a child of `x-ui`, without a separate `xray.service`. An active panel alone does not prove the VPN listener is running.
+Paths and executable names can differ by architecture or installation method. Xray may run as a child of `x-ui`, without a separate `xray.service`. The VPN listener is created in Step 3, so you will check its port there.
 
 **Step 2 is complete when:** the panel opens, you know the selected public VPN port, and SSH still works.
 

@@ -4,17 +4,17 @@
 
 **Optional toolbox.** Pick only the helper for your task; this page is not a sequence to run from top to bottom. For setup without repository helpers, [start with the manual guide](../README.md#follow-these-steps-in-order).
 
-**All scripts on this page are optional.** The [main walkthrough](../README.md) explains the manual path from renting a server to connecting an app.
+The examples use a rented remote server (**VPS**), its administrator account (**root**), the **3x-ui** browser dashboard, and the **Hiddify** VPN app. **Xray** is a network engine used on the server and in standalone client tests. A **profile** or **share link** is the private link containing an account’s connection settings.
 
 Once you know which step you want to automate, the helpers can handle repetitive tasks such as generating a configuration or checking a connection. A helper is not an extra requirement for using the VPN.
 
-The fresh-server bootstrap installs software only when explicitly applied. The diagnostic and client-preference helpers do not install software. None of the helpers changes a provider firewall or stops existing clients. Run them from the repository root. Python helpers require **Python 3.8+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
+The **setup helper** installs server software only when explicitly applied. The diagnostic and client-preference helpers do not install software. None of the helpers changes a provider firewall or stops existing clients. Run them from the repository root—the folder containing `README.md` and `scripts/`. Python helpers require **Python 3.8+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
 
 ## Start with only a VPS IP and root password
 
 Follow the [illustrated quick start](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
 
-The launchers use the operating system's OpenSSH client. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. A busy 443 falls back to 8443; provider-firewall work is reported as a separate action when needed.
+The launchers use **SSH**, an encrypted terminal connection, through the operating system’s **OpenSSH** program. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. A busy 443 falls back to 8443; provider-firewall work is reported as a separate action when needed.
 
 The private panel is reached through the SSH-forward command printed at completion. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
 
@@ -63,7 +63,7 @@ IPv6 may intentionally be unavailable. These requests are direct from the VPS; t
 
 ## Inspect a connection link without putting it in shell history
 
-Interactive use hides the pasted URI:
+Interactive use hides the pasted connection link (also called a URI):
 
 ```bash
 python3 scripts/vpn_profile.py inspect
@@ -126,7 +126,7 @@ A Linux test from WSL and a Windows test exercise different native cores and OS 
 
 ## Repair Hiddify preferences on Windows
 
-Read the [reason for this recovery baseline](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) first. Start with a preview from PowerShell:
+Read the [Hiddify recovery explanation](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) first. Start with a preview from PowerShell:
 
 ```powershell
 .\scripts\Repair-Hiddify.ps1
@@ -170,7 +170,7 @@ bash -n scripts/server-check.sh
 
 On Windows, also run `.\tests\check-powershell.ps1` for syntax, fixture-only preview checks, and simulated running-app protection. It does not inspect or stop your VPN apps.
 
-No server password, live profile, panel session, or working VPN is needed for these checks. Live end-to-end behavior still needs a real authorized test; the offline checks do not pretend to establish it.
+No server password, live profile, panel session, or working VPN is needed for these checks. Testing a live VPN still requires a real server and a webpage request through the client.
 
 ## Working with an assistant
 

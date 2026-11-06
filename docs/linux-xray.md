@@ -2,11 +2,11 @@
 
 # Use your VPN connection from a Linux terminal
 
-You can use Hiddify on Linux, just as on other desktop systems. This optional chapter shows another approach for command-line programs and servers.
+**Hiddify**, the VPN app in the main guide, also works on Linux desktops. This optional chapter shows another approach for command-line programs and servers.
 
 **Xray** is the network engine that carries the connection. Here you will run it directly, without a desktop app. It provides a **local proxy**, a program on this Linux machine that forwards another program's requests through the remote server. Programs such as curl or the APT package manager can explicitly use it.
 
-Run this walkthrough on the **Linux client machine**, not on a VPS where 3x-ui already manages Xray. It creates a separate client service with an HTTP proxy on `127.0.0.1:10801`. Programs that ignore proxy settings will still use their normal route; this is not a TUN/transparent-routing guide.
+Run this walkthrough on the **Linux client machine**, not on a rented server (VPS) where the 3x-ui browser dashboard already manages Xray. It creates a separate client service with an HTTP proxy on `127.0.0.1:10801`. Programs that ignore proxy settings will still use their normal route; this chapter configures selected programs rather than routing the whole device.
 
 **Optional chapter: skip it for a normal Linux desktop VPN.** [Hiddify works on Linux](clients.md) and is the main guide’s client. Continue here only if you want a standalone proxy for terminal programs or a machine without a desktop.
 
@@ -27,13 +27,15 @@ Press `q` to leave `less`. Check the actual version and service:
 systemctl status xray --no-pager
 ```
 
-Keep client/server REALITY compatibility in mind. The [temporary client test](automation.md#test-a-real-authenticated-tunnel) lets you test a profile before installing it as the persistent service configuration.
+This client must support your server’s **REALITY** connection type. The [temporary client test](automation.md#test-a-real-authenticated-tunnel) lets you test a profile before installing it as the persistent service configuration.
 
 ## Put your account settings in a client file
 
 Have your private [VLESS link from 3x-ui](server-inbound.md#5-export-the-connection) ready. **Choose one method:** edit the example below manually, or use the optional helper in the closed box. Both create the same client file; do not do both.
 
 ### Manual method
+
+**nano** is a terminal text editor. If it is unavailable, use another editor you know or install it with your Linux distribution’s package manager.
 
 On the **Linux client**, create a private folder and open the file:
 

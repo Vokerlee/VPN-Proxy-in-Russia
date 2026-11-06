@@ -6,19 +6,21 @@ Open **3x-ui**, the browser dashboard installed on your server. Here you will cr
 
 An **inbound** is the server entry point that accepts a device's connection. **VLESS + REALITY** is the connection type used in this walkthrough; the table below supplies its required settings. An **outbound** is the path the server uses afterward to reach a website.
 
-These labels refer to **3x-ui 3.8.5**. Inbounds accept clients; outbounds carry their traffic to websites. The panel's HTTP/HTTPS port is separate from the inbound's VPN port.
+The dashboard runs **Xray**, the network engine that handles the connections. These labels refer to **3x-ui 3.8.5**. The panel's HTTP/HTTPS port is separate from the inbound's VPN port.
 
 **Do this page if you need a connection account.** Already have an enabled account and its exported VLESS link? Skip this page and [open Step 4: connect your device](clients.md). Otherwise, follow sections 1–6 in order. The reference links at the end are optional.
 
 ## 1. Open the correct form
 
-1. Sign in using the full panel URL printed during installation.
+1. Open the dashboard using the browser address from [Step 2](server-setup.md#required-open-the-dashboard-safely-in-your-browser). For the default private setup, keep its SSH forwarding window open. Sign in with the panel credentials.
 2. In the main left sidebar, click **Inbounds**.
 3. Click **Add Inbound**. On a narrow screen, open the sidebar with the menu button first.
 
 ![3x-ui buttons: Inbounds, then Add Inbound](../images/3x-ui-add-inbound.svg)
 
 ## 2. Set the listener
+
+The **listener** waits for devices to connect on the selected port. Use the free port you chose in the previous page; allow that same TCP port in the server firewall and any provider firewall.
 
 | Field | Set it to | Check |
 |---|---|---|
@@ -38,18 +40,20 @@ Do not replace a working listener just to match the examples. Preserve its actua
 | Security | **REALITY** | Different from ordinary certificate-based TLS |
 | Proxy Protocol | Off | Enable only when an upstream proxy actually sends PROXY headers |
 | Target / Dest | A reachable TLS endpoint, for example `www.google.com:443` | This endpoint must work from the VPS |
-| Server Names / SNI | `www.google.com` for that example | Use a name covered by the target's certificate |
-| Fingerprint / uTLS, when offered | `chrome` | This is exported for the client |
-| Short IDs | Generate a short ID | Keep the value from the exported link |
+| Server Names / SNI | `www.google.com` for that example | SNI is the website name sent during connection setup; use one covered by the target’s certificate |
+| Fingerprint / uTLS, when offered | `chrome` | Selects the browser-style connection handshake exported to the client |
+| Short IDs | Generate a short ID | A short random label used to recognize this connection; keep the exported value |
 | Private / Public Key | Click **Get New Key** for a new inbound | Keep the private key on the server |
 | SpiderX, when offered | `/` | Keep the exported value |
-| Sniffing | Off for the initial setup | Add it later only when a routing requirement needs it |
+| Sniffing | Off for the initial setup | Inspects initial traffic to identify its destination; unnecessary for this simple setup |
 
-The example target is not a promise of availability on your network. From the VPS, test your selected name:
+**TLS** is the encryption used by HTTPS websites. The REALITY target must provide suitable TLS and be reachable from your rented server (VPS). On that server, test the example target:
 
 ```bash
 curl -I --connect-timeout 5 --max-time 15 https://www.google.com/
 ```
+
+You should receive HTTP response headers rather than a timeout or connection error. This checks website reachability; the device test in Step 4 will check the actual VPN connection.
 
 For an existing inbound, do **not** regenerate keys or short IDs: that invalidates existing profiles. A client's REALITY public key is not the website's certificate key.
 
@@ -63,7 +67,7 @@ Some forms reveal Flow only after selecting REALITY.
 |---|---|
 | Enable | On |
 | Email / Name | A label for this device, for example `laptop` |
-| ID / UUID | Generate a UUID, or retain the existing client's UUID |
+| ID / UUID | Generate the unique account identifier, or keep the existing account’s value |
 | Flow | `xtls-rprx-vision` |
 | Encryption | `none`, where shown |
 | Expiry / Traffic limit / IP limit | No limit for initial testing, unless you intentionally require one |
@@ -76,7 +80,9 @@ Click **Create** / **Save**, then apply or restart Xray if the panel prompts for
 
 ## 5. Export the connection
 
-1. In **Inbounds**, expand the inbound's client list if needed.
+The **connection profile** is a private link containing the account’s connection settings. You will import it into **Hiddify**, the VPN app on your device.
+
+1. In **Inbounds**, expand the inbound’s client list if needed.
 2. Find the intended client row.
 3. Open its **Info / connection details** action, or the QR/share action. Depending on the layout, actions may be in **⋯**.
 4. Copy the **VLESS URL**, or scan the client's QR code in Hiddify.

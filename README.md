@@ -2,7 +2,7 @@
 
 This guide takes you from having nothing set up to connecting your computer or phone through your own server in another country.
 
-The idea is simple: your device connects to that server, and the server connects to websites for you. You control the server and the accounts that can use it. Network filtering can still affect the connection; the guide includes checks to help you find and fix problems.
+Here, your own **VPN** is an encrypted connection to a server you control. Your device connects to that server, and the server connects to websites for you. You control the server and the accounts that can use it. Network filtering can still affect the connection; the guide includes checks to help you find and fix problems.
 
 ![Your computer or phone connects through your rented server to the website](images/connection-path.svg)
 
@@ -20,7 +20,7 @@ We use Ubuntu as the server's operating system. You do not need one specific Ubu
 
 This page is the map. Open the guide linked under your step, finish that page, and use its **Next step** link at the bottom. The four summaries below are not extra instructions to repeat.
 
-Already have a server? Start at Step 2. Already have 3x-ui installed and can open it? Start at Step 3. Already have a working connection profile? Start at Step 4.
+Already have a server? Start at Step 2. Already have the server dashboard installed and can open it? Start at Step 3. Already have a private connection link from the server’s administrator? Start at Step 4.
 
 ### 1. Get a server
 
@@ -54,7 +54,7 @@ When you finish, the panel gives you a **connection profile**: a link containing
 
 ### 4. Connect your computer or phone
 
-You now need an app on your device to use the profile. We use **Hiddify**, a free VPN/proxy client available for Windows, Linux, macOS, Android, and iOS.
+You now need an app on your device to use the profile. We use **Hiddify**, a free app for connecting to your server, available for Windows, Linux, macOS, Android, and iOS.
 
 Install it, import your connection link using **+ → Add from clipboard**, select the profile, and connect. The guide explains which connection mode to choose, what each setting does, and how to check that websites see your server's address.
 
@@ -79,7 +79,7 @@ Two common follow-up questions have their own illustrated pages:
 
 For other setups:
 
-- [Use Xray directly on a Linux machine](docs/linux-xray.md).
+- [Use the Xray network engine directly on a Linux machine](docs/linux-xray.md).
 - [Let another device use your proxy](docs/share-proxy.md).
 - [How Xray, REALITY, and routing work—for programmers and network engineers](docs/xray-internals.md).
 
