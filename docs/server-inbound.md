@@ -1,4 +1,4 @@
-[← Guide index](../README.md) · Previous: [Server setup](server-setup.md) · Next: [Client setup](clients.md)
+[← Setup overview](../README.md) · Step 3 of 4
 
 # Create your first connection account
 
@@ -7,6 +7,8 @@ Open **3x-ui**, the browser dashboard installed on your server. Here you will cr
 An **inbound** is the server entry point that accepts a device's connection. **VLESS + REALITY** is the connection type used in this walkthrough; the table below supplies its required settings. An **outbound** is the path the server uses afterward to reach a website.
 
 These labels refer to **3x-ui 3.8.5**. Inbounds accept clients; outbounds carry their traffic to websites. The panel's HTTP/HTTPS port is separate from the inbound's VPN port.
+
+**Do this page if you need a connection account.** Already have an enabled account and its exported VLESS link? Skip this page and [open Step 4: connect your device](clients.md). Otherwise, follow sections 1–6 in order. The reference links at the end are optional.
 
 ## 1. Open the correct form
 
@@ -100,7 +102,7 @@ ss -lntp 'sport = :443'
 journalctl -u x-ui --since '10 minutes ago' --no-pager
 ```
 
-**Success:** Xray owns the intended public listener, the client is enabled, and the exported link matches it. Then [configure Hiddify](clients.md).
+**Check:** Xray owns the intended public listener, the client is enabled, and the exported link matches it.
 
 For an IPv4 exit address, use the separate [ForceIPv4 guide](force-ipv4.md). For failed handshakes, follow [troubleshooting](troubleshooting.md).
 
@@ -109,3 +111,7 @@ For an IPv4 exit address, use the separate [ForceIPv4 guide](force-ipv4.md). For
 - [3x-ui 3.8.5 inbound form source](https://github.com/MHSanaei/3x-ui/tree/v3.8.5/frontend/src/pages/inbounds)
 - [Xray REALITY configuration](https://xtls.github.io/en/config/transport.html#realityobject)
 - [RAW/TCP transport](https://xtls.github.io/en/config/transports/raw.html)
+
+**Step 3 is complete when:** you have an enabled account, its private connection link, and a listening server port.
+
+**[Next step: import the account into Hiddify and connect →](clients.md)**

@@ -2,6 +2,8 @@
 
 # Share a working proxy without turning it into a public relay
 
+**Optional: only for borrowing a proxy from another Linux machine.** For a normal desktop or phone VPN, [use Hiddify directly](clients.md) and skip this entire page. Choose **one** sharing method below; direct LAN access is an alternative to SSH forwarding.
+
 Sometimes one Linux machine already has the right route, and a second device just needs to borrow it. You can do that without giving the whole internet an unauthenticated proxy port.
 
 First complete the [Linux client walkthrough](linux-xray.md). The proxy host should already pass an HTTPS exit test through `127.0.0.1:10801`. Keep the public VPN server, this intermediate proxy host, and the device using it conceptually separate—even if one deployment combines some roles.

@@ -1,10 +1,14 @@
-[← Guide index](../README.md) · Next: [Install the control panel](server-setup.md)
+[← Setup overview](../README.md) · Step 1 of 4
 
 # Get the computer that will run your VPN
 
 You do not need to buy a physical machine or leave a laptop running at home. You rent a small virtual server in a data center. Providers call this a **VPS**, **VDS**, or **cloud server**. For this guide, it is a remote Linux computer that stays online and carries your VPN traffic.
 
 Your own computer remains as it is. You can rent and administer an Ubuntu server from Windows, Linux, or macOS.
+
+**Do this page only if you need a server.** Already have a running Ubuntu server and its login details? Skip this page and [open Step 2: install or open the dashboard](server-setup.md).
+
+On this page, create **one** server using either the HostVDS example or another provider, then save its login details.
 
 ## Choose a provider and a location
 
@@ -14,7 +18,7 @@ Choose the location where you want traffic to leave the VPN, such as a European 
 
 A second server in Russia is **not needed** for the ordinary setup. The [optional sharing chapter](share-proxy.md) describes cases where an intermediate proxy host is useful. Do not buy two servers just because a diagram in an advanced chapter shows two machines.
 
-## Example: create the server on HostVDS
+## Create one server: HostVDS example
 
 If you want a concrete place to start, use [HostVDS](https://hostvds.com/). The provider's [own walkthrough](https://hostvds.com/knowledge/6) uses this creation flow:
 
@@ -31,11 +35,10 @@ If no root password arrives, HostVDS documents **Servers → Actions: Security �
 
 ![HostVDS example buttons: Servers, New Instance, Ubuntu, and Deploy](../images/hostvds-new-server.svg)
 
-You now have the same starting point as a server bought elsewhere: an IP address, an administrative login, and a running Linux system. Continue with [installing the server dashboard](server-setup.md).
+<details>
+<summary>Using another provider? Open these alternative creation steps. Skip if you already created your server.</summary>
 
-## Create a small Ubuntu server
-
-Provider dashboards use different labels, so use the matching action rather than expecting identical screenshots everywhere:
+Use these instead of the HostVDS steps, then continue with “Save the details” below:
 
 1. Register or sign in to the provider's website and add funds/payment details if required.
 2. Open **Servers / Cloud / Instances** and choose **Create server**, **Create instance**, or **Order**.
@@ -49,6 +52,8 @@ Provider dashboards use different labels, so use the matching action rather than
 You do not need Windows Server, a desktop environment, a hosting control-panel bundle, a GPU, or a domain name for the basic VPN. The server's Ubuntu version and your laptop's operating system are separate choices.
 
 If you already have a server with other software or files, do not reinstall its operating system to follow this guide. Check the existing installation and available ports, then add only what is needed.
+
+</details>
 
 ## Save the details you will use next
 
@@ -64,8 +69,6 @@ Open the new server's **Details / Access / Credentials** page. The provider may 
 
 `root` is the administrator account, not a password. A provider that creates an `ubuntu` user and an SSH key does not necessarily enable root-password login; follow the supplied access method instead of repeatedly guessing a root password.
 
-You are ready when the server is running and you have its IP and login method. Continue with [connecting to it and installing the panel](server-setup.md#2-connect-over-ssh).
-
 ## A firewall note before leaving the provider dashboard
 
 A **firewall** decides which incoming connections the server accepts. Some providers put an extra one in their web dashboard, often called **Firewall**, **Security group**, or **Network rules**.
@@ -78,3 +81,7 @@ Keep the supplied SSH access allowed. Later, you will allow the actual VPN TCP p
 - [Ubuntu cloud-server tutorial](https://ubuntu.com/tutorials/launch-and-terminate-cloud-instances), for readers who want to understand the underlying cloud terminology
 
 Provider forms and billing offers change. The actions above describe the task; consult the selected provider's current instructions for its exact form labels.
+
+**Step 1 is complete when:** your server is running and you have its IP address and login method.
+
+**[Next step: install and open the server dashboard →](server-setup.md)**

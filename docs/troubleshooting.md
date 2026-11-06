@@ -2,6 +2,8 @@
 
 # The server pings, but the VPN does not work
 
+**Use this page when a check fails.** Choose your symptom from the table below, then read that section. These are diagnostic branches, not additional steps every working setup needs.
+
 This is the failure that started this update. SSH worked. Ping worked. The server listened on the right port. Yet one client timed out and another printed a REALITY verification error.
 
 Those observations were not contradictory. They described different layers. The quickest way out is to test one layer at a time, keeping a note of what each result actually proves.

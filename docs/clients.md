@@ -1,4 +1,4 @@
-[← Guide index](../README.md) · Previous: [Create the server inbound](server-inbound.md) · Next: [Understand the ports and modes](ports-and-modes.md)
+[← Setup overview](../README.md) · Step 4 of 4
 
 # Connect your computer or phone
 
@@ -7,6 +7,8 @@
 The next job is to import the profile and decide which applications should use it. A **proxy** is a program that forwards network requests for another application. Hiddify can provide a local proxy or use your operating system's VPN routing.
 
 The illustrated labels are from **Hiddify 5.5.5**. The basic profile import applies on Windows, Linux, macOS, and phones; operating-system permissions and connection modes differ. Windows-specific verification commands below are explicitly labeled. Labels can move between releases; check **About** before comparing your screen with a guide. A green connection indicator is a useful start, but the exit test at the end is what proves the route works.
+
+**This is the final required setup page.** Follow the import, mode, settings, and connection-test sections. Stop at **Your first connection is complete** when the test works. Everything after that point is optional recovery or background reading.
 
 ## Give the link a home
 
@@ -25,7 +27,7 @@ Treat the link like a password. It contains the account UUID and enough paramete
 
 ## Choose how much traffic Hiddify should handle
 
-Open **Settings → Inbound → Service mode**. The three choices solve different problems:
+**Desktop computers:** open **Settings → Inbound → Service mode**. The three choices solve different problems:
 
 | Mode | Choose it when | After Connect |
 |---|---|---|
@@ -75,13 +77,21 @@ After changing connection settings, disconnect and reconnect **Hiddify** so its 
 
 Click Hiddify's main **Connect** button. In manual Proxy mode, the local listener should now be available on `127.0.0.1:12334`.
 
-Open PowerShell and run:
+**On Windows**, open PowerShell and run:
 
 ```powershell
 curl.exe --noproxy localhost,127.0.0.1 --proxy http://127.0.0.1:12334 --connect-timeout 5 --max-time 15 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
 Use `curl.exe`, because older Windows PowerShell gives the shorter `curl` name a different meaning. The explicit proxy and external test URL also avoid accidentally testing an unrelated system proxy.
+
+**On Linux/macOS**, run this equivalent command in your terminal (Hiddify still uses port **12334**, not the standalone Xray example's 10801):
+
+```bash
+curl --noproxy '' --proxy http://127.0.0.1:12334 --connect-timeout 5 --max-time 15 https://www.cloudflare.com/cdn-cgi/trace
+```
+
+**On a phone**, use the normal VPN mode and grant its VPN permission, then open an IP-check website such as `https://www.cloudflare.com/cdn-cgi/trace` in the browser. The desktop proxy commands do not apply.
 
 Look for `ip=` and `loc=`. The IP should be the VPS's outgoing address, with its expected location. A successful HTTP response through the proxy is stronger evidence than pinging the server. An IPv6 result can be the VPS's legitimate exit address; use the [ForceIPv4 guide](force-ipv4.md) if you want its IPv4 address.
 
@@ -91,7 +101,15 @@ If the test fails, keep the profile and collect the error before changing server
 
 ![Connect the profile, run an explicit HTTPS proxy request, and check the exit IP](../images/hiddify-connect.svg)
 
+## Your first connection is complete
+
+**You can stop reading here when:** the HTTPS test shows your server’s exit address and the applications you intended to use work through Hiddify. There is no fifth required setup page.
+
+Optional: [choose an IPv4 exit](force-ipv4.md), [understand modes and ports](ports-and-modes.md), or read the recovery sections below **only if something fails**.
+
 ## Advanced recovery when the normal settings are not enough
+
+**Skip this section if the connection works.** Use it for persistent Hiddify failures after checking the visible settings above.
 
 Hiddify 5.5.5 does not expose every core preference as a switch. In particular, its General page has a **Clash API port** field but no corresponding enable/disable toggle, and independent DNS cache is not a visible switch on its DNS page. Do not waste time looking for those controls.
 
@@ -114,6 +132,8 @@ This is an advanced fallback for the recorded problem, not a requirement that ev
 The effective file under `%APPDATA%\Hiddify\hiddify\data\current-config.json` is diagnostic output, not the persistent place to make this repair. Hiddify regenerates it.
 
 ## Leave Invisible Man installed, but use a maintained client for this setup
+
+**Optional background for existing Invisible Man users.** New Hiddify users can skip this section.
 
 Invisible Man's upstream latest release checked on **2026-11-06** was **3.2.5**, dated **2025-02-02**, with Xray **25.1.30**. It is treated here as a legacy client without a current upstream release, not as the recommended client for a new server. That does not mean the executable can never work against any server.
 

@@ -18,6 +18,10 @@ We use Ubuntu as the server's operating system. You do not need one specific Ubu
 
 ## Follow these steps in order
 
+This page is the map. Open the guide linked under your step, finish that page, and use its **Next step** link at the bottom. The four summaries below are not extra instructions to repeat.
+
+Already have a server? Start at Step 2. Already have 3x-ui installed and can open it? Start at Step 3. Already have a working connection profile? Start at Step 4.
+
 ### 1. Get a server
 
 For example, use **[HostVDS](https://hostvds.com/)** and choose a European or US location, a small plan, and Ubuntu. This is the provider used in the original guide; another suitable provider works too.

@@ -2,6 +2,8 @@
 
 # Let the scripts do the repetitive work
 
+**Optional toolbox.** Pick only the helper for your task; this page is not a sequence to run from top to bottom. For setup without repository helpers, [start with the manual guide](../README.md#follow-these-steps-in-order).
+
 **All scripts on this page are optional.** The [main walkthrough](../README.md) explains the manual path from renting a server to connecting an app.
 
 Once you know which step you want to automate, the helpers can handle repetitive tasks such as generating a configuration or checking a connection. A helper is not an extra requirement for using the VPN.

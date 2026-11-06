@@ -1,4 +1,4 @@
-[← Guide index](../README.md) · Previous: [Get a server](choose-server.md) · Next: [Create the inbound](server-inbound.md)
+[← Setup overview](../README.md) · Step 2 of 4
 
 # Install and prepare the VPN server
 
@@ -7,6 +7,10 @@ You have rented a Linux server and saved its login details. If you have not, sta
 We will install **3x-ui**, a browser-based dashboard for managing connection accounts. Later, **Xray**, the network engine it manages, will carry the traffic. You do not need to learn either program's internals to install the panel.
 
 UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11-06**. Record your panel and Xray versions before making changes; they have independent release numbers. Existing working installations do not need a reinstall.
+
+**Do this page if your server does not yet have a working 3x-ui dashboard.** If you can already log in to 3x-ui, skip installation and [open Step 3: create your connection account](server-inbound.md).
+
+Follow sections 1–4 and 6 for setup. Section 5 is optional administration advice; it is labeled before its commands. Public HTTPS panel access is an advanced alternative, kept closed below.
 
 ## 1. Choose the deployment
 
@@ -58,45 +62,64 @@ bash /tmp/3x-ui-install.sh
 
 Press `q` to leave `less`. Running the installer grants it root access. Use an official stable release, and record the installed version rather than assuming the latest panel and every client engine are compatible.
 
+### Required: install the panel and save its login details
+
 At the installer prompts:
 
-1. If asked for a database, keep **SQLite**, the simple built-in choice for a personal server.
-2. Choose an unused administration-panel port, for example **27297**, when offered. A port is a numbered network entry point; the panel port will be separate from the VPN connection port.
-3. Choose how to protect the panel's browser login, as explained below.
-4. Copy the printed **panel URL, username, password, and URL path** into a password manager. These are newly generated panel credentials, separate from the server's SSH/root password.
-5. Open the exact panel URL in your browser. Keep its path; opening only the IP and port may return 404.
-6. Enter the generated panel username/password and click **Login**. You should reach the dashboard.
+1. If asked for a database, keep **SQLite**, the built-in choice for a personal server.
+2. Choose an unused panel port, for example **27297**, when offered. A port is a numbered network entry point. This one is for managing the server, not for VPN traffic.
+3. For panel certificates, choose **Skip SSL / HTTP only**. The next steps carry the browser connection through encrypted SSH, so you do not need a domain or public certificate.
+4. Save the printed **panel port, URL path, username, and password** in a password manager. The panel credentials are different from your root/SSH login.
 
-### Open the panel with HTTPS
+### Required: open the dashboard safely in your browser
 
-HTTPS encrypts the browser connection to the panel. Its certificate proves which server the browser reached. This is separate from the REALITY setting you will later use for VPN connections.
+This connection is only for managing the dashboard. It does not carry your VPN traffic and does not need to stay open while using the VPN. Follow these steps after the installer finishes.
 
-The checked 3x-ui installer offers **Let's Encrypt IP certificate** for a server without a domain name. Choose that label, enter the server's public IP when requested, and follow the prompts. A domain name is a website-style name such as `panel.example.com`; it is not required for this IP-certificate option.
-
-Certificate issuance needs incoming **TCP port 80** reachable from the certificate authority. Allow it in the provider's firewall and in an existing host firewall if necessary. If another program already uses port 80, do not stop it blindly; use an appropriate existing web-server setup or the private-access option below. The installer configures renewal for its short-lived IP certificate, so keep that renewal path working.
-
-When the installer prints an `https://...` URL, use that URL. Also allow the chosen panel TCP port from your administration IP if your firewall blocks it. If certificate setup failed, do not assume the panel now has trusted HTTPS merely because the installer finished.
-
-### Or keep the panel private through SSH
-
-This is useful if you do not want a public panel port or cannot use certificate issuance. In the installer, choose **Skip SSL / HTTP only** only when you will immediately use this private-access setup. Run on the server:
+**1. On the server**, in the SSH window you already opened, run:
 
 ```bash
 /usr/local/x-ui/x-ui setting -listenIP 127.0.0.1
 systemctl restart x-ui
 ```
 
-This binds the panel to the server's own loopback address, which is not reachable directly from the internet. On **your computer**, open a second terminal and run:
+This makes the dashboard private: only the server itself can reach it directly. Next, give your browser a secure way in.
+
+**2. On your computer**, open a **second PowerShell window or terminal**. Do not type this command inside the server's SSH session:
 
 ```bash
 ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:18080:127.0.0.1:YOUR_PANEL_PORT YOUR_LOGIN_USER@YOUR_SERVER_IP
 ```
 
-Replace the panel port, login user, and server IP with the values you saved. Leave this terminal open. It forwards your computer's local port 18080 securely over SSH to the panel.
+Replace these three placeholders before pressing Enter:
 
-Open `http://127.0.0.1:18080/YOUR_PANEL_PATH/` in your computer's browser, using the saved panel path. Log in with the generated **panel credentials**, not the SSH password. The browser-to-localhost address is HTTP, while the hop to the VPS is carried inside encrypted SSH. You do not need to open a public firewall port for the panel in this arrangement.
+| Replace | With |
+|---|---|
+| `YOUR_PANEL_PORT` | The panel port saved from the installer, for example `27297` |
+| `YOUR_LOGIN_USER` | Your server login user, such as `root` |
+| `YOUR_SERVER_IP` | Your server's public IP address |
 
-These are manual steps; no repository script is required. The [optional setup helper](quick-start.md) chooses private SSH-forwarded access for you when you explicitly use it.
+If your provider uses a custom SSH port, add `-p YOUR_SSH_PORT` after `ssh`. Enter the SSH password when asked. **Leave this window open**; no further output is normal. It is carrying your browser connection securely to the server. If it reports that local port 18080 is already in use, choose another unused local port in both this command and the browser address below.
+
+**3. In your computer's browser**, open:
+
+```text
+http://127.0.0.1:18080/YOUR_PANEL_PATH/
+```
+
+Replace `YOUR_PANEL_PATH` with the path printed by the installer. For example, a saved path `/abc123/` gives `http://127.0.0.1:18080/abc123/`. Keep the slashes and the path. Use your **panel username and password**, then click **Login**.
+
+**Check:** the dashboard opens. Keep the second terminal open while using it. You can close it when finished; the VPN service keeps running. To open the dashboard tomorrow, repeat steps 2 and 3. Step 1 only needs to be done once.
+
+<details>
+<summary>Optional advanced alternative: public HTTPS dashboard. Skip for the ordinary setup above.</summary>
+
+Use this instead of the private dashboard access above only if you intentionally want a public administration endpoint. You do not need it for the VPN to work. An already-private installation also needs its listen address changed deliberately before it can accept public connections.
+
+The checked installer offers **Let's Encrypt IP certificate** without a domain name. During installation, select that option and enter the public IP. Certificate issuance and renewal need incoming **TCP 80** reachable from the certificate authority, and browser access needs the chosen panel TCP port allowed from your administration IP in both applicable firewalls. Preserve any existing web service using port 80; plan coexistence rather than stopping it.
+
+Use the printed `https://...` URL including its path, and log in with the generated panel credentials. Confirm the certificate is trusted. A completed installation alone does not establish that certificate issuance or future renewal succeeded.
+
+</details>
 
 The panel port is an administration port. Do not put it in the VPN client's server-port field. See [the port map](ports-and-modes.md#the-ports-you-will-see).
 
@@ -126,6 +149,8 @@ ufw allow 443/tcp
 Replace `443` if you selected another VPN port. Before enabling a new firewall, allow your actual SSH port and arrange access to the panel from your administration IP. Do not enable a default-deny firewall from a remote session before protecting SSH access. If UFW is absent, inspect the existing nftables/iptables rules rather than installing a second firewall blindly.
 
 ## 5. Keep administration recoverable
+
+**Optional for the first connection.** These steps improve ongoing administration. You may go straight to section 6 and return here after the VPN works. If you already have a tested administrator and SSH keys, keep them; you do not need another account.
 
 Create a separate administrator:
 
@@ -162,4 +187,6 @@ systemctl --failed --no-pager
 
 Paths and executable names can differ by architecture or installation method. Xray may run as a child of `x-ui`, without a separate `xray.service`. An active panel alone does not prove the VPN listener is running.
 
-**Success:** the panel opens, you know the selected public VPN port, and SSH still works. Continue with [inbound creation](server-inbound.md).
+**Step 2 is complete when:** the panel opens, you know the selected public VPN port, and SSH still works.
+
+**[Next step: create your connection account →](server-inbound.md)**

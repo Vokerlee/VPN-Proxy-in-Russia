@@ -2,6 +2,8 @@
 
 # Make the VPN server use an IPv4 exit
 
+**Optional: use this page only if you want an IPv4 exit address.** A working connection with an IPv6 exit does not require this change. After changing the form, run the verification section; the JSON reference is optional.
+
 The address a website sees after you connect is the server's **exit address**. It can be IPv4 (a dotted address such as `203.0.113.10`) or IPv6 (an address with colons, such as `2001:db8::10`).
 
 If you want websites to see the server's IPv4 address, change the outgoing connection setting in **3x-ui**, the server's browser dashboard. This does not require changing your own computer's operating system or disabling IPv6 everywhere.
@@ -49,16 +51,16 @@ Do not disable the VPS's IPv6 networking or loopback merely to select an IPv4 VP
 For Hiddify's default local proxy on Windows, run in PowerShell:
 
 ```powershell
-curl.exe --noproxy "" --proxy http://127.0.0.1:12334 https://www.cloudflare.com/cdn-cgi/trace
+curl.exe --noproxy localhost,127.0.0.1 --proxy http://127.0.0.1:12334 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
-In Windows PowerShell 5.1, an empty argument can be lost when calling native programs. If this causes an argument error, use `--noproxy localhost,127.0.0.1` for this external URL instead. In a Linux shell:
+For Hiddify on Linux/macOS, run:
 
 ```bash
-curl --noproxy '' --proxy http://127.0.0.1:10801 https://www.cloudflare.com/cdn-cgi/trace
+curl --noproxy '' --proxy http://127.0.0.1:12334 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
-Use the port your running client actually listens on. In the response, find `ip=`:
+The optional standalone Linux Xray guide uses **10801** instead; substitute that port only if you followed that guide. Use the port your running client actually listens on. In the response, find `ip=`:
 
 - An IPv4 address has dotted decimal notation, for example `203.0.113.10`.
 - An IPv6 address contains colons, for example `2001:db8::10`.

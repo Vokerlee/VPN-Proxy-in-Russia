@@ -2,6 +2,8 @@
 
 # One Connect button, several different network paths
 
+**Optional explanation.** The normal setup is in [Hiddify setup](clients.md). Read the sections relevant to your mode; you do not need to enable all three modes or apply every example.
+
 You press Connect. The app turns green. Your browser may immediately use the VPS—or nothing in the browser may change at all. Both outcomes can be correct: the button starts the client, but the selected mode decides how your applications reach it.
 
 A **port** is a numbered endpoint that lets several network programs share one machine's address. A **proxy** is a program that forwards a request for another application. Hiddify is the VPN app in this guide; it opens a proxy on your own computer, then carries selected requests to the remote server.
@@ -15,7 +17,8 @@ Follow one browser request from your desk to a website, and those numbers become
 | Your Windows PC | `127.0.0.1:12334` | Hiddify's local mixed HTTP/SOCKS proxy |
 | The same PC | `127.0.0.1:10801` | An existing Invisible Man or standalone Xray proxy; its actual setting may differ |
 | Your VPS | `YOUR_SERVER_IP:443` | The public VLESS + REALITY inbound; 8443 is another possible configured port |
-| Your VPS | `YOUR_SERVER_IP:27297` | Example administration-panel port, not the VPN listener |
+| Your VPS | `127.0.0.1:27297` | Private administration panel in the default walkthrough; reached through SSH |
+| Your computer | `127.0.0.1:18080` | Browser access forwarded over SSH to that private panel |
 | Your PC | `127.0.0.1:16756` | Example Clash control API port, not a browser proxy |
 | A website | `website.example:443` | HTTPS at the final destination |
 
@@ -51,7 +54,7 @@ The local `http://` proxy URL describes how curl talks to Hiddify. For an HTTPS 
 
 When you select **System Proxy** and Connect, Hiddify also updates the Windows user's system proxy configuration. Applications that follow that configuration send requests to Hiddify's listener.
 
-For Windows 11, you can see or set the same destination yourself:
+**Optional manual alternative:** Hiddify’s System Proxy mode already selects this destination. Use the following Windows 11 steps only to inspect it or set it yourself; you do not need to repeat them after every Connect:
 
 1. Open **Settings → Network & internet → Proxy**.
 2. Under **Manual proxy setup**, click **Set up** or **Edit**.

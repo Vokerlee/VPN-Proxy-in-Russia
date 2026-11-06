@@ -28,6 +28,8 @@ On Linux/macOS, have OpenSSH and Python 3.8+ available. The automatic server set
 
 ## See the plan, then let SSH ask for the password
 
+**Choose your computer’s operating system below.** Run the Windows commands or the Linux/macOS commands, not both.
+
 On Windows, preview the plan:
 
 ```powershell
@@ -115,28 +117,23 @@ When you close the SSH-forwarding terminal, browser access stops. The VPN servic
 
 Install Hiddify from its [official download page](https://github.com/hiddify/hiddify-app/releases/latest).
 
-For the exact Windows recovery baseline tested in this guide, launch Hiddify once so it creates its preferences, then **close Hiddify yourself**. From this repository's PowerShell terminal, preview and apply the preference helper:
+Start with the normal visible settings below. **Skip preference repair if the connection works.** If it fails after the ordinary checks, the [optional Windows preference repair](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) explains both manual editing and the helper.
 
-```powershell
-.\scripts\Repair-Hiddify.ps1
-.\scripts\Repair-Hiddify.ps1 -Apply -ServiceMode Manual
-```
-
-If needed, use the same reviewed per-process execution-policy approach described above for this file. The helper backs up preferences, disables the optional DNS/routing/API features involved in the investigated failure, and never stops another client. Read [the setting explanations](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) before applying it to a customized installation. This Windows preference repair is not a required phone step.
-
-Now open Hiddify again and import the account:
+Open Hiddify and import the account:
 
 1. Open the generated `hiddify-profile.txt` in a text editor and copy the whole `vless://...` line.
 2. Open Hiddify, click **+ / New profile → Add from clipboard**, and select **Personal VPN**.
 3. In **Settings → Inbound → Service mode**, choose **Proxy** for the first test. Keep the mixed/local port enabled at **12334**.
 4. In **Settings → DNS**, start with **Fake DNS off**. In **Settings → Routing**, select **Region → Other** while diagnosing. Leave TLS tricks and optional chaining off.
-5. Click **Connect** and make an explicit request from PowerShell:
+5. Click **Connect**. **On Windows**, make an explicit request from PowerShell:
 
 ```powershell
 curl.exe --noproxy localhost,127.0.0.1 --proxy http://127.0.0.1:12334 --connect-timeout 5 --max-time 15 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
 ![Hiddify: add the profile from the clipboard](../images/hiddify-import.svg)
+
+**On Linux/macOS**, use the [equivalent Hiddify terminal test](clients.md#press-connect-then-prove-the-route). On phones, use VPN mode and open the test URL in the browser instead. Do not run the Windows command on a phone.
 
 Find `ip=` in the response. It should be the VPS's IPv4 egress address. Now select **System Proxy** and reconnect if you want Windows' proxy-aware programs to use Hiddify. Choose **VPN/TUN** if your application ignores system proxies, and accept the OS permission request. The [client walkthrough](clients.md) covers the complete settings and the [ports guide](ports-and-modes.md) explains the differences.
 
