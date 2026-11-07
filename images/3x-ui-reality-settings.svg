@@ -1,12 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="686" viewBox="0 0 1120 686" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="801" viewBox="0 0 1120 801" role="img" aria-labelledby="title desc">
 <title id="title">Fill in the REALITY form</title>
 <desc id="desc">Numbered navigation illustration. This is not a captured screenshot. Exact positions may differ by version.</desc>
 <g font-family="DejaVu Sans,Arial,sans-serif">
-<rect x="0" y="0" width="1120" height="686" rx="12" fill="#f4f7fb" stroke="none"/>
+<rect x="0" y="0" width="1120" height="801" rx="12" fill="#f4f7fb" stroke="none"/>
 <rect x="20" y="20" width="1080" height="112" rx="12" fill="#14283f" stroke="none"/>
 <text x="44" y="60" font-size="27" fill="#ffffff" font-weight="700">Fill in the REALITY form</text>
 <text x="44" y="96" font-size="16" fill="#c7d7eb" font-weight="400">3x-ui 3.8.5  |  Navigation diagram, not a screenshot</text>
-<rect x="28" y="152" width="216" height="460" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
+<rect x="28" y="152" width="216" height="575" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <text x="48" y="185" font-size="13" fill="#60738d" font-weight="700">NAVIGATION</text>
 <text x="49" y="205" font-size="14" fill="#53657d" font-weight="400">Inbounds</text>
 <text x="49" y="248" font-size="14" fill="#53657d" font-weight="400">New inbound</text>
@@ -23,24 +23,31 @@
 <rect x="272" y="267" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="297" cy="296" r="16" fill="#0b62b9"/>
 <text x="292" y="302" font-size="16" fill="white" font-weight="700">2</text>
-<text x="323" y="298" font-size="17" fill="#172b4d" font-weight="400">For a new inbound only</text>
-<rect x="323" y="309" width="180" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
-<text x="336" y="330" font-size="15" fill="#074985" font-weight="700">Get New Key</text>
-<text x="323" y="358" font-size="13" fill="#53657d" font-weight="400">Keep generated short IDs. Never regenerate a working profile&#x27;s keys.</text>
+<text x="323" y="298" font-size="17" fill="#172b4d" font-weight="400">Choose the client fingerprint</text>
+<rect x="323" y="309" width="258.8" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
+<text x="336" y="330" font-size="15" fill="#074985" font-weight="700">Fingerprint / uTLS: safari</text>
+<text x="323" y="358" font-size="13" fill="#53657d" font-weight="400">US-server Hiddify setup: export Safari; keep the selected SNI unchanged.</text>
 <rect x="272" y="382" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="297" cy="411" r="16" fill="#0b62b9"/>
 <text x="292" y="417" font-size="16" fill="white" font-weight="700">3</text>
-<text x="323" y="413" font-size="17" fill="#172b4d" font-weight="400">Set the client flow</text>
+<text x="323" y="413" font-size="17" fill="#172b4d" font-weight="400">For a new inbound only</text>
 <rect x="323" y="424" width="180" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
-<text x="336" y="445" font-size="15" fill="#074985" font-weight="700">xtls-rprx-vision</text>
-<text x="323" y="473" font-size="13" fill="#53657d" font-weight="400">Use the generated UUID and VLESS encryption=none.</text>
+<text x="336" y="445" font-size="15" fill="#074985" font-weight="700">Get New Key</text>
+<text x="323" y="473" font-size="13" fill="#53657d" font-weight="400">Keep generated short IDs. Never regenerate a working profile&#x27;s keys.</text>
 <rect x="272" y="497" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="297" cy="526" r="16" fill="#0b62b9"/>
 <text x="292" y="532" font-size="16" fill="white" font-weight="700">4</text>
-<text x="323" y="528" font-size="17" fill="#172b4d" font-weight="400">Save the new listener</text>
+<text x="323" y="528" font-size="17" fill="#172b4d" font-weight="400">Set the client flow</text>
 <rect x="323" y="539" width="180" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
-<text x="336" y="560" font-size="15" fill="#074985" font-weight="700">Create / Save</text>
-<text x="323" y="588" font-size="13" fill="#53657d" font-weight="400">The selected public port must be allowed by both firewalls.</text>
-<text x="34" y="664" font-size="14" fill="#53657d" font-weight="400">Follow the adjacent guide for checks and version-specific alternatives. All values shown are placeholders.</text>
+<text x="336" y="560" font-size="15" fill="#074985" font-weight="700">xtls-rprx-vision</text>
+<text x="323" y="588" font-size="13" fill="#53657d" font-weight="400">Use the generated UUID and VLESS encryption=none.</text>
+<rect x="272" y="612" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
+<circle cx="297" cy="641" r="16" fill="#0b62b9"/>
+<text x="292" y="647" font-size="16" fill="white" font-weight="700">5</text>
+<text x="323" y="643" font-size="17" fill="#172b4d" font-weight="400">Save the new listener</text>
+<rect x="323" y="654" width="180" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
+<text x="336" y="675" font-size="15" fill="#074985" font-weight="700">Create / Save</text>
+<text x="323" y="703" font-size="13" fill="#53657d" font-weight="400">The selected public port must be allowed by both firewalls.</text>
+<text x="34" y="779" font-size="14" fill="#53657d" font-weight="400">Follow the adjacent guide for checks and version-specific alternatives. All values shown are placeholders.</text>
 </g>
 </svg>

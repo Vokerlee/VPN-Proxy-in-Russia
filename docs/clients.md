@@ -20,11 +20,13 @@ On Windows, install the Windows app. You do not need WSL (Windows Subsystem for 
 
 On a phone, you can scan the account’s QR code instead of copying the link. Both contain the same connection settings. Keep the link and QR code private: anyone with them can use that account. The dashboard’s browser address is a different link and cannot be imported as a VPN profile.
 
+**For a US REALITY server, use the Safari fingerprint in this walkthrough.** Before importing, check the link for **`fp=safari`**. If it has `fp=chrome` and you have the investigated timeout symptom, follow [the panel's Safari steps](server-inbound.md#3-set-transport-and-security) and import the new export. The Kansas comparison kept the Google SNI unchanged and succeeded with Safari in 12/12 requests while Chrome failed in 12/12. This was verified with the installed Hiddify 5.5.5 engine; other engines and networks need their own check.
+
 ![Hiddify: New profile, Add from clipboard, select Personal VPN](../images/hiddify-import.svg)
 
 ## 3. Important: set Outbound domain strategy to IPv4 only
 
-**This fixed the Android Hiddify connection reported by the guide’s author on 2026-11-07.** Make this the first setting to check when Hiddify times out, including when the same account works on Windows.
+**This was initially reported as an Android fix on 2026-11-07, but the failure later returned.** Keep this DNS check, but do not treat it as a proven cure for every timeout. For the investigated US REALITY connection, also check [Chrome versus Safari](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works).
 
 1. In **Hiddify**, disconnect if connected.
 2. Open **Settings → DNS**.
@@ -62,7 +64,7 @@ The sections below are optional. Use them only for a failed connection or when s
 
 ## If the connection fails: try these settings
 
-**Optional: skip if the connection works after setting Outbound domain strategy → IPv4 only.** The options below are additional troubleshooting choices from the earlier Windows investigation, not the confirmed Android fix. Try one at a time, reconnect, and repeat the browser check.
+**Optional: skip if the connection works.** The options below are additional troubleshooting choices from the earlier Windows investigation. Try one at a time, reconnect, and repeat the browser check. For the investigated US REALITY timeout, check [the client fingerprint](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works) before changing more unrelated settings.
 
 | Open | Set |
 |---|---|
@@ -121,7 +123,7 @@ Use [the repair helper](automation.md#repair-hiddify-preferences-on-windows) to 
 
 You can make this advanced recovery change without a script too. On Windows, close Hiddify yourself, press **Win+R**, open `%APPDATA%\Hiddify\hiddify`, and make a private backup copy of `shared_preferences.json`. Open the original with a text editor. Merge the five entries shown above into the existing file; keep all unrelated entries. The three `false` values have no quotes; `"other"` and `"proxy"` are strings and need quotes. Keep valid JSON commas between entries. Do not replace the entire preferences file with this small example. Save it, reopen Hiddify, reconnect, and test. If the file no longer parses or the change does not help, close Hiddify and restore your backup.
 
-The author subsequently reported that Hiddify’s visible **Outbound domain strategy → IPv4 only** resolved the Android connection. Start with that setting rather than copying these Windows-only file edits to a phone. The helper is an optional way to avoid manual JSON mistakes.
+The initial Android improvement after **Outbound domain strategy → IPv4 only** did not last. Keep visible DNS and fingerprint checks separate from these Windows-only file edits; the later controlled fingerprint comparison isolated Chrome versus Safari on the tested connection. The helper is an optional way to avoid manual JSON mistakes.
 
 The effective file under `%APPDATA%\Hiddify\hiddify\data\current-config.json` is diagnostic output, not the persistent place to make this repair. Hiddify regenerates it.
 

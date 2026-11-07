@@ -12,11 +12,27 @@ A server can answer ping or let you log in while its VPN connection fails. Those
 
 ## Hiddify: first check Outbound domain strategy
 
-**The author reported this as the fix for Android on 2026-11-07:** in **Hiddify → Settings → DNS → Outbound domain strategy**, select **IPv4 only**. Disconnect and reconnect Hiddify, then open a website.
+**Initially reported as an Android improvement on 2026-11-07; the timeout later returned.** In **Hiddify → Settings → DNS → Outbound domain strategy**, select **IPv4 only**, reconnect, and test a website. For a US REALITY server with the investigated symptom, check the fingerprint below too.
 
 [See the short button-by-button walkthrough](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only). The earlier changes to Fake DNS, Region, and IPv6 routing had not fixed the phone. Windows preference-file edits are not the first step for this symptom.
 
 This is an app setting. The similarly named server outbound setting in 3x-ui controls the server’s website connections; it is not the same control.
+
+## US REALITY server: Chrome times out, but Safari works
+
+**Use this branch when a REALITY account on a US server reaches its TCP port but cannot reliably load websites.** For the tested Kansas connection, avoid the **Chrome** fingerprint and use **Safari** in Hiddify. A fingerprint is the browser-style initial TLS connection message; it is separate from the target website's name, called SNI.
+
+1. Open **3x-ui → Inbounds** and edit the existing REALITY inbound.
+2. Set **Fingerprint / uTLS → Safari**, then **Save**. Keep the target/SNI, port, UUID, keys, short ID, and Flow unchanged.
+3. Open the account's **Info / Share / QR** action and export again. Check that the link contains **`fp=safari`**.
+4. Import the new link or scan the new QR in Hiddify, select that profile, and reconnect. Saving the panel form alone does not update the old profile on your phone.
+5. Open a real website and the [exit-address check](clients.md#4-connect-and-check-a-website). A latency badge alone is not a complete connection test.
+
+**What was isolated on 2026-11-07:** alternating requests through the installed Windows Hiddify 5.5.5 engine, to the same original VLESS/REALITY/Vision account and US server, produced **Chrome 0/12 successes and Safari 12/12**. Only the fingerprint changed. Both fingerprints authenticated through an SSH control path. The Safari REALITY phone check was still pending when those results were recorded; the separately tested Trojan/TLS phone connection is a different setup.
+
+Captures at both ends showed incomplete Chrome-style handshakes reaching the VPS, despite retransmissions of the missing bytes by the client. This supports fingerprint-dependent loss or interference between the device and VPS; it does not identify the responsible operator or prove a blanket restriction on every US server. Smaller TCP segments and fragmentation did not produce a reliable fix in that investigation.
+
+The Google target/SNI stayed unchanged when Safari worked. **Do not confuse Google's website name with the Chrome browser fingerprint**, or replace working target names on the strength of this result. Different client cores can produce different handshakes for the same fingerprint label; retest after changing engines or versions.
 
 ## First, choose the symptom that matches yours
 
@@ -25,6 +41,7 @@ This is an app setting. The similarly named server outbound setting in 3x-ui con
 | The app says connected, but the browser did not change | [Check the Windows proxy](#the-app-is-green-but-windows-still-uses-the-old-proxy) |
 | Connection refused on localhost | [Find the local listener](#connection-refused-on-localhost) |
 | Hiddify times out | [Set its outbound domain strategy to IPv4 only](#hiddify-first-check-outbound-domain-strategy) |
+| US REALITY server times out with `fp=chrome` | [Try the tested Safari fingerprint](#us-reality-server-chrome-times-out-but-safari-works) |
 | Hiddify still times out after that change | [Test the VPN TCP port](#ping-works-so-test-the-vpn-port-next) |
 | `reality verification failed` or `processed invalid connection` | [Check the handshake and core version](#the-tcp-port-opens-but-reality-fails) |
 | The IP check shows IPv6 | [Check the server's egress](force-ipv4.md) |
@@ -94,7 +111,7 @@ Some newer REALITY servers require changes to the initial encrypted connection s
 
 A profile contains the account’s connection settings. Hiddify adds its own settings, including DNS (website name lookups) and rules that choose which traffic uses the VPN. Those additions can explain why a valid account link works in one test but fails in the app.
 
-**Check the visible [Outbound domain strategy setting](#hiddify-first-check-outbound-domain-strategy) first.** The Android fix reported later was that setting, not the hidden preference edits below.
+**Check the visible [Outbound domain strategy setting](#hiddify-first-check-outbound-domain-strategy) and, for the investigated US REALITY symptom, [the fingerprint](#us-reality-server-chrome-times-out-but-safari-works).** The initial DNS improvement later stopped working; the hidden preference edits below were not isolated as the cause either.
 
 In the earlier Windows investigation, the installed Hiddify Windows core repeatedly connected with a small configuration, while the complete generated configuration failed. Rebuilding the app configuration with **Region Other**, **Fake DNS off**, **independent DNS cache off**, and **Clash API off** was followed by a successful request through the app’s proxy. Because several options changed together, re-enable them one at a time if you want to find which option affects your device.
 

@@ -34,4 +34,4 @@ Redact private keys, UUIDs, whole VLESS links, QR codes, passwords, tokens, subs
 
 Keep originals with credentials out of the repository, including Git history. Genuine new screenshots require a contributor's captures; none were taken from the user's applications during this repository-only update.
 
-`hiddify-outbound-ipv4.svg` illustrates the author’s reported Android fix: **Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only**, then reconnect. Keep this distinct from `3x-ui-force-ipv4.svg`, which changes the server’s website connections. Both are navigation diagrams, not captured screenshots.
+`hiddify-outbound-ipv4.svg` illustrates the author’s initial Android DNS check, whose reported improvement later stopped working: **Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only**, then reconnect. Keep this distinct from `3x-ui-force-ipv4.svg`, which changes the server’s website connections. Both are navigation diagrams, not captured screenshots.

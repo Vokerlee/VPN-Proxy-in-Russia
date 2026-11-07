@@ -25,6 +25,7 @@ FIGURES = [
         ("Configure before saving", "REALITY + Vision", "The next diagram shows the transport and account fields.")]),
     ("3x-ui-reality-settings", "Fill in the REALITY form", "3x-ui 3.8.5", ["Inbounds", "New inbound", "Client account", "Transport"], "Transport", [
         ("Select transport and security", "RAW / TCP  |  REALITY", "Target: www.google.com:443; SNI: www.google.com for this example."),
+        ("Choose the client fingerprint", "Fingerprint / uTLS: safari", "US-server Hiddify setup: export Safari; keep the selected SNI unchanged."),
         ("For a new inbound only", "Get New Key", "Keep generated short IDs. Never regenerate a working profile's keys."),
         ("Set the client flow", "xtls-rprx-vision", "Use the generated UUID and VLESS encryption=none."),
         ("Save the new listener", "Create / Save", "The selected public port must be allowed by both firewalls.")]),

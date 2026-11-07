@@ -127,7 +127,7 @@ On **2026-11-07**, the author reported that **Hiddify → Settings → DNS → O
 
 This selects IPv4 for the client’s direct/outbound name resolution. It is separate from the routing IPv6 mode and from Xray’s server-side freedom strategy. A numeric IPv4 server address alone does not constrain every other hostname lookup made by the client.
 
-The reported result makes this the first practical Hiddify check. It does not isolate the precise failing IPv6 route or resolver, or establish which of the earlier bundled Windows preference edits mattered. Those are separate diagnostic questions.
+The initial improvement later stopped working. It did not isolate an IPv6 route or resolver as the cause. A later controlled experiment on the same US REALITY connection isolated the client fingerprint: Chrome failed in 12/12 requests, while Safari succeeded in 12/12, with endpoint, credentials, SNI, and protocol unchanged. Both authenticated through SSH. Captures showed missing Chrome-style handshake bytes between client and VPS. This supports fingerprint-dependent path interference, without identifying the dropping operator or making a universal claim about US servers. The Google SNI stayed unchanged. See the [practical fingerprint steps](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works).
 
 ## Routing is ordered policy, not a list of wishes
 

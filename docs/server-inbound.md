@@ -41,11 +41,17 @@ Do not replace a working listener just to match the examples. Preserve its actua
 | Proxy Protocol | Off | Enable only when an upstream proxy actually sends PROXY headers |
 | Target / Dest | A reachable TLS endpoint, for example `www.google.com:443` | This endpoint must work from the VPS |
 | Server Names / SNI | `www.google.com` for that example | SNI is the website name sent during connection setup; use one covered by the target’s certificate |
-| Fingerprint / uTLS, when offered | `chrome` | Selects the browser-style connection handshake exported to the client |
+| Fingerprint / uTLS, when offered | `safari` for this Hiddify setup | Selects the browser-style connection handshake exported to the client; see the US-server check below |
 | Short IDs | Generate a short ID | A short random label used to recognize this connection; keep the exported value |
 | Private / Public Key | Click **Get New Key** for a new inbound | Keep the private key on the server |
 | SpiderX, when offered | `/` | Keep the exported value |
 | Sniffing | Off for the initial setup | Inspects initial traffic to identify its destination; unnecessary for this simple setup |
+
+**Using a US server? Start with Safari in this Hiddify walkthrough.** In the Kansas investigation on 2026-11-07, changing only the client fingerprint gave **Safari 12/12 successful requests; Chrome 0/12**. Avoid the Chrome default for that failing setup. This is a tested choice for Hiddify 5.5.5 on the investigated network, not a rule that Chrome fails on every US server or with every client core.
+
+**Google SNI and the Chrome fingerprint are different fields.** `www.google.com` is the example target website; `chrome` imitates a browser's initial connection message. The successful Safari test kept the same Google target and SNI. There is no evidence here that Google targets themselves must be avoided on US servers.
+
+For an existing account: **Inbounds → edit the REALITY inbound → Fingerprint / uTLS → Safari → Save**, then export its link or QR again and reimport it in Hiddify. Check that the new link contains **`fp=safari`**. Keep its UUID, keys, short ID, SNI, and port unchanged. This field supplies the client export; an already imported profile does not update just because you saved the panel form. See the [fingerprint troubleshooting steps](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works).
 
 <details>
 <summary>Optional: check whether the example target website is reachable. Use this if connections fail.</summary>
@@ -95,7 +101,7 @@ The **connection profile** is a private link containing the account’s connecti
 A placeholder link looks like this; import the panel's real export rather than copying this example:
 
 ```text
-vless://YOUR_UUID@YOUR_SERVER_IP:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.google.com&fp=chrome&pbk=YOUR_PUBLIC_KEY&sid=YOUR_SHORT_ID&type=tcp&spx=%2F#Personal-VPN
+vless://YOUR_UUID@YOUR_SERVER_IP:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.google.com&fp=safari&pbk=YOUR_PUBLIC_KEY&sid=YOUR_SHORT_ID&type=tcp&spx=%2F#Personal-VPN
 ```
 
 Check server IP, VPN port, UUID, Flow, REALITY public key, short ID, SNI, fingerprint, and transport. A correct IP with the wrong key or short ID can establish TCP and still fail REALITY authentication.

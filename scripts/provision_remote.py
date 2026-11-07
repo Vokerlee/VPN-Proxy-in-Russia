@@ -45,7 +45,7 @@ def inbound_payload(options, private, public, account, sid):
     stream = {"network": "tcp", "security": "reality", "realitySettings": {
         "show": False, "xver": 0, "target": options["target"] + ":443",
         "serverNames": [options["target"]], "privateKey": private, "shortIds": [sid],
-        "settings": {"publicKey": public, "fingerprint": "chrome",
+        "settings": {"publicKey": public, "fingerprint": "safari",
                      "serverName": options["target"], "spiderX": "/"}}}
     return {"remark": "Personal VPN", "enable": True, "listen": "0.0.0.0",
             "port": options["vpn_port"], "protocol": "vless", "expiryTime": 0,
@@ -66,7 +66,7 @@ def set_ipv4(template):
 
 def share_link(options, account, public, sid):
     query = urllib.parse.urlencode({"encryption": "none", "flow": "xtls-rprx-vision",
-        "security": "reality", "sni": options["target"], "fp": "chrome", "pbk": public,
+        "security": "reality", "sni": options["target"], "fp": "safari", "pbk": public,
         "sid": sid, "type": "tcp", "spx": "/"})
     return f"vless://{account}@{options['host']}:{options['vpn_port']}?{query}#Personal-VPN"
 
