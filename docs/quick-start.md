@@ -72,6 +72,7 @@ You get:
 - One VLESS + RAW/TCP + REALITY inbound and one `xtls-rprx-vision` account.
 - Public VPN TCP port **443**, or **8443** if 443 is already occupied. It does not stop the existing listener.
 - Generated UUID, REALITY keys, short ID, panel credentials, and panel URL path.
+- A client fingerprint chosen from the VPS country: **Safari for the US**, **Chrome elsewhere**, with an explicit override available. This is a starting policy based on the [controlled Kansas comparison](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works), not a guarantee for every network.
 - **ForceIPv4** on the server’s outgoing path, so hostname-based website requests use IPv4.
 - A panel bound to **127.0.0.1:27297** on the VPS, accessed through SSH rather than exposed as public HTTP.
 - The selected VPN port allowed in an existing UFW firewall, if active. UFW is Ubuntu’s firewall-management tool; the helper does not install or enable it. Existing SSH rules and custom/provider firewalls are not reset.
@@ -80,6 +81,8 @@ You get:
 The helper checks that the server listener starts and probes its public TCP port from your computer. A reachable socket is still not an authenticated VPN test; importing the profile and running the final request below completes that check.
 
 For a custom SSH or VPN port, use `-SshPort` / `-VpnPort` on Windows, or `--ssh-port` / `--vpn-port` with Python. Use `-PanelPort` / `--panel-port` if the administration port is occupied. Read the [automation details](automation.md#start-with-only-a-vps-ip-and-root-password) before changing defaults.
+
+During **Apply**, the helper looks up the VPS's public IP country using [Country](https://country.is/); it sends the public IP, never your credentials. **Plan mode makes no lookup or SSH connection.** To skip that lookup or correct its result, add `-ServerCountry US` on Windows or `--server-country US` with Python; use another two-letter code for another country. To choose a tested preset yourself, add `-Fingerprint safari` / `--fingerprint safari` (or `chrome`, `firefox`, etc.). An explicit fingerprint overrides the country policy. If automatic lookup fails, the helper stops before installation and tells you which option to supply.
 
 ## Open 3x-ui without opening another public port
 

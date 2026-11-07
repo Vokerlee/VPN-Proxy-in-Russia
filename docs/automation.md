@@ -20,6 +20,26 @@ The private panel is reached through the SSH-forward command printed at completi
 
 The pinned remote payload is `scripts/provision_remote.py`; it is not a workstation setup program and refuses direct invocation without the launcher's supplied options. Review the code and pinned installer before applying it. This path installs 3x-ui and its bundled Xray version; it does not silently upgrade an existing installation or promise automatic compatibility with every future client.
 
+### Choose the client fingerprint by server country
+
+During Apply, the shared payload looks up the **VPS IP**, not your computer's location, using [Country's public-IP API](https://country.is/). The default policy selects **Safari for `US`** and **Chrome for other countries**. The panel's exported client metadata and the generated share link receive the same choice. The resolved country and fingerprint are also saved in private `server.json`.
+
+Use these options to skip geolocation or override its answer. The examples show plan mode; add `-Apply` / `--apply` only for the fresh server you intend to provision.
+
+```powershell
+.\scripts\Setup-Vpn.ps1 -ServerIp YOUR_SERVER_IP -ServerCountry US
+.\scripts\Setup-Vpn.ps1 -ServerIp YOUR_SERVER_IP -ServerCountry DE -Fingerprint firefox
+```
+
+```bash
+python3 scripts/bootstrap_server.py --host YOUR_SERVER_IP --server-country US --plan
+python3 scripts/bootstrap_server.py --host YOUR_SERVER_IP --server-country DE --fingerprint firefox --plan
+```
+
+An explicit fingerprint always wins and does not require geolocation. Available explicit presets are `chrome`, `safari`, `firefox`, `edge`, `ios`, `android`, `random`, `randomized`, `360`, and `qq`; client-core support must still be checked. With both choices left at `auto`, an unavailable, malformed, or unknown-country lookup stops setup before package installation instead of guessing. Supply the provider's country code or an explicit preset to continue. Plan mode remains offline.
+
+This regional policy is an initial selection, not evidence that all US networks reject Chrome or that every other preset works everywhere else. The controlled investigation isolated a Chrome/Safari difference on one US-server path. Test a real HTTPS request after import; see [what a TLS fingerprint changes](xray-internals.md#what-a-tls-fingerprint-changes-and-why-chrome-can-fail). Helpers that inspect or convert an existing profile preserve its selected fingerprint rather than silently replacing it according to geography.
+
 ## Pick the helper for the job
 
 | Your next step | Helper | Changes by default |

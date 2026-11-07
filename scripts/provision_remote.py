@@ -9,6 +9,7 @@ import base64
 import json
 import os
 from pathlib import Path
+import re
 import secrets
 import socket
 import subprocess
@@ -22,6 +23,42 @@ import uuid
 VERSION = "v3.8.5"
 INSTALLER = f"https://raw.githubusercontent.com/MHSanaei/3x-ui/{VERSION}/install.sh"
 EXISTING_PATHS = ("/usr/local/x-ui/x-ui", "/etc/x-ui/x-ui.db")
+FINGERPRINTS = ("chrome", "safari", "firefox", "edge", "ios", "android", "random", "randomized", "360", "qq")
+
+
+def select_fingerprint(country, requested="auto"):
+    if requested != "auto":
+        if requested not in FINGERPRINTS:
+            raise ValueError("unsupported client fingerprint")
+        return requested
+    if not re.fullmatch(r"[A-Z]{2}", country) or country in ("XX", "ZZ"):
+        raise ValueError("VPS country is unresolved; set --server-country or --fingerprint explicitly")
+    return "safari" if country == "US" else "chrome"
+
+
+def detect_server_country(host):
+    # Public-IP geolocation only; never sends credentials. See docs/automation.md.
+    try:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+        with opener.open("https://api.country.is/" + urllib.parse.quote(host, safe=""), timeout=5) as response:
+            value = json.load(response)
+        country = value.get("country", "")
+        if value.get("ip") != host:
+            raise ValueError("country response does not match the VPS IP")
+        select_fingerprint(country)
+        return country
+    except (OSError, ValueError, TypeError, AttributeError) as error:
+        raise RuntimeError("VPS country lookup failed. No installation was started. Supply --server-country US/DE/etc. (PowerShell: -ServerCountry), or an explicit --fingerprint / -Fingerprint.") from error
+
+
+def resolve_fingerprint_options(options):
+    country = options.get("server_country", "auto")
+    requested = options.get("fingerprint", "auto")
+    if country == "auto":
+        country = detect_server_country(options["host"]) if requested == "auto" else "unknown"
+    options["fingerprint"] = select_fingerprint(country, requested)
+    options["server_country"] = country
+    return options
 
 
 def assert_fresh(root=Path("/")):
@@ -39,13 +76,14 @@ def available_port(preferred, host="0.0.0.0"):
 
 
 def inbound_payload(options, private, public, account, sid):
+    fingerprint = select_fingerprint(options.get("server_country", "auto"), options.get("fingerprint", "auto"))
     client = {"id": account, "flow": "xtls-rprx-vision", "email": "first-device",
               "enable": True, "expiryTime": 0, "totalGB": 0, "limitIp": 0,
               "subId": secrets.token_hex(12), "reset": 0}
     stream = {"network": "tcp", "security": "reality", "realitySettings": {
         "show": False, "xver": 0, "target": options["target"] + ":443",
         "serverNames": [options["target"]], "privateKey": private, "shortIds": [sid],
-        "settings": {"publicKey": public, "fingerprint": "safari",
+        "settings": {"publicKey": public, "fingerprint": fingerprint,
                      "serverName": options["target"], "spiderX": "/"}}}
     return {"remark": "Personal VPN", "enable": True, "listen": "0.0.0.0",
             "port": options["vpn_port"], "protocol": "vless", "expiryTime": 0,
@@ -65,8 +103,9 @@ def set_ipv4(template):
 
 
 def share_link(options, account, public, sid):
+    fingerprint = select_fingerprint(options.get("server_country", "auto"), options.get("fingerprint", "auto"))
     query = urllib.parse.urlencode({"encryption": "none", "flow": "xtls-rprx-vision",
-        "security": "reality", "sni": options["target"], "fp": "safari", "pbk": public,
+        "security": "reality", "sni": options["target"], "fp": fingerprint, "pbk": public,
         "sid": sid, "type": "tcp", "spx": "/"})
     return f"vless://{account}@{options['host']}:{options['vpn_port']}?{query}#Personal-VPN"
 
@@ -80,6 +119,8 @@ def run(options):
         raise RuntimeError("This bootstrap supports fresh Ubuntu/Debian systemd VPS installations only.")
     if not Path("/run/systemd/system").exists():
         raise RuntimeError("A systemd VPS is required; this is not a container/WSL installer.")
+    options = resolve_fingerprint_options(dict(options))
+    print("VPS country: " + options["server_country"] + "; client fingerprint: " + options["fingerprint"], flush=True)
     vpn_port = available_port(options["vpn_port"])
     if vpn_port is None:
         if options["vpn_port"] == 443 and available_port(8443):
@@ -198,6 +239,7 @@ def run(options):
             "web_path": web_path, "panel_username": username, "panel_password": password,
             "vpn_port": options["vpn_port"], "target": options["target"], "panel_version": VERSION,
             "core_version": core_version, "client_link": share_link(options, account, public, sid),
+            "server_country": options["server_country"], "fingerprint": options["fingerprint"],
             "firewall": firewall, "server_log": str(log_path)}
         result_file = Path("/root/vpn-guide-bootstrap-result.json")
         result_fd = os.open(result_file, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)

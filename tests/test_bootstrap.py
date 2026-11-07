@@ -1,9 +1,12 @@
 """Offline bootstrap checks. No SSH calls or server installations are performed."""
 import importlib.util
+import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest import mock
+from urllib.parse import parse_qs, urlsplit
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -26,6 +29,10 @@ class BootstrapTests(unittest.TestCase):
             bootstrap.validate_options("203.0.113.10",vpn_port=22)
         with self.assertRaises(ValueError):
             bootstrap.validate_options("203.0.113.10",target="example.com;echo x")
+        with self.assertRaises(ValueError):
+            bootstrap.validate_options("203.0.113.10",server_country="US;echo x")
+        with self.assertRaises(ValueError):
+            bootstrap.validate_options("203.0.113.10",fingerprint="chrome;echo x")
 
     def test_native_ssh_prompt_and_host_key_check_are_preserved(self):
         opts=bootstrap.validate_options("203.0.113.10")
@@ -53,11 +60,41 @@ class BootstrapTests(unittest.TestCase):
         self.assertEqual(result["outbounds"][0]["streamSettings"]["sockopt"]["domainStrategy"],"ForceIPv4")
 
     def test_api_payload_and_share_link_use_the_actual_port(self):
-        opts=bootstrap.validate_options("203.0.113.10",vpn_port=8443)
+        opts=bootstrap.validate_options("203.0.113.10",vpn_port=8443,server_country="US")
         value=remote.inbound_payload(opts,"PRIVATE_PLACEHOLDER","PUBLIC_PLACEHOLDER","UUID_PLACEHOLDER","abcd")
         self.assertEqual(value["port"],8443)
         self.assertEqual(json.loads(value["settings"])["clients"][0]["flow"],"xtls-rprx-vision")
         self.assertIn("@203.0.113.10:8443?",remote.share_link(opts,"UUID_PLACEHOLDER","PUBLIC_PLACEHOLDER","abcd"))
+
+    def test_regional_selection_and_explicit_override_reach_both_exports(self):
+        for country,requested,expected in [("US","auto","safari"),("DE","auto","chrome"),
+                                            ("JP","auto","chrome"),("US","firefox","firefox"),
+                                            ("DE","safari","safari")]:
+            with self.subTest(country=country,requested=requested):
+                opts=bootstrap.validate_options("203.0.113.10",server_country=country,fingerprint=requested)
+                payload=remote.inbound_payload(opts,"PRIVATE","PUBLIC","ACCOUNT","abcd")
+                saved=json.loads(payload["streamSettings"])["realitySettings"]["settings"]["fingerprint"]
+                shared=parse_qs(urlsplit(remote.share_link(opts,"ACCOUNT","PUBLIC","abcd")).query)["fp"][0]
+                self.assertEqual((saved,shared),(expected,expected))
+
+    def test_country_lookup_is_validated_and_override_needs_no_lookup(self):
+        opener=mock.Mock()
+        opener.open.return_value=io.BytesIO(b'{"ip":"203.0.113.10","country":"US"}')
+        with mock.patch.object(remote.urllib.request,"build_opener",return_value=opener):
+            result=remote.resolve_fingerprint_options(bootstrap.validate_options("203.0.113.10"))
+        self.assertEqual((result["server_country"],result["fingerprint"]),("US","safari"))
+        opener.open.assert_called_once_with("https://api.country.is/203.0.113.10",timeout=5)
+        for body in [b'{"ip":"203.0.113.11","country":"US"}',b'{"ip":"203.0.113.10","country":null}',
+                     b'{"ip":"203.0.113.10","country":"XX"}',b'not JSON']:
+            opener.open.return_value=io.BytesIO(body)
+            with mock.patch.object(remote.urllib.request,"build_opener",return_value=opener):
+                with self.assertRaisesRegex(RuntimeError,"country lookup failed"):
+                    remote.resolve_fingerprint_options(bootstrap.validate_options("203.0.113.10"))
+        with mock.patch.object(remote,"detect_server_country",side_effect=AssertionError("must not look up")):
+            result=remote.resolve_fingerprint_options(bootstrap.validate_options("203.0.113.10",fingerprint="safari"))
+            self.assertEqual(result["fingerprint"],"safari")
+            result=remote.resolve_fingerprint_options(bootstrap.validate_options("203.0.113.10",server_country="DE"))
+            self.assertEqual(result["fingerprint"],"chrome")
 
     def test_result_files_cannot_overwrite_an_existing_export(self):
         result={"client_link":"vless://PLACEHOLDER"}

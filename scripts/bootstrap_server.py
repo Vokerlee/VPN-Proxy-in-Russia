@@ -27,7 +27,11 @@ REMOTE_COMMAND = "bash -c " + shlex.quote(
     "exec python3 -")
 
 
-def validate_options(host, ssh_port=22, vpn_port=443, panel_port=27297, target="www.google.com"):
+FINGERPRINTS = ("auto", "chrome", "safari", "firefox", "edge", "ios", "android", "random", "randomized", "360", "qq")
+
+
+def validate_options(host, ssh_port=22, vpn_port=443, panel_port=27297, target="www.google.com",
+                     server_country="auto", fingerprint="auto"):
     address = ipaddress.ip_address(host)
     if address.version != 4:
         raise ValueError("use the VPS IPv4 address for this walkthrough")
@@ -37,8 +41,14 @@ def validate_options(host, ssh_port=22, vpn_port=443, panel_port=27297, target="
         raise ValueError("SSH, public VPN and administration panel ports must be different")
     if not re.fullmatch(r"[A-Za-z0-9.-]+", target) or target.startswith("-"):
         raise ValueError("target must be a hostname without a URL scheme, port or credentials")
+    country = "auto" if server_country.lower() == "auto" else server_country.upper()
+    if country != "auto" and not re.fullmatch(r"[A-Z]{2}", country):
+        raise ValueError("server country must be auto or a two-letter code such as US or DE")
+    if fingerprint not in FINGERPRINTS:
+        raise ValueError("unsupported fingerprint; see --help")
     return {"host": str(address), "ssh_port": ssh_port, "vpn_port": vpn_port,
-            "panel_port": panel_port, "target": target}
+            "panel_port": panel_port, "target": target,
+            "server_country": country, "fingerprint": fingerprint}
 
 
 def ssh_command(ssh, options):
@@ -75,13 +85,18 @@ def main():
     p.add_argument("--vpn-port", type=int, default=443)
     p.add_argument("--panel-port", type=int, default=27297)
     p.add_argument("--target", default="www.google.com")
+    p.add_argument("--server-country", default="auto", help="VPS country code, e.g. US/DE; auto looks up its public IP during apply")
+    p.add_argument("--fingerprint", choices=FINGERPRINTS, default="auto", help="auto selects Safari for US, Chrome elsewhere; an explicit preset overrides that policy")
     p.add_argument("--output-dir", type=Path)
     args = p.parse_args()
     try:
         options = validate_options(args.host or input("VPS IPv4 address: ").strip(), args.ssh_port,
-                                   args.vpn_port, args.panel_port, args.target)
+                                   args.vpn_port, args.panel_port, args.target,
+                                   args.server_country, args.fingerprint)
         print("Fresh-server plan: official 3x-ui v3.8.5, one REALITY/Vision account, ForceIPv4,")
         print("a loopback-only administration panel, and private local profile/credential files.")
+        print("Fingerprint policy: US → Safari; other countries → Chrome; explicit --fingerprint overrides.")
+        print("Country lookup runs only during apply; --server-country skips it.")
         print("Existing installs/listeners are preserved. No SSH hardening, OS upgrade, client stop,")
         print("provider-firewall change, or workstation system-proxy change will be attempted.")
         if not args.apply:
@@ -120,6 +135,7 @@ def main():
         save_result(result, folder)
         print("Private panel credentials:", folder / "server.json")
         print("Private Hiddify import link:", folder / "hiddify-profile.txt")
+        print("VPS country:", result["server_country"], "| exported client fingerprint:", result["fingerprint"])
         print(result["firewall"])
         try:
             with socket.create_connection((result["host"], result["vpn_port"]), timeout=5):
