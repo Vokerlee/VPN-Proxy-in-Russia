@@ -137,6 +137,69 @@ The useful debugging unit is therefore not just “this hostname.” Record the 
 
 The freedom outbound has its own final checks too. An allowed routing decision does not necessarily override its destination policy; keep existing `finalRules` when changing a family preference. See [freedom](https://xtls.github.io/en/config/outbounds/freedom.html).
 
+## What a TLS fingerprint changes, and why Chrome can fail
+
+A **TLS fingerprint** is the observable shape of the client's initial TLS handshake, particularly its **ClientHello** message. A uTLS preset such as `chrome` or `safari` asks the client engine to construct a browser-like handshake. It does not select a remote browser, contact that browser's vendor, or change the account's password.
+
+Several fields contribute to that shape:
+
+- Cipher suites, signature algorithms, and their ordering.
+- Supported TLS versions and key-exchange groups.
+- The `key_share` extension, including any large hybrid post-quantum key share.
+- Extension order, padding, and GREASE values: deliberately reserved values used to exercise extension compatibility.
+- ALPN, which advertises application protocols such as HTTP/2 and HTTP/1.1.
+
+JA3/JA4-style summaries describe aspects of this observable handshake. They are not account credentials or complete representations of every byte. A fingerprint label is not a fixed packet size either: engine versions, preset implementations, and randomized fields can change the emitted message.
+
+### Google SNI is different from the Chrome fingerprint
+
+| Setting | What it controls | Example |
+|---|---|---|
+| REALITY target | The endpoint the VPS contacts for its REALITY handshake/fallback behavior | `www.google.com:443` |
+| SNI / server name | The website name advertised during TLS setup | `www.google.com` |
+| Client fingerprint | The browser-style ClientHello constructed by the client engine | `chrome` or `safari` |
+| REALITY key and short ID | The connection's REALITY authentication parameters | Private account values |
+
+Choosing Safari does not require choosing an Apple website. Likewise, choosing a Google target does not require the Chrome fingerprint. In 3x-ui, the REALITY fingerprint dropdown supplies **client export metadata**. The checked running server's REALITY configuration had no server fingerprint field. An imported phone profile keeps its old `fp=chrome` until it is edited or a new export is imported.
+
+### The controlled Kansas experiment
+
+On **2026-11-07**, the installed Windows **Hiddify 5.5.5** engine was tested against the original US server's **VLESS + REALITY + Vision** account. Two isolated local proxy listeners used identical server IP, remote port, UUID, public key, short ID, SNI, transport, and Flow. Only the client fingerprint differed. Requests alternated between the two listeners rather than running all of one preset before the other.
+
+| Client fingerprint | Real HTTPS requests that succeeded |
+|---|---|
+| Chrome | **0/12** |
+| Safari | **12/12** |
+
+Successful responses contained the expected server exit address. Both fingerprints also authenticated through the SSH control path. The Google target/SNI stayed unchanged. These observations isolate a fingerprint-dependent failure on the tested direct path; they do not establish that Google sites are unusable from US servers, that all US servers block Chrome, or that a particular operator is responsible.
+
+```mermaid
+flowchart LR
+    C[Same REALITY account] --> P{ClientHello preset}
+    P -->|Chrome| L[Missing handshake bytes on direct path]
+    P -->|Safari| S[Complete handshake and HTTPS success]
+    C --> E[SSH wraps the handshake]
+    E --> A[Both presets authenticate]
+```
+
+### What the packet captures prove
+
+Captures at the client and VPS showed failed Chrome-style handshakes declaring roughly **1.7–1.8 KB**, while only the first **1.35 KB** reached the VPS. The client repeatedly retransmitted the missing small segment, but it remained absent from the server capture. The server therefore lacked the complete message needed to continue TLS/REALITY setup. A successful SYN exchange or ICMP ping cannot prove that these later bytes are delivered.
+
+This is more specific than a failed latency badge. It supports selective loss or interference **between the capture points**, before the VPS can process the complete handshake. Traffic inspection is a plausible explanation; a faulty middlebox is another. The experiment did not locate the dropping device or identify its matching rule. Wrapping traffic in SSH changes both its visible bytes and its outer connection behavior, so SSH success alone would not prove a particular DPI algorithm.
+
+**Size alone is not the established cause.** The successful Safari REALITY ClientHello was about **1,533 bytes**, still large enough to span TCP segments on this path. Safari's **517-byte** handshake in the separately tested Trojan/TLS setup belonged to a different protocol/configuration. It must not be presented as the Safari REALITY handshake. Smaller TCP MSS values and the tested fragmentation options did not give a reliable cure. The controlled fingerprint change affects message contents, order, layout, and size together; it does not isolate one extension or a simple MTU threshold.
+
+For another investigation, match TCP sequence ranges across the two captures and distinguish retransmissions from new bytes. NAT can change source ports, host clocks can differ, and segmentation/coalescing offloads can make a capture show a different packet layout from the physical wire. A single capture's apparent large packet is not proof that an oversized physical packet was transmitted.
+
+### Repeat the comparison without changing the whole desktop network
+
+Keep a working connection for administration. Make two private copies of the same profile, changing only `fp=chrome` to `fp=safari`, and test them through separate unused local proxy ports. Alternate real HTTPS requests and compare their exit address, not just their latency label. Record app/core versions, timeout settings, and fresh errors; a client engine's internal timeout can end a request before curl's longer timeout expires. Keep credentials and raw captures private.
+
+For Hiddify's Windows VPN service, the checked privileged engine also wrote logs under `%ProgramData%\Hiddify\AdminBgService\core\work\data\box.log`. AppData logs could be stale while that engine was running. Reproduce the failure and verify the log timestamp before drawing conclusions.
+
+The [beginner fingerprint walkthrough](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works) shows how to select Safari and re-export the profile. Compatibility still depends on the actual client implementation: a preset working in Hiddify's fork does not establish that stock sing-box or every Xray release emits the same compatible handshake.
+
 ## Why a valid profile can stop working after an update
 
 Configuration compatibility and wire compatibility are different contracts. A parser can accept `security=reality` and `fp=chrome` while the engine emits a ClientHello that the server's newer policy rejects.
