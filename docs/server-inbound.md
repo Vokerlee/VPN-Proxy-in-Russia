@@ -41,7 +41,7 @@ Do not replace a working listener just to match the examples. Preserve its actua
 | Proxy Protocol | Off | Enable only when an upstream proxy actually sends PROXY headers |
 | Target / Dest | A reachable TLS endpoint, for example `www.google.com:443` | This endpoint must work from the VPS |
 | Server Names / SNI | `www.google.com` for that example | SNI is the website name sent during connection setup; use one covered by the target’s certificate |
-| Fingerprint / uTLS, when offered | `safari` for this Hiddify setup | Selects the browser-style connection handshake exported to the client; see the US-server check below |
+| Fingerprint / uTLS, when offered | US server: `safari`; elsewhere: start with `chrome` | Initial defaults for the exported client; test your actual network and engine |
 | Short IDs | Generate a short ID | A short random label used to recognize this connection; keep the exported value |
 | Private / Public Key | Click **Get New Key** for a new inbound | Keep the private key on the server |
 | SpiderX, when offered | `/` | Keep the exported value |
