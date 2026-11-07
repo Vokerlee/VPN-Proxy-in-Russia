@@ -4,7 +4,7 @@
 
 **Hiddify** is the app you install on your device to connect to your VPN server. A **connection profile** is the private `vless://...` link containing the server address and your account settings. Get that link from **3x-ui**, the server’s browser dashboard, or from the person who manages your VPN.
 
-**Follow sections 1–3:** install, import, and connect. Try the defaults first. Everything after **Your first connection is complete** is optional troubleshooting. Button labels below are from Hiddify **5.5.5**.
+**Follow sections 1–4:** install, import, set the outbound domain strategy, and connect. Everything after **Your first connection is complete** is optional troubleshooting. Button labels below are from Hiddify **5.5.5**.
 
 ## 1. Install Hiddify
 
@@ -22,7 +22,23 @@ On a phone, you can scan the account’s QR code instead of copying the link. Bo
 
 ![Hiddify: New profile, Add from clipboard, select Personal VPN](../images/hiddify-import.svg)
 
-## 3. Connect and check a website
+## 3. Important: set Outbound domain strategy to IPv4 only
+
+**This fixed the Android Hiddify connection reported by the guide’s author on 2026-11-07.** Make this the first setting to check when Hiddify times out, including when the same account works on Windows.
+
+1. In **Hiddify**, disconnect if connected.
+2. Open **Settings → DNS**.
+3. Tap **Outbound domain strategy**.
+4. Select **IPv4 only**. Save or confirm if the app asks.
+5. Return to the home screen and reconnect, then check a website as shown below.
+
+**Choose this exact field.** It is on Hiddify’s **DNS** page. **Routing → IPv6 routing** is a different control, and the server’s **3x-ui → Outbounds → ForceIPv4** is a separate setting. Changing either of those does not replace this step.
+
+DNS turns names into IP addresses. This option makes Hiddify use IPv4 results for its outbound/direct name lookups. Choose **IPv4 only**, rather than **Prefer IPv4**, for the setup described here.
+
+If you followed the earlier advice to change Fake DNS, Region, or the hidden Windows preferences and the phone still failed, check **Outbound domain strategy** before editing anything else. No Android system-file editing or Windows repair script is needed for this setting.
+
+## 4. Connect and check a website
 
 **Already using another VPN?** To check Hiddify while keeping that connection untouched, use the [optional manual proxy test](#press-connect-then-prove-the-route) below instead of activating another VPN/TUN connection.
 
@@ -32,7 +48,7 @@ On a phone, you can scan the account’s QR code instead of copying the link. Bo
 4. Open `https://www.cloudflare.com/cdn-cgi/trace` in your browser. Find the line starting with **`ip=`**. It should show your server’s outgoing address, rather than your ordinary internet address.
 5. Open a website you wanted to use through the VPN.
 
-If the address is unfamiliar, open the same test URL with Hiddify disconnected and compare. A server may have a different outgoing address from its login address, particularly when it also has IPv6. If the browser cannot load the page or still shows your ordinary address, start with [the settings that helped here](#if-the-connection-fails-try-these-settings).
+If the address is unfamiliar, open the same test URL with Hiddify disconnected and compare. A server may have a different outgoing address from its login address, particularly when it also has IPv6. If the browser cannot load the page or still shows your ordinary address, first recheck [Outbound domain strategy → IPv4 only](#3-important-set-outbound-domain-strategy-to-ipv4-only), reconnect, and then use [the additional checks](#if-the-connection-fails-try-these-settings) if needed.
 
 ![Hiddify: Connect, grant VPN permission, open an IP-check page](../images/hiddify-connect.svg)
 
@@ -44,7 +60,7 @@ The sections below are optional. Use them only for a failed connection or when s
 
 ## If the connection fails: try these settings
 
-**Optional recovery: skip if the connection works with its defaults.** These visible settings helped restore the connection checked for this guide. Apply them, disconnect Hiddify, reconnect, and repeat the browser check. Keep other settings at their defaults.
+**Optional: skip if the connection works after setting Outbound domain strategy → IPv4 only.** The options below are additional troubleshooting choices from the earlier Windows investigation, not the confirmed Android fix. Try one at a time, reconnect, and repeat the browser check.
 
 | Open | Set |
 |---|---|
@@ -83,11 +99,11 @@ If the command works but the browser fails, check [which proxy the browser uses]
 
 ## Advanced recovery when the normal settings are not enough
 
-**Skip this section if the connection works.** Use it for persistent Hiddify failures after checking the visible settings above.
+**Windows-only fallback. Skip if the connection works.** First check [Hiddify’s outbound domain strategy](#3-important-set-outbound-domain-strategy-to-ipv4-only). The preference changes below were made together during an earlier Windows investigation; they were not isolated as the cause and are not needed to apply the Android fix.
 
-Hiddify uses a network engine, also called a **core**, to make connections. Some of that engine’s settings are saved in a file rather than shown as switches in Hiddify 5.5.5. The **Clash API** lets other software control or monitor the engine; an **independent DNS cache** stores name-lookup results separately for different resolvers. Both were disabled in the recovery described here. In particular, its General page has a **Clash API port** field but no corresponding enable/disable toggle, and independent DNS cache is not a visible switch on its DNS page. Do not waste time looking for those controls.
+Hiddify uses a network engine, also called a **core**, to make connections. Some of that engine’s settings are saved in a file rather than shown as switches in Hiddify 5.5.5. The **Clash API** lets other software control or monitor the engine; an **independent DNS cache** stores name-lookup results separately for different resolvers. Both were disabled during the earlier Windows recovery. In particular, its General page has a **Clash API port** field but no corresponding enable/disable toggle, and independent DNS cache is not a visible switch on its DNS page. Do not waste time looking for those controls.
 
-The recovery used these saved preferences:
+The earlier Windows recovery used these saved preferences:
 
 ```json
 {
@@ -103,7 +119,7 @@ Use [the repair helper](automation.md#repair-hiddify-preferences-on-windows) to 
 
 You can make this advanced recovery change without a script too. On Windows, close Hiddify yourself, press **Win+R**, open `%APPDATA%\Hiddify\hiddify`, and make a private backup copy of `shared_preferences.json`. Open the original with a text editor. Merge the five entries shown above into the existing file; keep all unrelated entries. The three `false` values have no quotes; `"other"` and `"proxy"` are strings and need quotes. Keep valid JSON commas between entries. Do not replace the entire preferences file with this small example. Save it, reopen Hiddify, reconnect, and test. If the file no longer parses or the change does not help, close Hiddify and restore your backup.
 
-This is an advanced fallback for the recorded problem, not a requirement that every new user edit a preferences file. The helper is an optional way to avoid manual JSON mistakes.
+The author subsequently reported that Hiddify’s visible **Outbound domain strategy → IPv4 only** resolved the Android connection. Start with that setting rather than copying these Windows-only file edits to a phone. The helper is an optional way to avoid manual JSON mistakes.
 
 The effective file under `%APPDATA%\Hiddify\hiddify\data\current-config.json` is diagnostic output, not the persistent place to make this repair. Hiddify regenerates it.
 

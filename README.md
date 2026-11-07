@@ -56,7 +56,9 @@ When you finish, the panel gives you a **connection profile**: a link containing
 
 You now need an app on your device to use the profile. We use **Hiddify**, a free app for connecting to your server, available for Windows, Linux, macOS, Android, and iOS.
 
-Install it, import your connection link using **+ → Add from clipboard**, select the profile, and connect. The guide explains which connection mode to choose, what each setting does, and how to check that websites see your server's address.
+Install it, import your connection link using **+ → Add from clipboard**, and select the profile.
+
+**Important for Hiddify: Settings → DNS → Outbound domain strategy → IPv4 only.** This was the setting that fixed the author’s Android connection after the other suggested changes had failed. Set it in Hiddify, reconnect, and test a website. This is different from the server’s IPv4 exit setting. The guide explains which connection mode to choose, what each setting does, and how to check that websites see your server's address.
 
 **[Install Hiddify and make your first connection →](docs/clients.md)**
 
@@ -66,7 +68,7 @@ Already received a working connection profile from someone else? You can start a
 
 ## If something does not work
 
-Start with [the troubleshooting guide](docs/troubleshooting.md). It helps you distinguish a blocked server port, an incompatible client, a wrong profile, and a Windows proxy setting that still points at another app.
+**Hiddify times out? First check [Outbound domain strategy → IPv4 only](docs/clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only).** If that does not help, use [the troubleshooting guide](docs/troubleshooting.md). It helps you distinguish a blocked server port, an incompatible client, a wrong profile, and a Windows proxy setting that still points at another app.
 
 Two common follow-up questions have their own illustrated pages:
 

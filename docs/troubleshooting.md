@@ -10,13 +10,22 @@ A server can answer ping or let you log in while its VPN connection fails. Those
 
 ![Check the local listener, remote port, account handshake and website request in order](../images/troubleshooting-path.svg)
 
+## Hiddify: first check Outbound domain strategy
+
+**The author reported this as the fix for Android on 2026-11-07:** in **Hiddify → Settings → DNS → Outbound domain strategy**, select **IPv4 only**. Disconnect and reconnect Hiddify, then open a website.
+
+[See the short button-by-button walkthrough](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only). The earlier changes to Fake DNS, Region, and IPv6 routing had not fixed the phone. Windows preference-file edits are not the first step for this symptom.
+
+This is an app setting. The similarly named server outbound setting in 3x-ui controls the server’s website connections; it is not the same control.
+
 ## First, choose the symptom that matches yours
 
 | What you see | Start here |
 |---|---|
 | The app says connected, but the browser did not change | [Check the Windows proxy](#the-app-is-green-but-windows-still-uses-the-old-proxy) |
 | Connection refused on localhost | [Find the local listener](#connection-refused-on-localhost) |
-| The server pings, but the app times out | [Test the VPN TCP port](#ping-works-so-test-the-vpn-port-next) |
+| Hiddify times out | [Set its outbound domain strategy to IPv4 only](#hiddify-first-check-outbound-domain-strategy) |
+| Hiddify still times out after that change | [Test the VPN TCP port](#ping-works-so-test-the-vpn-port-next) |
 | `reality verification failed` or `processed invalid connection` | [Check the handshake and core version](#the-tcp-port-opens-but-reality-fails) |
 | The IP check shows IPv6 | [Check the server's egress](force-ipv4.md) |
 | HTTPS works, but the app's latency test fails | [Check the test endpoint](#the-latency-test-and-a-real-request-disagree) |
@@ -85,7 +94,9 @@ Some newer REALITY servers require changes to the initial encrypted connection s
 
 A profile contains the account’s connection settings. Hiddify adds its own settings, including DNS (website name lookups) and rules that choose which traffic uses the VPN. Those additions can explain why a valid account link works in one test but fails in the app.
 
-In this investigation, the installed Hiddify Windows core repeatedly connected with a small configuration, while the complete generated configuration failed. Rebuilding the app configuration with **Region Other**, **Fake DNS off**, **independent DNS cache off**, and **Clash API off** restored the app's actual proxy. Because several options changed together, re-enable them one at a time if you want to find which option affects your device.
+**Check the visible [Outbound domain strategy setting](#hiddify-first-check-outbound-domain-strategy) first.** The Android fix reported later was that setting, not the hidden preference edits below.
+
+In the earlier Windows investigation, the installed Hiddify Windows core repeatedly connected with a small configuration, while the complete generated configuration failed. Rebuilding the app configuration with **Region Other**, **Fake DNS off**, **independent DNS cache off**, and **Clash API off** was followed by a successful request through the app’s proxy. Because several options changed together, re-enable them one at a time if you want to find which option affects your device.
 
 Use the [Hiddify recovery walkthrough](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough). Start with the visible UI options. For hidden preferences, the repair helper previews changes and saves a backup. Re-enable features individually, testing after each one; note which change reintroduces the symptom.
 

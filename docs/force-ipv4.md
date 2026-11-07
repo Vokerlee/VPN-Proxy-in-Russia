@@ -2,7 +2,9 @@
 
 # Make the VPN server use an IPv4 exit
 
-**Optional: use this page only if you want an IPv4 exit address.** A working connection with an IPv6 exit does not require this change. After changing the form, run the verification section; the JSON reference is optional.
+**Looking for the Hiddify timeout fix? Use [Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only) first. That is an app setting; this page changes the server.**
+
+**Optional: use this page if you want the server to use an IPv4 exit address.** A working connection with an IPv6 exit does not require this change. After changing the form, run the verification section; the JSON reference is optional.
 
 This page changes **3x-ui**, the server’s browser dashboard. **Hiddify** is the app connecting from your device, and a **proxy** forwards an application’s requests through the server.
 
@@ -16,7 +18,7 @@ A client may connect to `YOUR_SERVER_IPV4:443` and still show the VPS's IPv6 add
 Client -- IPv4 tunnel --> VPS -- IPv4 or IPv6 --> Website
 ```
 
-Hiddify’s **IPv4 only** option applies on your device. To choose how the server reaches websites, change the server’s outbound as shown below. A command-line downloader such as curl also leaves the proxy to resolve the requested website when it sends a hostname through an HTTP proxy.
+Hiddify has two separate client options: **DNS → Outbound domain strategy → IPv4 only**, the author’s reported Android fix, and **Routing → IPv6 routing**, which controls a different part of the client’s traffic handling. Both apply on your device. To choose how the server reaches websites, change the server’s outbound as shown below. A command-line downloader such as curl also leaves the proxy to resolve the requested website when it sends a hostname through an HTTP proxy.
 
 ## Use the form: no JSON required
 

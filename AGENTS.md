@@ -82,7 +82,7 @@ Keep a working SSH session during any separately authorized access-control chang
 
 The checked UI baseline is **3x-ui 3.8.5** and **Hiddify 5.5.5**, dated **2026-11-06**. The bootstrap deliberately pins the panel release. Do not silently change that pin without rechecking installer variables, CLI flags, API paths, payload schema, UI instructions and integration behavior together.
 
-Use official release notes, documentation and version-pinned source for changing software behavior. Distinguish a reproduced result, a source-derived explanation, and a hypothesis. The recorded Hiddify repair changed several preferences together; it does not prove one universal root cause. Do not label REALITY undetectable or guarantee that every provider/engine version works.
+Use official release notes, documentation and version-pinned source for changing software behavior. Distinguish a reproduced result, a source-derived explanation, and a hypothesis. On 2026-11-07 the author reported the Android fix: **Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only**. Keep it prominent in the main client path and first in Hiddify timeout troubleshooting. It maps to `direct-dns-domain-strategy`; do not confuse it with client IPv6 routing or server ForceIPv4. The earlier Windows preference repair changed several settings together and did not isolate one causal option. Do not label REALITY undetectable or guarantee that every provider/engine version works.
 
 Never claim fresh-VPS provisioning was live-tested when only the offline suite was run. A disposable, user-authorized VPS integration run is separate from unit, syntax and dry-run checks.
 

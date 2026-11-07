@@ -121,6 +121,14 @@ A remote DNS setting on the client does not automatically control all three. Fak
 
 This explains how a connection to an IPv4 server address can produce an IPv6 exit. The client reached the VPS over IPv4, but a hostname request still allowed the VPS to choose IPv6. [ForceIPv4 on the server's actual freedom outbound](force-ipv4.md) controls that hostname-resolution decision. A literal IPv6 destination and a routing rule blocking IPv6 are separate cases.
 
+### The reported Android fix: Hiddify’s outbound domain strategy
+
+On **2026-11-07**, the author reported that **Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only** resolved the Android failure after the earlier client changes had not helped. In Hiddify 5.5.5’s [English labels](https://github.com/hiddify/hiddify-app/blob/v5.5.5/assets/translations/en.i18n.json), this control is `directDnsDomainStrategy`; its [stored option](https://github.com/hiddify/hiddify-app/blob/v5.5.5/lib/features/settings/data/config_option_repository.dart) is `direct-dns-domain-strategy`.
+
+This selects IPv4 for the client’s direct/outbound name resolution. It is separate from the routing IPv6 mode and from Xray’s server-side freedom strategy. A numeric IPv4 server address alone does not constrain every other hostname lookup made by the client.
+
+The reported result makes this the first practical Hiddify check. It does not isolate the precise failing IPv6 route or resolver, or establish which of the earlier bundled Windows preference edits mattered. Those are separate diagnostic questions.
+
 ## Routing is ordered policy, not a list of wishes
 
 Routing associates a request with an outbound. A broad earlier match can make a later rule unreachable. A country bypass can send some traffic directly even while the selected VPN profile is healthy. Multiple address-family and DNS rules can change which address is available by the time a match is attempted.
@@ -137,7 +145,7 @@ A concrete example: the [REALITY change adopted in the 26.9.8/26.9.9 period](htt
 
 **sing-box** is another proxy engine; **Hiddify**, the VPN app in the practical guide, uses a modified version of it. The [sing-box compatibility report](https://github.com/SagerNet/sing-box/issues/4520) tracks affected implementations and experimental fixes. For the recorded setup, Hiddify 5.5.5’s own engine connected successfully. Compare actual engine versions and results when applying that report to another installation.
 
-The reproduced comparison used the same profile, provider, destination, and server: Xray **25.1.30** failed; **26.10.31** succeeded against server **26.9.9**. That is evidence for a core-dependent failure, not evidence that the UUID needed regeneration. A separate comparison then showed Hiddify's plain profile working while its full generated configuration failed; the [recorded settings repair](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) addressed that second problem.
+The reproduced comparison used the same profile, provider, destination, and server: Xray **25.1.30** failed; **26.10.31** succeeded against server **26.9.9**. That is evidence for a core-dependent failure, not evidence that the UUID needed regeneration. A separate comparison then showed Hiddify's plain profile working while its full generated configuration failed; the [recorded Windows preference changes](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) were followed by success without isolating one causal option. The author’s later Android fix was the visible outbound domain strategy described above.
 
 Similarly, finding an Xray module in a GUI binary proves a build dependency, not that its traffic is carried by an Xray backend. Inspect the actual execution path or test it. The checked Hiddify fork's [Xray outbound constructor](https://github.com/hiddify/hiddify-sing-box/blob/1614c5edb52dd44a4cc079201ba1e790fdfad8a0/protocol/hiddify/xray/outbound.go) returned an unimplemented error.
 
