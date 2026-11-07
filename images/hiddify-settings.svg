@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="571" viewBox="0 0 1120 571" role="img" aria-labelledby="title desc">
-<title id="title">Build a simple starting configuration</title>
+<title id="title">Optional: further client troubleshooting</title>
 <desc id="desc">Numbered navigation illustration. This is not a captured screenshot. Exact positions may differ by version.</desc>
 <g font-family="DejaVu Sans,Arial,sans-serif">
 <rect x="0" y="0" width="1120" height="571" rx="12" fill="#f4f7fb" stroke="none"/>
 <rect x="20" y="20" width="1080" height="112" rx="12" fill="#14283f" stroke="none"/>
-<text x="44" y="60" font-size="27" fill="#ffffff" font-weight="700">Build a simple starting configuration</text>
+<text x="44" y="60" font-size="27" fill="#ffffff" font-weight="700">Optional: further client troubleshooting</text>
 <text x="44" y="96" font-size="16" fill="#c7d7eb" font-weight="400">Hiddify 5.5.5  |  Navigation diagram, not a screenshot</text>
 <rect x="28" y="152" width="216" height="345" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <text x="48" y="185" font-size="13" fill="#60738d" font-weight="700">NAVIGATION</text>

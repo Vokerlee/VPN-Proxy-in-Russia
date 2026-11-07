@@ -34,6 +34,8 @@ On a phone, you can scan the account’s QR code instead of copying the link. Bo
 
 **Choose this exact field.** It is on Hiddify’s **DNS** page. **Routing → IPv6 routing** is a different control, and the server’s **3x-ui → Outbounds → ForceIPv4** is a separate setting. Changing either of those does not replace this step.
 
+![Hiddify buttons: Settings, DNS, Outbound domain strategy, IPv4 only, reconnect](../images/hiddify-outbound-ipv4.svg)
+
 DNS turns names into IP addresses. This option makes Hiddify use IPv4 results for its outbound/direct name lookups. Choose **IPv4 only**, rather than **Prefer IPv4**, for the setup described here.
 
 If you followed the earlier advice to change Fake DNS, Region, or the hidden Windows preferences and the phone still failed, check **Outbound domain strategy** before editing anything else. No Android system-file editing or Windows repair script is needed for this setting.

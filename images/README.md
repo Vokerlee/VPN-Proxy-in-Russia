@@ -33,3 +33,5 @@ The useful capture list is:
 Redact private keys, UUIDs, whole VLESS links, QR codes, passwords, tokens, subscription URLs, panel URL paths, and account identifiers. Use solid opaque redactions, not blur. A public key alone is not a private key, but a complete profile still needs protection. Prefer documentation/demo accounts over production data.
 
 Keep originals with credentials out of the repository, including Git history. Genuine new screenshots require a contributor's captures; none were taken from the user's applications during this repository-only update.
+
+`hiddify-outbound-ipv4.svg` illustrates the author’s reported Android fix: **Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only**, then reconnect. Keep this distinct from `3x-ui-force-ipv4.svg`, which changes the server’s website connections. Both are navigation diagrams, not captured screenshots.

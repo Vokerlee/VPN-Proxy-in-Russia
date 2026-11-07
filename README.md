@@ -60,6 +60,8 @@ Install it, import your connection link using **+ → Add from clipboard**, and 
 
 **Important for Hiddify: Settings → DNS → Outbound domain strategy → IPv4 only.** This was the setting that fixed the author’s Android connection after the other suggested changes had failed. Set it in Hiddify, reconnect, and test a website. This is different from the server’s IPv4 exit setting. The guide explains which connection mode to choose, what each setting does, and how to check that websites see your server's address.
 
+![Hiddify: Settings, DNS, Outbound domain strategy, IPv4 only](images/hiddify-outbound-ipv4.svg)
+
 **[Install Hiddify and make your first connection →](docs/clients.md)**
 
 ![Hiddify: add a profile from the clipboard and select it](images/hiddify-import.svg)

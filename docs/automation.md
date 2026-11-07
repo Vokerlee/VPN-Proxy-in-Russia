@@ -126,6 +126,8 @@ A Linux test from WSL and a Windows test exercise different native cores and OS 
 
 ## Repair Hiddify preferences on Windows
 
+**Optional fallback, not the first Hiddify fix.** First set [Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only) and reconnect. That resolved the author’s Android connection; this Windows-only helper does not set that option.
+
 Read the [Hiddify recovery explanation](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) first. Start with a preview from PowerShell:
 
 ```powershell

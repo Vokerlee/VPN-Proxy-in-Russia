@@ -45,7 +45,11 @@ FIGURES = [
         ("Copy the panel's real VLESS URL", "+  New profile", "The panel's browser URL is not a VPN profile."),
         ("Read your clipboard", "Add from clipboard", "Or scan the client's QR code on your phone."),
         ("Pick the new profile", "Personal VPN", "Check the server and port before connecting.")]),
-    ("hiddify-settings", "Build a simple starting configuration", "Hiddify 5.5.5", ["Settings", "DNS", "Routing", "Inbound"], "DNS", [
+    ("hiddify-outbound-ipv4", "Hiddify: the outbound IPv4 fix", "Hiddify 5.5.5 labels | Android fix reported 2026-11-07", ["Home", "Settings", "DNS"], "DNS", [
+        ("Disconnect, then open Settings > DNS", "Outbound domain strategy", "Use this DNS field, not Routing > IPv6 routing."),
+        ("Choose the exact value", "IPv4 only", "This is in Hiddify; server ForceIPv4 is a different setting."),
+        ("Return home and reconnect", "Connect", "Open a website to check the connection. No Windows repair script is needed.")]),
+    ("hiddify-settings", "Optional: further client troubleshooting", "Hiddify 5.5.5", ["Settings", "DNS", "Routing", "Inbound"], "DNS", [
         ("Settings > DNS", "Fake DNS: Off", "Start with ordinary DNS; add special features after the tunnel works."),
         ("Settings > Routing > Region", "Other", "Temporarily avoid country-specific bypass rules while diagnosing."),
         ("Settings > Routing > ...", "IPv6 routing: IPv4 only", "The server exit address is a separate setting.")]),
