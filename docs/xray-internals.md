@@ -127,7 +127,7 @@ On **2026-11-07**, the author reported that **Hiddify → Settings → DNS → O
 
 This selects IPv4 for the client’s direct/outbound name resolution. It is separate from the routing IPv6 mode and from Xray’s server-side freedom strategy. A numeric IPv4 server address alone does not constrain every other hostname lookup made by the client.
 
-The initial improvement later stopped working. It did not isolate an IPv6 route or resolver as the cause. A later controlled experiment on the same US REALITY connection isolated the client fingerprint: Chrome failed in 12/12 requests, while Safari succeeded in 12/12, with endpoint, credentials, SNI, and protocol unchanged. Both authenticated through SSH. Captures showed missing Chrome-style handshake bytes between client and VPS. This supports fingerprint-dependent path interference, without identifying the dropping operator or making a universal claim about US servers. The Google SNI stayed unchanged. See the [practical fingerprint steps](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works).
+The initial improvement later stopped working. It did not isolate an IPv6 route or resolver as the cause. A later controlled experiment on the same US REALITY connection isolated the client fingerprint: Chrome failed in 12/12 requests, while Safari succeeded in 12/12, with endpoint, credentials, SNI, and protocol unchanged. Both authenticated through SSH. Captures showed missing Chrome-style handshake bytes between client and VPS. This supports fingerprint-dependent path interference, without identifying the dropping operator or making a universal claim about US servers. The Google SNI stayed unchanged. See the [practical fingerprint steps](troubleshooting.md#reality-chrome-times-out-but-safari-works).
 
 ## Routing is ordered policy, not a list of wishes
 
@@ -182,6 +182,14 @@ flowchart LR
     E --> A[Both presets authenticate]
 ```
 
+### A second Windows comparison outside the US
+
+A second, non-US endpoint tested on **2026-11-07** reproduced the fingerprint distinction in Windows Hiddify 5.5.5: **Chrome 0/4, Safari 4/4**, alternating the same account, endpoint, SNI, keys, transport and Flow. Firefox also passed one exploratory request. Re-exporting Safari from 3x-ui and importing it into Hiddify’s full VPN mode then passed **2/2** HTTPS requests with that endpoint’s exit address. No UUID, key, SNI or port change was needed.
+
+Native Linux Xray 26.10.31 passed 2/2 requests for each of Chrome, Safari and Firefox against that second endpoint. Thus a fingerprint label alone does not describe the complete handshake across different engines. This second case does not establish that its dropped bytes or filtering rule were identical to the original Kansas packet capture below.
+
+Earlier in the second investigation, TCP SYNs themselves did not reach the VPS. That reachability failure later cleared before the successful TCP/failing-Hiddify comparison. It must remain separate from the fingerprint result: an initially unreachable port cannot be repaired by changing a later TLS message. The precise cause of the earlier path recovery was not isolated.
+
 ### What the packet captures prove
 
 Captures at the client and VPS showed failed Chrome-style handshakes declaring roughly **1.7–1.8 KB**, while only the first **1.35 KB** reached the VPS. The client repeatedly retransmitted the missing small segment, but it remained absent from the server capture. The server therefore lacked the complete message needed to continue TLS/REALITY setup. A successful SYN exchange or ICMP ping cannot prove that these later bytes are delivered.
@@ -198,7 +206,7 @@ Keep a working connection for administration. Make two private copies of the sam
 
 For Hiddify's Windows VPN service, the checked privileged engine also wrote logs under `%ProgramData%\Hiddify\AdminBgService\core\work\data\box.log`. AppData logs could be stale while that engine was running. Reproduce the failure and verify the log timestamp before drawing conclusions.
 
-The [beginner fingerprint walkthrough](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works) shows how to select Safari and re-export the profile. Compatibility still depends on the actual client implementation: a preset working in Hiddify's fork does not establish that stock sing-box or every Xray release emits the same compatible handshake.
+The [beginner fingerprint walkthrough](troubleshooting.md#reality-chrome-times-out-but-safari-works) shows how to select Safari and re-export the profile. Compatibility still depends on the actual client implementation: a preset working in Hiddify's fork does not establish that stock sing-box or every Xray release emits the same compatible handshake.
 
 ## Why a valid profile can stop working after an update
 

@@ -25,10 +25,15 @@ FIGURES = [
         ("Configure before saving", "REALITY + Vision", "The next diagram shows the transport and account fields.")]),
     ("3x-ui-reality-settings", "Fill in the REALITY form", "3x-ui 3.8.5", ["Inbounds", "New inbound", "Client account", "Transport"], "Transport", [
         ("Select transport and security", "RAW / TCP  |  REALITY", "Target: www.google.com:443; SNI: www.google.com for this example."),
-        ("Choose the client fingerprint", "Fingerprint / uTLS: safari", "US-server Hiddify setup: export Safari; keep the selected SNI unchanged."),
+        ("Choose the client fingerprint", "Fingerprint / uTLS: safari", "For a Chrome timeout: try Safari, keep SNI, then export and import again."),
         ("For a new inbound only", "Get New Key", "Keep generated short IDs. Never regenerate a working profile's keys."),
         ("Set the client flow", "xtls-rprx-vision", "Use the generated UUID and VLESS encryption=none."),
         ("Save the new listener", "Create / Save", "The selected public port must be allowed by both firewalls.")]),
+    ("3x-ui-change-fingerprint", "TCP works, but Hiddify times out? Try Safari", "3x-ui 3.8.5 / Hiddify 5.5.5", ["Inbounds", "Edit", "Client account"], "Edit", [
+        ("Edit the existing REALITY inbound", "Inbounds > Edit", "Keep the current port, UUID, keys, short ID, SNI and Flow."),
+        ("Change the exported client preset", "Fingerprint / uTLS > Safari", "Tested for this Hiddify symptom on US and non-US connections."),
+        ("Save, then open your account row", "Save > Info / Share / QR", "Copy the new VLESS URL or scan the new QR on your phone."),
+        ("Replace the old profile in Hiddify", "+ > Add from clipboard", "Select the new profile, Connect, then check a website and exit IP.")]),
     ("3x-ui-client-info", "Find the account's share action", "3x-ui 3.8.5", ["Inbounds", "Personal VPN", "Client: laptop"], "Client: laptop", [
         ("Expand the inbound", "Client list", "Use the account you intend to connect, not another device's row."),
         ("Open the row's action", "Info (i) / Share / QR", "Some layouts put the actions inside the three-dot menu."),

@@ -109,6 +109,8 @@ For an explicit Windows proxy request, use a nonempty exclusion argument such as
 
 The controlled Kansas result was fingerprint-dependent: Chrome 0/12 vs Safari 12/12 with the original REALITY account. Google SNI stayed unchanged. Do not claim that Google sites or all US servers are blocked, or that message size alone was isolated. Safari's successful REALITY ClientHello was about 1,533 bytes; the 517-byte Safari hello belonged to a separate Trojan/TLS test. Do not transfer stock sing-box compatibility failures to Hiddify's fork without testing that implementation.
 
+A later non-US Paris endpoint reproduced Windows Hiddify Chrome 0/4 versus Safari 4/4; actual GUI VPN mode passed 2/2 after importing its canonical Safari export. Native Linux Xray 26.10.31 passed both fingerprints. Country is only an automation default, not proof of compatibility. Use an explicit Safari override for this live endpoint. Its earlier complete TCP unreachability later cleared; repeat fresh TCP probes before relying on old captures, and do not claim AiProtection caused that recovery without a controlled comparison. Read the private Paris STATE.md for the latest result.
+
 ### Protect the current connection during Windows VPN tests
 
 When the user requests timed tests, **arm an independent Windows-local disconnect watchdog before Connect**. A local deadline must not depend on chat or network connectivity. The checked CLI supports `HiddifyCli.exe admin_bgservice disconnect`; verify it works first. Preserve and restore the prior Windows proxy settings. If closing Hiddify is needed for a requested reset, target only that application and keep automatic reconnect disabled during testing. Never stop Invisible Man - XRay Client.

@@ -72,7 +72,7 @@ You get:
 - One VLESS + RAW/TCP + REALITY inbound and one `xtls-rprx-vision` account.
 - Public VPN TCP port **443**, or **8443** if 443 is already occupied. It does not stop the existing listener.
 - Generated UUID, REALITY keys, short ID, panel credentials, and panel URL path.
-- A client fingerprint chosen from the VPS country: **Safari for the US**, **Chrome elsewhere**, with an explicit override available. This is a starting policy based on the [controlled Kansas comparison](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works), not a guarantee for every network.
+- A client fingerprint chosen from the VPS country: **Safari for the US**, **Chrome elsewhere**, with an explicit override available. This is a starting policy based on the [controlled Kansas comparison](troubleshooting.md#reality-chrome-times-out-but-safari-works), not a guarantee for every network.
 - **ForceIPv4** on the server’s outgoing path, so hostname-based website requests use IPv4.
 - A panel bound to **127.0.0.1:27297** on the VPS, accessed through SSH rather than exposed as public HTTP.
 - The selected VPN port allowed in an existing UFW firewall, if active. UFW is Ubuntu’s firewall-management tool; the helper does not install or enable it. Existing SSH rules and custom/provider firewalls are not reset.

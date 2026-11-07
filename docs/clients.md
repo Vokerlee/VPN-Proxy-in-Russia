@@ -33,9 +33,11 @@ Keep the name supplied by 3x-ui. It can combine the inbound and device account, 
 
 ![Hiddify: New profile, Add from clipboard, select Personal VPN](../images/hiddify-import.svg)
 
+**A server outside the US can need Safari too.** If its TCP port opens but Hiddify still times out, follow [the Safari export steps](troubleshooting.md#reality-chrome-times-out-but-safari-works), then import the new link. This also fixed the tested non-US connection. Changing the panel setting alone leaves your phone’s old profile unchanged.
+
 ## 3. Important: set Outbound domain strategy to IPv4 only
 
-**This was initially reported as an Android fix on 2026-11-07, but the failure later returned.** Keep this DNS check, but do not treat it as a proven cure for every timeout. For the investigated US REALITY connection, also check [Chrome versus Safari](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works).
+**This was initially reported as an Android fix on 2026-11-07, but the failure later returned.** Keep this DNS check, but do not treat it as a proven cure for every timeout. For the investigated REALITY timeout, also check [Chrome versus Safari](troubleshooting.md#reality-chrome-times-out-but-safari-works).
 
 1. In **Hiddify**, disconnect if connected.
 2. Open **Settings → DNS**.
@@ -73,7 +75,7 @@ The sections below are optional. Use them only for a failed connection or when s
 
 ## If the connection fails: try these settings
 
-**Optional: skip if the connection works.** The options below are additional troubleshooting choices from the earlier Windows investigation. Try one at a time, reconnect, and repeat the browser check. For the investigated US REALITY timeout, check [the client fingerprint](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works) before changing more unrelated settings.
+**Optional: skip if the connection works.** The options below are additional troubleshooting choices from the earlier Windows investigation. Try one at a time, reconnect, and repeat the browser check. For the investigated REALITY timeout, check [the client fingerprint](troubleshooting.md#reality-chrome-times-out-but-safari-works) before changing more unrelated settings.
 
 | Open | Set |
 |---|---|

@@ -49,9 +49,11 @@ Do not replace a working listener just to match the examples. Preserve its actua
 
 **Using a US server? Start with Safari in this Hiddify walkthrough.** In the Kansas investigation on 2026-11-07, changing only the client fingerprint gave **Safari 12/12 successful requests; Chrome 0/12**. Avoid the Chrome default for that failing setup. This is a tested choice for Hiddify 5.5.5 on the investigated network, not a rule that Chrome fails on every US server or with every client core.
 
+**Safari also fixed the tested Hiddify timeout on a non-US endpoint.** If the server’s TCP port is reachable but Chrome fails, try Safari using the steps below, regardless of country. The optional setup helper accepts an explicit fingerprint override; a country-based default cannot replace a connection test.
+
 **Google SNI and the Chrome fingerprint are different fields.** `www.google.com` is the example target website; `chrome` imitates a browser's initial connection message. The successful Safari test kept the same Google target and SNI. There is no evidence here that Google targets themselves must be avoided on US servers.
 
-For an existing account: **Inbounds → edit the REALITY inbound → Fingerprint / uTLS → Safari → Save**, then export its link or QR again and reimport it in Hiddify. Check that the new link contains **`fp=safari`**. Keep its UUID, keys, short ID, SNI, and port unchanged. This field supplies the client export; an already imported profile does not update just because you saved the panel form. See the [fingerprint troubleshooting steps](troubleshooting.md#us-reality-server-chrome-times-out-but-safari-works).
+For an existing account: **Inbounds → edit the REALITY inbound → Fingerprint / uTLS → Safari → Save**, then export its link or QR again and reimport it in Hiddify. Check that the new link contains **`fp=safari`**. Keep its UUID, keys, short ID, SNI, and port unchanged. This field supplies the client export; an already imported profile does not update just because you saved the panel form. See the [fingerprint troubleshooting steps](troubleshooting.md#reality-chrome-times-out-but-safari-works).
 
 <details>
 <summary>Optional: check whether the example target website is reachable. Use this if connections fail.</summary>
