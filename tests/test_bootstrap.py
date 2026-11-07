@@ -90,8 +90,11 @@ class BootstrapTests(unittest.TestCase):
         opts=bootstrap.validate_options("203.0.113.10",vpn_port=8443,server_country="US")
         link=panel_link_fixture()
         self.assertEqual(remote.panel_share_link(opts,"ACCOUNT","PUBLIC","abcd",[link]),link)
+        implicit_none=link.replace("encryption=none&", "")
+        self.assertEqual(remote.panel_share_link(opts,"ACCOUNT","PUBLIC","abcd",[implicit_none]),implicit_none)
         for links in [[link.replace("ACCOUNT@","OTHER@")],[panel_link_fixture(443)],
-                      [panel_link_fixture(fingerprint="chrome")],[link.split("#")[0]],None]:
+                      [panel_link_fixture(fingerprint="chrome")],[link.split("#")[0]],
+                      [link.replace("encryption=none", "encryption=unsupported")],None]:
             with self.subTest(links=links):
                 with self.assertRaisesRegex(RuntimeError,"panel did not export"):
                     remote.panel_share_link(opts,"ACCOUNT","PUBLIC","abcd",links)

@@ -117,6 +117,9 @@ def panel_share_link(options, account, public, sid, links):
                        and value.hostname == options["host"] and value.port == options["vpn_port"]
                        and bool(value.fragment))
             query = urllib.parse.parse_qs(value.query, keep_blank_values=True)
+            # VLESS defaults to none; 3x-ui can omit this default in its export.
+            # Validate the meaning while returning the original URI unchanged.
+            query.setdefault("encryption", ["none"])
             if matches and all(query.get(key) == [expected_value] for key, expected_value in expected.items()):
                 return link
         except ValueError:
