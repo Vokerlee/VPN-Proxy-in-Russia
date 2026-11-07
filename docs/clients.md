@@ -27,6 +27,8 @@ On Windows, install the Windows app. You do not need WSL (Windows Subsystem for 
 
 On a phone, you can scan the account’s QR code instead of copying the link. Both contain the same connection settings. Keep the link and QR code private: anyone with them can use that account. The dashboard’s browser address is a different link and cannot be imported as a VPN profile.
 
+Keep the name supplied by 3x-ui. It can combine the inbound and device account, such as **Personal VPN-desktop** or **Personal VPN-phone**. Use your own device's export; another person's similarly named profile can contain different credentials. Import the whole link, including its name and any `spx` parameter, rather than rebuilding it by hand.
+
 **For a US REALITY server, use the Safari fingerprint in this walkthrough.** Before importing, check the link for **`fp=safari`**. If it has `fp=chrome` and you have the investigated timeout symptom, follow [the panel's Safari steps](server-inbound.md#3-set-transport-and-security) and import the new export. The Kansas comparison kept the Google SNI unchanged and succeeded with Safari in 12/12 requests while Chrome failed in 12/12. This was verified with the installed Hiddify 5.5.5 engine; other engines and networks need their own check.
 
 ![Hiddify: New profile, Add from clipboard, select Personal VPN](../images/hiddify-import.svg)

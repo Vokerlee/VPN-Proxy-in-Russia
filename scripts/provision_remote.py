@@ -102,12 +102,26 @@ def set_ipv4(template):
     return template
 
 
-def share_link(options, account, public, sid):
+def panel_share_link(options, account, public, sid, links):
+    """Select the exact panel export; never reconstruct its title or SpiderX."""
     fingerprint = select_fingerprint(options.get("server_country", "auto"), options.get("fingerprint", "auto"))
-    query = urllib.parse.urlencode({"encryption": "none", "flow": "xtls-rprx-vision",
+    expected = {"encryption": "none", "flow": "xtls-rprx-vision",
         "security": "reality", "sni": options["target"], "fp": fingerprint, "pbk": public,
-        "sid": sid, "type": "tcp", "spx": "/"})
-    return f"vless://{account}@{options['host']}:{options['vpn_port']}?{query}#Personal-VPN"
+        "sid": sid, "type": "tcp"}
+    for link in links if isinstance(links, list) else []:
+        if not isinstance(link, str):
+            continue
+        try:
+            value = urllib.parse.urlsplit(link)
+            matches = (value.scheme == "vless" and value.username == account
+                       and value.hostname == options["host"] and value.port == options["vpn_port"]
+                       and bool(value.fragment))
+            query = urllib.parse.parse_qs(value.query, keep_blank_values=True)
+            if matches and all(query.get(key) == [expected_value] for key, expected_value in expected.items()):
+                return link
+        except ValueError:
+            continue
+    raise RuntimeError("The panel did not export a matching named client link. Open the existing panel to inspect it; do not rerun provisioning or invent a replacement URI.")
 
 
 def run(options):
@@ -238,7 +252,7 @@ def run(options):
         result = {"host": options["host"], "ssh_port": options["ssh_port"], "panel_port": options["panel_port"],
             "web_path": web_path, "panel_username": username, "panel_password": password,
             "vpn_port": options["vpn_port"], "target": options["target"], "panel_version": VERSION,
-            "core_version": core_version, "client_link": share_link(options, account, public, sid),
+            "core_version": core_version, "client_link": panel_share_link(options, account, public, sid, api("clients/links/first-device")),
             "server_country": options["server_country"], "fingerprint": options["fingerprint"],
             "firewall": firewall, "server_log": str(log_path)}
         result_file = Path("/root/vpn-guide-bootstrap-result.json")

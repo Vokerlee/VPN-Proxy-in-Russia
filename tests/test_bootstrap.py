@@ -20,6 +20,12 @@ bootstrap=load("bootstrap_server")
 remote=load("provision_remote")
 
 
+def panel_link_fixture(port=8443, fingerprint="safari"):
+    return (f"vless://ACCOUNT@203.0.113.10:{port}?encryption=none&flow=xtls-rprx-vision"
+            f"&fp={fingerprint}&pbk=PUBLIC&security=reality&sid=abcd&sni=www.google.com"
+            "&spx=%2Fpanel-exported-path&type=tcp#Personal%20VPN-first-device")
+
+
 class BootstrapTests(unittest.TestCase):
     def test_untrusted_inputs_cannot_become_shell_options(self):
         for host in ["-oProxyCommand=evil", "example.com;echo x", "2001:db8::1"]:
@@ -64,7 +70,8 @@ class BootstrapTests(unittest.TestCase):
         value=remote.inbound_payload(opts,"PRIVATE_PLACEHOLDER","PUBLIC_PLACEHOLDER","UUID_PLACEHOLDER","abcd")
         self.assertEqual(value["port"],8443)
         self.assertEqual(json.loads(value["settings"])["clients"][0]["flow"],"xtls-rprx-vision")
-        self.assertIn("@203.0.113.10:8443?",remote.share_link(opts,"UUID_PLACEHOLDER","PUBLIC_PLACEHOLDER","abcd"))
+        link=panel_link_fixture()
+        self.assertEqual(remote.panel_share_link(opts,"ACCOUNT","PUBLIC","abcd",[panel_link_fixture(443),link]),link)
 
     def test_regional_selection_and_explicit_override_reach_both_exports(self):
         for country,requested,expected in [("US","auto","safari"),("DE","auto","chrome"),
@@ -74,8 +81,20 @@ class BootstrapTests(unittest.TestCase):
                 opts=bootstrap.validate_options("203.0.113.10",server_country=country,fingerprint=requested)
                 payload=remote.inbound_payload(opts,"PRIVATE","PUBLIC","ACCOUNT","abcd")
                 saved=json.loads(payload["streamSettings"])["realitySettings"]["settings"]["fingerprint"]
-                shared=parse_qs(urlsplit(remote.share_link(opts,"ACCOUNT","PUBLIC","abcd")).query)["fp"][0]
+                link=panel_link_fixture(443,expected)
+                exported=remote.panel_share_link(opts,"ACCOUNT","PUBLIC","abcd",[link])
+                shared=parse_qs(urlsplit(exported).query)["fp"][0]
                 self.assertEqual((saved,shared),(expected,expected))
+
+    def test_panel_export_preserves_exact_name_and_spiderx_and_checks_identity(self):
+        opts=bootstrap.validate_options("203.0.113.10",vpn_port=8443,server_country="US")
+        link=panel_link_fixture()
+        self.assertEqual(remote.panel_share_link(opts,"ACCOUNT","PUBLIC","abcd",[link]),link)
+        for links in [[link.replace("ACCOUNT@","OTHER@")],[panel_link_fixture(443)],
+                      [panel_link_fixture(fingerprint="chrome")],[link.split("#")[0]],None]:
+            with self.subTest(links=links):
+                with self.assertRaisesRegex(RuntimeError,"panel did not export"):
+                    remote.panel_share_link(opts,"ACCOUNT","PUBLIC","abcd",links)
 
     def test_country_lookup_is_validated_and_override_needs_no_lookup(self):
         opener=mock.Mock()

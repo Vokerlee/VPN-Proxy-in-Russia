@@ -18,6 +18,8 @@ The launchers use **SSH**, an encrypted terminal connection, through the operati
 
 The private panel is reached through the SSH-forward command printed at completion. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
 
+The helper retrieves the **actual 3x-ui client export**, including its display name and `spx` value, rather than constructing a lookalike link. Keep that name when importing: for example, an inbound named `Personal VPN` with account `first-device` may export **Personal VPN-first-device**. Different people and devices must receive their own account's export; the inbound name alone does not identify whose credentials a profile uses.
+
 The pinned remote payload is `scripts/provision_remote.py`; it is not a workstation setup program and refuses direct invocation without the launcher's supplied options. Review the code and pinned installer before applying it. This path installs 3x-ui and its bundled Xray version; it does not silently upgrade an existing installation or promise automatic compatibility with every future client.
 
 ### Choose the client fingerprint by server country
