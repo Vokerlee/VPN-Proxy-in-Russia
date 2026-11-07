@@ -8,7 +8,14 @@
 
 ## 1. Install Hiddify
 
-Download it using the links on the [official installation page](https://hiddify.com/app/How-to-install-Hiddify-app/) or the [official releases page](https://github.com/hiddify/hiddify-app/releases/latest). Choose the download for your device: Windows, Linux, macOS, Android, or iOS.
+**On Android, download the current APK from [Hiddify's official GitHub releases](https://github.com/hiddify/hiddify-app/releases/latest), rather than using the Play Store build for this walkthrough.** This keeps the app/core version aligned with the current release used for troubleshooting. It does not mean every Play Store installation is broken; compare actual versions when investigating.
+
+1. Open that release page on your phone and find **Downloads → Android**.
+2. Choose **APK Universal** if you are unsure which processor your phone uses, or **APK ARMv8** for a compatible ARM64 phone.
+3. Open the downloaded APK. If Android asks, allow installation from that browser/file manager, finish installation, then turn that permission off again if you do not need it.
+4. Open Hiddify and check **About** for the installed version. These button instructions were checked with **5.5.5**; the release page may offer a newer version later.
+
+For Windows, Linux, and macOS, use the matching download on the same GitHub release page. The [official installation page](https://hiddify.com/app/How-to-install-Hiddify-app/) covers the other platform-specific installation routes, including iOS.
 
 On Windows, install the Windows app. You do not need WSL (Windows Subsystem for Linux, an optional environment for running Linux programs inside Windows).
 
