@@ -78,6 +78,51 @@ Keep a working SSH session during any separately authorized access-control chang
 - `Repair-Hiddify.ps1` defaults to preview, requires Hiddify to be closed before applying, and preserves a backup. Let the user close the app; the helper must never kill it. Manual mode keeps another client's Windows proxy selection separate.
 - A Hiddify build containing Xray libraries does not prove it has an executable Xray traffic backend. Check the actual implementation/core behavior. Preserve the version-specific nuance in `docs/clients.md`.
 
+## Fast workflow for an existing server and Hiddify
+
+Read this section before making live changes. The repository is a reusable guide, not a place to store live credentials. If working on the maintainer's existing machine, first read `$HOME/.config/kansas-vpn/STATE.md` when present for the current private deployment state. Verify it against the live system; do not assume an earlier investigation's temporary profiles or ports still exist.
+
+### Identify ownership and the requested final state
+
+Distinguish three objects: a server **inbound** (listener), a central 3x-ui **client account** (credentials), and a Hiddify **profile** (an imported export). Removing an inbound can leave orphaned central client records. An account name is an ownership label, not interchangeable with another person's credentials. This PC must use its owner's `desktop` account; their phone uses `phone`. Keep other people's separately named accounts separate. Preserve accounts outside the requested deletion scope.
+
+Before replacing an account, verify a new account with isolated requests, migrate any active Linux transport that uses the old UUID, and only then revoke the old account. Keep a recoverable private backup and a working administrative SSH connection. Do not leave several confusing diagnostic profiles in Hiddify after a requested cleanup.
+
+### Use the exact panel-generated export and display name
+
+**Never hand-build the final client URI or invent a replacement display name when 3x-ui already exports it.** On the checked 3x-ui 3.8.5 API, `GET panel/api/clients/links/{email}` returns the panel-generated link list. Select the requested inbound's link and preserve its complete query and fragment, including `spx`, `fp`, port, and account identity. For an inbound named `VLESS Kansas` and client `desktop`, the panel's display name is **`VLESS Kansas-desktop`**; import that exact name, rather than shortening it to `desktop` or substituting the inbound name alone. Use the corresponding panel export for `phone` and other owners too.
+
+Save private exports outside Git, import the actual panel link, and verify the selected Hiddify account UUID matches that export without printing UUIDs in routine logs. A JSON generated manually for a test is not automatically the final panel export. Provide a requested private link/QR to the user, but never commit it.
+
+### Inspect the live state before changing settings
+
+- Read the panel API's inbound and central client lists. In 3x-ui 3.8.5, the relevant routes are `panel/api/inbounds/list`, `panel/api/inbounds/update/{id}`, `panel/api/inbounds/del/{id}`, `panel/api/clients/list`, `panel/api/clients/links/{email}`, and `panel/api/clients/del/{email}`. URL-encode account names. Do not assume legacy `inbounds/addClient` exists. API responses may already contain objects for settings/stream settings; do not blindly call `json.loads` on a dict. Normalize the type before editing and serialize for the expected request schema.
+- The effective server config is conventionally `/usr/local/x-ui/bin/config.json`; do not print its credentials or private keys. Prefer supported API mutations to direct database writes. Back up SQLite consistently with its backup API, not a live bare file copy that ignores WAL.
+- Read Hiddify's selected profile, mode, actual local listeners, and Windows' selected proxy. A running process or green button does not prove applications use that route. Windows may still have Invisible Man - XRay Client's manual proxy selected even while another app's VPN is active.
+- Inspect fresh logs for the actual engine. Hiddify's privileged Windows VPN engine can use `%ProgramData%\Hiddify\AdminBgService\core\work\data\box.log` and `current-config.json`; AppData files can be stale. Use timestamps and the new request's error rather than historical errors.
+
+### Isolate the failure with controlled tests
+
+Use an unused loopback port and a child process you own. Change one variable at a time. Alternate real HTTPS requests between cases and record success, elapsed time, and exit address. Keep account, endpoint, SNI, flow, and engine constant when comparing fingerprints. Test a real site as well as the app's latency badge; the badge can disagree with working traffic. A longer curl timeout does not override the engine's internal timeout.
+
+For an explicit Windows proxy request, use a nonempty exclusion argument such as `curl.exe --noproxy does-not-match.invalid --proxy http://127.0.0.1:PORT ...`. Windows PowerShell can lose an empty-string native argument, creating a false direct-path success. For a full Windows VPN test, use `curl.exe --noproxy '*' ...` and verify the actual exit. On Linux, explicitly disable inherited application proxies for a route-based VPN test.
+
+The controlled Kansas result was fingerprint-dependent: Chrome 0/12 vs Safari 12/12 with the original REALITY account. Google SNI stayed unchanged. Do not claim that Google sites or all US servers are blocked, or that message size alone was isolated. Safari's successful REALITY ClientHello was about 1,533 bytes; the 517-byte Safari hello belonged to a separate Trojan/TLS test. Do not transfer stock sing-box compatibility failures to Hiddify's fork without testing that implementation.
+
+### Protect the current connection during Windows VPN tests
+
+When the user requests timed tests, **arm an independent Windows-local disconnect watchdog before Connect**. A local deadline must not depend on chat or network connectivity. The checked CLI supports `HiddifyCli.exe admin_bgservice disconnect`; verify it works first. Preserve and restore the prior Windows proxy settings. If closing Hiddify is needed for a requested reset, target only that application and keep automatic reconnect disabled during testing. Never stop Invisible Man - XRay Client.
+
+An SSH-backed temporary transport needs the real SSH server address outside TUN routing; a loopback forwarding address alone does not protect its outer connection. Verify the physical route before enabling TUN. A Windows host-route change needs real administrator rights; Codex full filesystem access is not Windows UAC elevation. Explain an actual OS permission requirement instead of asking repeatedly for permissions already granted.
+
+Keep disposable probes separate from persistent working state. Linux TUN may internally feed a local SOCKS engine while still providing real routed TCP/UDP/DNS; distinguish that implementation detail from an application-only proxy. Prove both TCP and UDP before claiming whole-device functionality. A WSL/SSH-dependent profile is not a portable phone solution.
+
+### Close the task cleanly
+
+Verify the final inbound count, account ownership, profile count, selected panel-export name, endpoint, and fingerprint. Keep only profiles the user requested; retain backups privately, not as extra active profiles. Verify the GUI Connect button separately from isolated core tests, with the requested rollback deadline. Leave the final connection state explicit. A phone that cannot be controlled remotely still needs its exact new export imported by its owner; do not claim to have erased phone profiles from Windows.
+
+Record sanitized current state in the private state file, update guide claims when new evidence supersedes an initial success, and commit each logical repository change separately. Do not publish private links or push commits without authorization.
+
 ## Version and evidence rules
 
 The checked UI baseline is **3x-ui 3.8.5** and **Hiddify 5.5.5**, dated **2026-11-06**. The bootstrap deliberately pins the panel release. Do not silently change that pin without rechecking installer variables, CLI flags, API paths, payload schema, UI instructions and integration behavior together.
