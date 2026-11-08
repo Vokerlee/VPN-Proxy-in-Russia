@@ -16,7 +16,7 @@ Follow the [illustrated quick start](quick-start.md) for the full sequence, incl
 
 The launchers use **SSH**, an encrypted terminal connection, through the operating system’s **OpenSSH** program. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. A busy 443 falls back to 8443; provider-firewall work is reported as a separate action when needed.
 
-The private panel is reached through the SSH-forward command printed at completion. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
+The private panel uses the root URL path `/` and is reached through the SSH-forward command printed at completion. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
 
 The helper retrieves the **actual 3x-ui client export**, including its display name and `spx` value, rather than constructing a lookalike link. Keep that name when importing: for example, an inbound named `Personal VPN` with account `first-device` may export **Personal VPN-first-device**. Different people and devices must receive their own account's export; the inbound name alone does not identify whose credentials a profile uses.
 

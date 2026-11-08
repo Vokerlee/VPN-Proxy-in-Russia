@@ -167,7 +167,7 @@ def run(options):
                  "--connect-timeout", "5", "--max-time", "15", "https://" + options["target"] + "/"], timeout=20)
         username = "vpnadmin_" + secrets.token_hex(4)
         password = secrets.token_urlsafe(24)
-        web_path = secrets.token_hex(12)
+        web_path = "/"
         install_env = dict(env, XUI_NONINTERACTIVE="1", XUI_DB_TYPE="sqlite", XUI_SSL_MODE="none",
             XUI_USERNAME=username, XUI_PASSWORD=password, XUI_WEB_BASE_PATH=web_path,
             XUI_PANEL_PORT=str(options["panel_port"]), XUI_SERVER_IP=options["host"])
@@ -179,14 +179,14 @@ def run(options):
             command(["bash", str(installer), VERSION], timeout=1800, env=install_env)
         binary = "/usr/local/x-ui/x-ui"
         print("Restricting the panel to loopback; SSH will carry browser access...", flush=True)
-        command([binary, "setting", "-listenIP", "127.0.0.1"])
+        command([binary, "setting", "-listenIP", "127.0.0.1", "-webBasePath", web_path])
         command(["systemctl", "restart", "x-ui"])
         token_output = command([binary, "setting", "-getApiToken"], capture=True)
         token_line = next((line for line in token_output.splitlines() if "apiToken: " in line), None)
         if token_line is None:
             raise RuntimeError("Could not obtain the new installation's API token. Use the local panel to finish; credentials remain in /etc/x-ui/install-result.env.")
         token = token_line.split("apiToken: ", 1)[1].strip()
-        base = f"http://127.0.0.1:{options['panel_port']}/{web_path}/panel/api/"
+        base = f"http://127.0.0.1:{options['panel_port']}{web_path}panel/api/"
         opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
         def api(endpoint, payload=None, form=False):

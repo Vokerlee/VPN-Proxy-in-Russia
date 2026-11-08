@@ -71,7 +71,7 @@ You get:
 
 - One VLESS + RAW/TCP + REALITY inbound and one `xtls-rprx-vision` account.
 - Public VPN TCP port **443**, or **8443** if 443 is already occupied. It does not stop the existing listener.
-- Generated UUID, REALITY keys, short ID, panel credentials, and panel URL path.
+- Generated UUID, REALITY keys, short ID, and panel credentials. The panel URL path is `/`.
 - A client fingerprint chosen from the VPS country: **Safari for the US**, **Chrome elsewhere**, with an explicit override available. This is a starting policy based on the [controlled Kansas comparison](troubleshooting.md#reality-chrome-times-out-but-safari-works), not a guarantee for every network.
 - **ForceIPv4** on the server’s outgoing path, so hostname-based website requests use IPv4.
 - A panel bound to **127.0.0.1:27297** on the VPS, accessed through SSH rather than exposed as public HTTP.
@@ -94,10 +94,10 @@ ssh -N -o ExitOnForwardFailure=yes -p 22 -L 127.0.0.1:18080:127.0.0.1:27297 root
 
 Open a **second terminal**, run the exact command printed for your server, and leave it running. SSH can ask for the password again. An apparently idle terminal is normal: it is forwarding the browser connection.
 
-Now open the exact printed URL in your Windows/macOS/Linux browser:
+Now open the printed root URL in your Windows/macOS/Linux browser:
 
 ```text
-http://127.0.0.1:18080/YOUR_GENERATED_PATH/
+http://127.0.0.1:18080/
 ```
 
 This `127.0.0.1` is **your computer**. SSH forwards it to the panel's loopback listener on the VPS. The remote hop is protected by SSH; it does not require a public panel certificate or provider firewall rule for 27297. Do not replace that URL with `http://SERVER_IP:27297`—the helper deliberately made the panel private.
@@ -142,7 +142,7 @@ A stopped helper tells you which stage needs attention. It does not roll back pa
 | Public VPN TCP port is not reachable | In the provider website, find Firewall / Security group / Network rules and allow inbound **TCP** on the recorded VPN port; inspect custom host rules too |
 | Installer or API stage failed | Read the private `/root/vpn-guide-bootstrap-*.log` over SSH; do not share it unredacted |
 | Setup completed but local result files were not saved | Recover `/root/vpn-guide-bootstrap-result.json` privately over SSH |
-| Browser cannot open the panel | Keep the SSH forward running; use its local port and the generated URL path |
+| Browser cannot open the panel | Keep the SSH forward running; use its local port and root URL `/` |
 | Hiddify errors after import | Follow the [handshake and generated-config checks](troubleshooting.md), including the documented recovery helper |
 
 **Optional, after the connection works:** read [server administration improvements](server-setup.md#5-optional-improve-server-administration-later) if you want a separate administrator account and tighter SSH access. The helper leaves these choices to you.

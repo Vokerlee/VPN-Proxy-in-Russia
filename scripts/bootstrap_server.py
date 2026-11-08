@@ -62,6 +62,11 @@ def panel_command(result, local_port=18080):
             "-L", f"127.0.0.1:{local_port}:127.0.0.1:{result['panel_port']}", "root@" + result["host"]]
 
 
+def panel_url(result, local_port=18080):
+    path = result["web_path"].strip("/")
+    return f"http://127.0.0.1:{local_port}/" + (path + "/" if path else "")
+
+
 def save_result(result, output):
     output = Path(output)
     output.mkdir(mode=0o700, parents=True, exist_ok=True)
@@ -144,7 +149,7 @@ def main():
             print(f"ACTION: allow inbound TCP {result['vpn_port']} in the provider's firewall/security group and inspect any custom host firewall.")
         print("Open the panel: leave this command running in a second terminal:")
         print(subprocess.list2cmdline(panel_command(result)) if os.name == "nt" else shlex.join(panel_command(result)))
-        print("Then open: http://127.0.0.1:18080/" + result["web_path"] + "/")
+        print("Then open: " + panel_url(result))
         print("Log in with the generated panel credentials in server.json, not the root password.")
         print("Next: docs/quick-start.md#bring-the-profile-into-hiddify")
         return 0

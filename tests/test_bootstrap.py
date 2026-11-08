@@ -118,6 +118,13 @@ class BootstrapTests(unittest.TestCase):
             result=remote.resolve_fingerprint_options(bootstrap.validate_options("203.0.113.10",server_country="DE"))
             self.assertEqual(result["fingerprint"],"chrome")
 
+    def test_panel_url_supports_root_and_previous_exports(self):
+        for path in ("/", ""):
+            self.assertEqual(bootstrap.panel_url({"web_path": path}), "http://127.0.0.1:18080/")
+        for path in ("saved-path", "/saved-path/"):
+            self.assertEqual(bootstrap.panel_url({"web_path": path}, 18082),
+                             "http://127.0.0.1:18082/saved-path/")
+
     def test_result_files_cannot_overwrite_an_existing_export(self):
         result={"client_link":"vless://PLACEHOLDER"}
         with tempfile.TemporaryDirectory() as folder:

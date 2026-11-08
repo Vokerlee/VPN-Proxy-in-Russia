@@ -89,6 +89,9 @@ try {
 }
 Write-Output 'In a second PowerShell terminal, keep this SSH forward running:'
 Write-Output ('ssh -N -o ExitOnForwardFailure=yes -p '+$SshPort+' -L 127.0.0.1:18080:127.0.0.1:'+$result.panel_port+' root@'+$ServerIp)
-Write-Output ('Then open http://127.0.0.1:18080/'+$result.web_path+'/ in your browser.')
+$panelPath=([string]$result.web_path).Trim('/')
+$panelUrl='http://127.0.0.1:18080/'
+if ($panelPath) {$panelUrl+=$panelPath+'/'}
+Write-Output ('Then open '+$panelUrl+' in your browser.')
 Write-Output 'Use the generated panel credentials in server.json, not the root password.'
 Write-Output 'Next: docs/quick-start.md#bring-the-profile-into-hiddify'
