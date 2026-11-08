@@ -50,11 +50,21 @@ tests/
 .secrets/                       Ignored local exports; never add to Git
 ```
 
+## Direct SSH first; stop on failure
+
+For every newly requested server and every new server setup or troubleshooting session, the **first network action must be a direct SSH login to that server**. Use the supplied login and SSH port, or the documented defaults when none were supplied. Success means completing authentication and a harmless command such as `true`; an open TCP port or an SSH banner is insufficient.
+
+Bypass configured SSH ProxyCommand/ProxyJump settings and do not reuse a multiplexed connection established through another VPN, proxy or jump host. Verify that the connection uses the intended direct route without stopping or reconfiguring the user's existing VPN applications. Preserve normal SSH host-key checking and hidden password entry. Bound the attempt, including a possible key-exchange stall. A local sandbox/network-permission denial is not a server result: obtain the required tool approval and make the actual direct attempt before deciding.
+
+**If direct SSH fails at any stage, report the failure and stop work on that server.** This includes connection refusal, timeout, stalled key exchange and authentication failure. Do not fall back to the existing VPN/proxy, SSH forwarding, a jump host or an old connected session. Do not continue with panel access, provisioning, account/inbound creation, VPN-port probes, target/SNI/uTLS comparisons, packet captures or alternate-path experiments. Do not ask to bypass the rule as the routine next step.
+
+Apply this gate to both fresh and existing servers. An earlier successful proxy connection or an existing installation does not satisfy it. Historical alternate-path experiments in `docs/network-path-debugging.md` document evidence; they do not authorize continuing after a failed direct SSH check.
+
 ## Automatic setup when the user supplies a VPS IP and root access
 
 The automatic path targets a **fresh Ubuntu/Debian systemd VPS**. An explicit request to set up that server authorizes the documented setup steps; do not ask for repetitive confirmations already covered by that request. Tool/sandbox approvals still apply. A request to edit docs or inspect a repository is not permission to provision a server.
 
-1. Read `docs/quick-start.md` and `docs/automation.md`. Verify the requested host and whether it is fresh or already managed. Use the given SSH port if nonstandard.
+1. Read `docs/quick-start.md` and `docs/automation.md`, then pass the direct-SSH gate above before any other network action or remote work. Only after successful direct SSH, verify whether the requested host is fresh or already managed. Use the given SSH port if nonstandard.
 2. Run the local plan first:
 
    ```bash
@@ -81,7 +91,7 @@ Keep a working SSH session during any separately authorized access-control chang
 
 ## Fast workflow for an existing server and Hiddify
 
-Read this section before making live changes. The repository is a reusable guide, not a place to store live credentials. If working on the maintainer's existing machine, first locate private deployment `STATE.md` files under `$HOME/.config/` with a read-only search and read the file matching the requested deployment. Verify it against the live system; do not assume an earlier investigation's temporary profiles or ports still exist.
+Read this section before making live changes, and pass the direct-SSH gate before starting live inspection or diagnostics. The repository is a reusable guide, not a place to store live credentials. If working on the maintainer's existing machine, first locate private deployment `STATE.md` files under `$HOME/.config/` with a read-only search and read the file matching the requested deployment. Verify it against the live system; do not assume an earlier investigation's temporary profiles or ports still exist.
 
 ### Identify ownership and the requested final state
 
