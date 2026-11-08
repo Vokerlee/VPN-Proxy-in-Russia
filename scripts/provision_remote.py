@@ -191,7 +191,8 @@ def run(options):
 
         def api(endpoint, payload=None, form=False):
             data = None
-            headers = {"Authorization": "Bearer " + token, "X-Requested-With": "XMLHttpRequest"}
+            headers = {"Authorization": "Bearer " + token, "X-Requested-With": "XMLHttpRequest",
+                       "Host": f"{options['host']}:{options['panel_port']}"}
             if payload is not None:
                 if form:
                     data = urllib.parse.urlencode(payload).encode()

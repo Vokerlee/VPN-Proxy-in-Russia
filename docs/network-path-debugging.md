@@ -174,6 +174,14 @@ A **SYN** is the first TCP connection request. Here the direct path failed befor
 
 Both cases establish path-dependent failure and a working alternate-path control. Neither identifies a router, access provider, transit network or hosting provider as the dropping operator. The preserved private reports contain exact endpoint/account identities and capture details; these public case labels are intentionally anonymous.
 
+## Recorded investigation C: 2026-11-09
+
+A third fresh Ubuntu 24.04 VPS, **deployment C**, was provisioned with the Python launcher and shared payload over the existing alternate SSH path. Private display/account labels were substituted outside the repository. The automation installed 3x-ui 3.8.5 and Xray 26.9.9, created one enabled REALITY/Vision account, selected ForceIPv4, bound the panel to loopback and used its root path `/`. Setting the public Host on loopback panel API requests produced the matching canonical client export. The read-only server helper passed its service, clock, listener and configuration checks.
+
+The operator requested a non-Google final target/SNI and fingerprint. The final pairing used `www.apple.com:443`, SNI `www.apple.com` and Safari on a free high TCP port. The target passed certificate validation, TLS 1.3, HTTP/2 and an HTTP 200 response from the VPS. Native Xray and the installed Windows Hiddify engine both completed HTTPS requests through the working alternate path with Safari and Firefox, reporting deployment C's expected exit. A native iOS-preset control failed while the Hiddify iOS-preset control succeeded; that difference was kept separate from the direct-path finding.
+
+Direct native and Hiddify tests returned no authenticated trace response. During three fresh connection attempts to the final high port, the client captured six TCP SYN packets and the VPS captured none from the direct public source. As in investigation B, the observed direct failure occurred before TLS. A verified non-Google pairing and completed provisioning did not repair that reachability failure. The server/profile were retained privately for an independent access-network test; only alternate-path operation was demonstrated.
+
 ## What to record before stopping
 
 Keep a sanitized report with the date/time zone, versions, exact failures and durations, direct/proxy exit distinction, comparison table, successful control exit, packet byte ranges and unresolved attribution. Record the final listener/profile state and which temporary processes/forwards were removed. Preserve the working existing VPN.

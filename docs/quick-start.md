@@ -152,6 +152,6 @@ A stopped helper tells you which stage needs attention. It does not roll back pa
 
 The bootstrap's input handling, existing-install guard, API payload construction, preservation of unrelated template rules, private export behavior, and default dry-run behavior have offline regression tests. Its routes and installer flags were checked against the pinned official 3x-ui source.
 
-A disposable live VPS provisioning run is a separate integration check. This repository-only update did not provision or reset the author's existing server. Do not interpret passing offline tests as proof that every provider, package mirror, firewall policy, and future release behaves identically.
+On 2026-11-09, the Python launcher and shared payload completed a fresh Ubuntu 24.04 VPS integration over an existing alternate SSH path, with private display/account labels substituted. Installation, the root panel path, ForceIPv4, one account and the canonical public-endpoint export were checked live. A loopback API request must carry the public Host header so its exported profile does not point to localhost. Subsequent authenticated requests succeeded through an alternate path while direct TCP access failed; see [investigation C](network-path-debugging.md#recorded-investigation-c-2026-11-09). The Windows launcher remains covered by offline checks rather than a separate live provisioning run. These results do not establish that every provider, package mirror, firewall policy or future release behaves identically.
 
 </details>
