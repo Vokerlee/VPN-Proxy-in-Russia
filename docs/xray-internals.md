@@ -162,7 +162,7 @@ JA3/JA4-style summaries describe aspects of this observable handshake. They are 
 
 Choosing Safari does not require choosing an Apple website. Likewise, choosing a Google target does not require the Chrome fingerprint. In 3x-ui, the REALITY fingerprint dropdown supplies **client export metadata**. The checked running server's REALITY configuration had no server fingerprint field. An imported phone profile keeps its old `fp=chrome` until it is edited or a new export is imported.
 
-### The controlled Kansas experiment
+### The controlled US experiment
 
 On **2026-11-07**, the installed Windows **Hiddify 5.5.5** engine was tested against the original US server's **VLESS + REALITY + Vision** account. Two isolated local proxy listeners used identical server IP, remote port, UUID, public key, short ID, SNI, transport, and Flow. Only the client fingerprint differed. Requests alternated between the two listeners rather than running all of one preset before the other.
 
@@ -186,7 +186,7 @@ flowchart LR
 
 A second, non-US endpoint tested on **2026-11-07** reproduced the fingerprint distinction in Windows Hiddify 5.5.5: **Chrome 0/4, Safari 4/4**, alternating the same account, endpoint, SNI, keys, transport and Flow. Firefox also passed one exploratory request. Re-exporting Safari from 3x-ui and importing it into Hiddify’s full VPN mode then passed **2/2** HTTPS requests with that endpoint’s exit address. No UUID, key, SNI or port change was needed.
 
-Native Linux Xray 26.10.31 passed 2/2 requests for each of Chrome, Safari and Firefox against that second endpoint. Thus a fingerprint label alone does not describe the complete handshake across different engines. This second case does not establish that its dropped bytes or filtering rule were identical to the original Kansas packet capture below.
+Native Linux Xray 26.10.31 passed 2/2 requests for each of Chrome, Safari and Firefox against that second endpoint. Thus a fingerprint label alone does not describe the complete handshake across different engines. This second case does not establish that its dropped bytes or filtering rule were identical to the original US packet capture below.
 
 Earlier in the second investigation, TCP SYNs themselves did not reach the VPS. That reachability failure later cleared before the successful TCP/failing-Hiddify comparison. It must remain separate from the fingerprint result: an initially unreachable port cannot be repaired by changing a later TLS message. The precise cause of the earlier path recovery was not isolated.
 

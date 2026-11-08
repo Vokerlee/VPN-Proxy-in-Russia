@@ -47,7 +47,7 @@ Do not replace a working listener just to match the examples. Preserve its actua
 | SpiderX, when offered | `/` | Keep the exported value |
 | Sniffing | Off for the initial setup | Inspects initial traffic to identify its destination; unnecessary for this simple setup |
 
-**Using a US server? Start with Safari in this Hiddify walkthrough.** In the Kansas investigation on 2026-11-07, changing only the client fingerprint gave **Safari 12/12 successful requests; Chrome 0/12**. Avoid the Chrome default for that failing setup. This is a tested choice for Hiddify 5.5.5 on the investigated network, not a rule that Chrome fails on every US server or with every client core.
+**Using a US server? Start with Safari in this Hiddify walkthrough.** In the US investigation on 2026-11-07, changing only the client fingerprint gave **Safari 12/12 successful requests; Chrome 0/12**. Avoid the Chrome default for that failing setup. This is a tested choice for Hiddify 5.5.5 on the investigated network, not a rule that Chrome fails on every US server or with every client core.
 
 **Safari also fixed the tested Hiddify timeout on a non-US endpoint.** If the server’s TCP port is reachable but Chrome fails, try Safari using the steps below, regardless of country. The optional setup helper accepts an explicit fingerprint override; a country-based default cannot replace a connection test.
 

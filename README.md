@@ -85,6 +85,7 @@ For other setups:
 
 - [Use the Xray network engine directly on a Linux machine](docs/linux-xray.md).
 - [Let another device use your proxy](docs/share-proxy.md).
+- [Debug a VPN that works through another connection but fails directly](docs/network-path-debugging.md).
 - [How Xray, REALITY, and routing work—for programmers and network engineers](docs/xray-internals.md).
 
 The UI examples were checked with 3x-ui 3.8.5 and Hiddify 5.5.5. Pictures are labeled navigation diagrams, not captured screenshots. Button positions may change between versions; the linked walkthroughs include alternatives.

@@ -52,6 +52,7 @@ That second investigation had two separate stages: initially, even TCP connectio
 | REALITY TCP port opens, but `fp=chrome` times out | [Try the tested Safari fingerprint](#reality-chrome-times-out-but-safari-works) |
 | Hiddify still times out after that change | [Test the VPN TCP port](#ping-works-so-test-the-vpn-port-next) |
 | `reality verification failed` or `processed invalid connection` | [Check the handshake and core version](#the-tcp-port-opens-but-reality-fails) |
+| TCP opens but every fingerprint times out, or the profile works through another VPN | [Compare direct and alternate paths](network-path-debugging.md) |
 | The IP check shows IPv6 | [Check the server's egress](force-ipv4.md) |
 | HTTPS works, but the app's latency test fails | [Check the test endpoint](#the-latency-test-and-a-real-request-disagree) |
 | Hiddify's plain profile works, its full app configuration fails | [Reduce the optional settings](#the-profile-works-but-the-apps-generated-configuration-fails) |
@@ -114,6 +115,10 @@ failed to find an available destination
 The tests recorded for this guide found that Xray client **25.1.30** failed against Xray server **26.9.9**, while client **26.10.31** connected with the same account link and provider. [Invisible Man - XRay Client](clients.md#switching-from-invisible-man---xray-client), a Windows VPN/proxy app used in the original guide, bundled that older engine in release 3.2.5. If your engine is similarly outdated, update the client and retest; copying the account link again leaves the engine unchanged.
 
 Some newer REALITY servers require changes to the initial encrypted connection setup, which older engines may lack. Hiddify 5.5.5 connected successfully in the recorded tests. The [technical explanation](xray-internals.md#why-a-valid-profile-can-stop-working-after-an-update) covers the version-specific details.
+
+## The same profile works through another VPN
+
+Label the direct and existing-proxy exits separately, repeat the same account over both paths, and compare packet headers at the client and VPS. The [network-path investigation guide](network-path-debugging.md) gives the commands, controlled tests and recorded anonymous case evidence. It covers random ports, target/SNI/fingerprint comparisons, missing handshake bytes and the limits of identifying the dropping operator.
 
 ## The profile works, but the app's generated configuration fails
 
