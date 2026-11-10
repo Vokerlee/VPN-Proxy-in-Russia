@@ -8,7 +8,7 @@ Your rented remote server is called a **VPS**. You press Connect. The app turns 
 
 A **port** is a numbered endpoint that lets several network programs share one machine's address. A **proxy** is a program that forwards a request for another application. Hiddify is the VPN app in this guide; it opens a proxy on your own computer, then carries selected requests to the remote server.
 
-Hiddify’s network engine is also called its **core**. **DNS** turns website names into IP addresses. **SSH** is the secure terminal connection used here to manage the server and carry private dashboard access.
+Hiddify’s network engine is also called its **core**. **DNS** turns website names into IP addresses. **SSH** is the secure terminal connection used here to manage the server; it can also carry optional private dashboard access.
 
 Follow one browser request from your desk to a website, and those numbers become much less mysterious.
 
@@ -19,8 +19,8 @@ Follow one browser request from your desk to a website, and those numbers become
 | Your Windows PC | `127.0.0.1:12334` | Hiddify's local mixed HTTP/SOCKS proxy |
 | The same PC | `127.0.0.1:10801` | An example second local proxy; the optional standalone Linux Xray guide uses this port |
 | Your VPS | `YOUR_SERVER_IP:443` | The public VLESS + REALITY inbound; 8443 is another possible configured port |
-| Your VPS | `127.0.0.1:27297` | Private administration panel in the default walkthrough; reached through SSH |
-| Your computer | `127.0.0.1:18080` | Browser access forwarded over SSH to that private panel |
+| Your VPS | `YOUR_SERVER_IP:27297` | Browser administration panel; open its full HTTP URL directly |
+| Your computer | `127.0.0.1:18080` | Optional SSH-forwarded access if you deliberately made the panel private |
 | Your PC | `127.0.0.1:16756` | Clash API: a control interface for other software to manage the app; not a browser proxy |
 | A website | `website.example:443` | HTTPS at the final destination |
 
@@ -30,7 +30,7 @@ Port 443 has a familiar HTTPS convention; that does not mean your local proxy mu
 
 `127.0.0.1` means **this machine**. It is your PC when entered in Windows, and the VPS when entered over SSH. Changing it to `0.0.0.0` changes who can reach the listener; it does not make the proxy more effective.
 
-![Separate paths and example ports for VPN traffic and SSH-forwarded panel access](../images/ports-paths.svg)
+![Separate paths and example ports for VPN traffic and direct panel access](../images/ports-paths.svg)
 
 ## Manual Proxy mode: start a listener, then choose an application
 

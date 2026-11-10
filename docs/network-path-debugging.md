@@ -90,7 +90,7 @@ An alternate-path success verifies that tested path. It does not establish a por
 
 ## 4. Vary settings without losing the control
 
-Port 443 is optional. A random unused TCP port is valid when the listener, both applicable firewalls and the imported profile agree. Check the port is free before using it. A different port can test a port-specific restriction; it cannot repair every destination or path restriction.
+Use only **443 or 8443** for public VPN inbounds. Check the chosen port is free, preserve existing listeners, and stop if neither allowed port is available. A different allowed port can test a port-specific restriction; it cannot bypass filtering of the whole destination IP. Historical cases below tested other ports before this rule was adopted; they are evidence, not instructions to repeat those configurations.
 
 Keep a private table with the endpoint, port, target, SNI, fingerprint, client engine/version, curl error, elapsed time, response body/exit and whether the route was direct or chained. Start by changing one field at a time. Use a broader comparison only after establishing the baseline, and repeat any apparent success with the same settings.
 
@@ -104,9 +104,9 @@ When TCP opens but the handshake stalls, capture the same attempt on the client 
 
 ```bash
 # Client: substitute the actual physical interface and VPN port.
-sudo tcpdump -ni eth0 -nn -S 'host 203.0.113.10 and tcp port 38457'
+sudo tcpdump -ni eth0 -nn -S 'host 203.0.113.10 and tcp port 8443'
 # VPS: filter on the client's public address after address translation.
-sudo tcpdump -ni any -nn -S 'host 198.51.100.20 and tcp port 38457'
+sudo tcpdump -ni any -nn -S 'host 198.51.100.20 and tcp port 8443'
 ```
 
 Stop each capture after the controlled request. The ordinary summary shows flags, TCP sequence/acknowledgment numbers and payload lengths. Avoid `-A`, `-X` and unrestricted packet files when headers are sufficient. Capturing requires packet-capture privileges; a filesystem permission alone does not supply them. Windows-native and WSL captures observe different parts of the local path.
@@ -181,6 +181,24 @@ A third fresh Ubuntu 24.04 VPS, **deployment C**, was provisioned with the Pytho
 The operator requested a non-Google final target/SNI and fingerprint. The final pairing used `www.apple.com:443`, SNI `www.apple.com` and Safari on a free high TCP port. The target passed certificate validation, TLS 1.3, HTTP/2 and an HTTP 200 response from the VPS. Native Xray and the installed Windows Hiddify engine both completed HTTPS requests through the working alternate path with Safari and Firefox, reporting deployment C's expected exit. A native iOS-preset control failed while the Hiddify iOS-preset control succeeded; that difference was kept separate from the direct-path finding.
 
 Direct native and Hiddify tests returned no authenticated trace response. During three fresh connection attempts to the final high port, the client captured six TCP SYN packets and the VPS captured none from the direct public source. As in investigation B, the observed direct failure occurred before TLS. A verified non-Google pairing and completed provisioning did not repair that reachability failure. The server/profile were retained privately for an independent access-network test; only alternate-path operation was demonstrated.
+
+## Recorded investigation D: success followed by direct reachability loss
+
+A later non-US deployment initially passed direct SSH and authenticated VPN tests. The server used TCP **8443**, VLESS/REALITY/Vision, Safari and `www.apple.com`. After replacing the existing desktop import with the exact panel export, repeated full Windows Hiddify engine requests passed 6/6 and the actual GUI VPN Connect test passed 2/2. The independent Windows watchdog then disconnected the test and restored the prior proxy selection.
+
+Direct reachability was subsequently lost while the same server still worked through an existing proxy:
+
+| Check | Direct path | Existing proxy path |
+|---|---|---|
+| Native Linux SSH login | Connection timed out | Not established in the comparison |
+| Native Windows SSH with ProxyCommand/ProxyJump bypassed | Connection timed out | Not established in the comparison |
+| TCP 22, VPN 8443, panel 27297 | All timed out | Panel access succeeded |
+| Same account, authenticated HTTPS through Xray | curl 28; no exit response | Succeeded; investigated VPS exit confirmed |
+| Panel HTTP request | curl 28; no response | HTTP 200 |
+
+The direct Linux route used the physical Ethernet gateway. The Windows SSH check used its native OpenSSH executable with normal configuration bypassed; the existing manual-proxy client was left running. The proxy control authenticated through the investigated VPN instead of merely returning the first proxy's exit address.
+
+This supersedes the initial direct success as the latest reachability result. It supports path-dependent filtering or routing failure before the VPN handshake; no nationwide, permanent ban or responsible operator was established. No new two-ended packet capture was performed in this comparison. Further SNI/uTLS changes were not presented as a repair for a TCP connection that could not be established.
 
 ## What to record before stopping
 

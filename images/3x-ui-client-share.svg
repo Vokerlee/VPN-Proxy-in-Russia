@@ -12,7 +12,7 @@
 <text x="95" y="183" font-size="17" fill="#172b4d" font-weight="400">In client connection details</text>
 <rect x="95" y="194" width="180" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
 <text x="108" y="215" font-size="15" fill="#074985" font-weight="700">Copy VLESS URL</text>
-<text x="95" y="243" font-size="13" fill="#53657d" font-weight="400">vless://YOUR_UUID@YOUR_SERVER_IP:443?...</text>
+<text x="95" y="243" font-size="13" fill="#53657d" font-weight="400">vless://YOUR_UUID@YOUR_SERVER_IP:8443?...</text>
 <rect x="44" y="267" width="1046" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="69" cy="296" r="16" fill="#0b62b9"/>
 <text x="64" y="302" font-size="16" fill="white" font-weight="700">2</text>

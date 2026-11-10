@@ -18,7 +18,7 @@
 <rect x="272" y="152" width="818" height="102" rx="12" fill="#ffffff" stroke="#d8e1ed"/>
 <circle cx="297" cy="181" r="16" fill="#0b62b9"/>
 <text x="292" y="187" font-size="16" fill="white" font-weight="700">1</text>
-<text x="323" y="183" font-size="17" fill="#172b4d" font-weight="400">Sign in through the forwarded local URL</text>
+<text x="323" y="183" font-size="17" fill="#172b4d" font-weight="400">Sign in through the public panel URL</text>
 <rect x="323" y="194" width="180" height="30" rx="7" fill="#e7f1fd" stroke="#6a9dd4"/>
 <text x="336" y="215" font-size="15" fill="#074985" font-weight="700">Login</text>
 <text x="323" y="243" font-size="13" fill="#53657d" font-weight="400">Use the generated panel account, not the SSH root password.</text>

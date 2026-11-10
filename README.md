@@ -36,13 +36,15 @@ Already have a suitable server? Continue with Step 2.
 
 The control panel is a website on your server where you can create connection accounts and change settings. We use a free panel called **3x-ui**.
 
-You will connect to the server through **SSH**, a secure way to administer it from a terminal, run the installation commands, and open the panel in your browser. The walkthrough shows the commands for both Windows and Linux and explains the installer prompts.
+You will connect to the server through **SSH**, a secure way to administer it from a terminal, run the installation commands, and open `http://YOUR_SERVER_IP:YOUR_PANEL_PORT/YOUR_PANEL_PATH/` directly in your browser. The ordinary setup does not require an SSH forwarding window. The walkthrough shows the commands for both Windows and Linux and explains the installer prompts.
 
 **[Install 3x-ui and open it in your browser →](docs/server-setup.md)**
 
 ### 3. Create your connection account
 
 In 3x-ui, click **Inbounds → Add Inbound** and fill in the settings shown in the guide. An *inbound* is the server entry point that accepts your device's connection.
+
+The current starting preset is **TCP 8443, target/SNI www.apple.com, Safari fingerprint, and Vision flow**. Use separate **desktop** and **phone** accounts on the same inbound when connecting both devices. The guide explains how to verify the profile and refresh an existing import.
 
 The guide uses a connection type called **VLESS + REALITY**. You can follow its field-by-field instructions without learning the protocol first.
 

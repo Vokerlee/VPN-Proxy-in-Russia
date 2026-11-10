@@ -60,6 +60,10 @@ Bypass configured SSH ProxyCommand/ProxyJump settings and do not reuse a multipl
 
 Apply this gate to both fresh and existing servers. An earlier successful proxy connection or an existing installation does not satisfy it. Historical alternate-path experiments in `docs/network-path-debugging.md` document evidence; they do not authorize continuing after a failed direct SSH check.
 
+## Allowed public VPN inbound ports
+
+**Never create, move or test a public VPN inbound on a port other than TCP 443 or 8443.** This is the repository owner's explicit rule. Prefer the documented 8443 preset; 443 is the only alternative. Preserve existing listeners. If neither allowed port is available, stop provisioning and report the conflict rather than selecting a random/high port. This restriction applies to public VPN inbounds, not SSH, the administration panel, or temporary loopback client proxies. Historical investigations on other ports are evidence only and do not authorize repeating those configurations.
+
 ## Automatic setup when the user supplies a VPS IP and root access
 
 The automatic path targets a **fresh Ubuntu/Debian systemd VPS**. An explicit request to set up that server authorizes the documented setup steps; do not ask for repetitive confirmations already covered by that request. Tool/sandbox approvals still apply. A request to edit docs or inspect a repository is not permission to provision a server.
@@ -68,16 +72,16 @@ The automatic path targets a **fresh Ubuntu/Debian systemd VPS**. An explicit re
 2. Run the local plan first:
 
    ```bash
-   python3 scripts/bootstrap_server.py --host VPS_IPV4 --plan
+   python3 scripts/bootstrap_server.py --host VPS_IPV4 --vpn-port 8443 --target www.apple.com --fingerprint safari --plan
    ```
 
-3. For an authorized fresh setup, run the launcher with `--apply`. Use an interactive terminal/PTY for OpenSSH's host-key and password prompts. On a Windows machine without Python, use `scripts/Setup-Vpn.ps1 -ServerIp VPS_IPV4 -Apply`.
+3. For an authorized fresh setup, run the launcher with `--apply`, preserving the guide's explicit `--vpn-port 8443 --target www.apple.com --fingerprint safari` preset unless the user chooses other values. Use an interactive terminal/PTY for OpenSSH's host-key and password prompts. On a Windows machine without Python, use `scripts/Setup-Vpn.ps1 -ServerIp VPS_IPV4 -Apply`.
 4. OpenSSH must verify host identity using its normal known-host behavior. Never disable strict host-key checking or silently accept a changed key. The launchers let SSH read the root password; never add a password argument, write it into scripts/configs, or print it.
 5. The payload refuses existing `/usr/local/x-ui/x-ui` or `/etc/x-ui/x-ui.db` before installation. Do not bypass that guard, delete the installation to retry, or rotate an existing account's credentials. For an existing deployment, use the manual guide and read-only diagnostics, then make only changes authorized by the user.
-6. The helper installs pinned 3x-ui, creates one REALITY/Vision account, applies ForceIPv4 to the new direct outbound, selects a free public VPN port, and puts the panel on loopback. During Apply only, it resolves the public VPS IP's country and selects Safari for US or Chrome elsewhere; explicit country/fingerprint options override lookup/policy. A failed unresolved lookup stops before installation instead of guessing. Export the exact panel-generated URI. It adds only the selected VPN allow rule if UFW is already active; it does not enable/reset a firewall or harden SSH blindly.
+6. The helper installs pinned 3x-ui, creates one REALITY/Vision account, applies ForceIPv4 to the new direct outbound, selects a free public VPN port, and enables direct public HTTP panel access. During Apply only, it resolves the public VPS IP's country and selects Safari for US or Chrome elsewhere; explicit country/fingerprint options override lookup/policy. A failed unresolved lookup stops before installation instead of guessing. Export the exact panel-generated URI. It adds the VPN and panel TCP allow rules if UFW is already active; it does not enable/reset a firewall or harden SSH blindly.
 7. Save the returned private exports under `.secrets/` or another user-approved private location. The VPS's recovery result is `/root/vpn-guide-bootstrap-result.json`; installer logs are root-only. Do not paste these files or raw logs into public output.
 8. Check the actual selected port. A busy 443 can select 8443. If the external TCP check fails, report the exact provider/custom-firewall action; root access is not provider-account access. Do not claim authentication from a TCP success.
-9. Explain panel access with the printed SSH-forward command, the local browser URL (new automated installations use the root path `/`), and the separate panel credentials. The root password is not the new panel login. Keep the forward open while using the browser; no public panel HTTP port needs to be opened.
+9. Give the complete public browser URL, including scheme, server IP, panel port and saved path (new automated installations use `/`), plus the separate panel credentials. The root password is not the panel login. The normal setup uses public HTTP as requested by the repository owner; do not silently replace it with SSH-only access or HTTPS. Offer those as optional alternatives. Verify public reachability and login. Never publish live credentials in tracked files.
 10. Import the generated `hiddify-profile.txt` into the client and follow the complete settings/verification path. Test a real HTTPS request through the local proxy and compare egress. Report what was tested and what remains unverified.
 
 Keep a working SSH session during any separately authorized access-control change. Do not disable root login or password authentication before a replacement administrator/key has been tested.

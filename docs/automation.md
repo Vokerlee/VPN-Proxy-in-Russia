@@ -14,13 +14,27 @@ The **setup helper** installs server software only when explicitly applied. The 
 
 Follow the [illustrated quick start](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
 
-The launchers use **SSH**, an encrypted terminal connection, through the operating system’s **OpenSSH** program. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. A busy 443 falls back to 8443; provider-firewall work is reported as a separate action when needed.
+The launchers use **SSH**, an encrypted terminal connection, through the operating system’s **OpenSSH** program. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. Public VPN inbound ports are restricted to **443 or 8443**. A busy default 443 falls back to 8443; provider-firewall work is reported as a separate action when needed. Allow the VPN port and the separate panel TCP port; the helper adds both rules only when UFW is already active.
 
-The private panel uses the root URL path `/` and is reached through the SSH-forward command printed at completion. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
+The panel uses the root URL path `/` and listens publicly. Open the printed `http://SERVER_IP:PANEL_PORT/` directly in your browser; no SSH forward is required. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
 
 The helper retrieves the **actual 3x-ui client export**, including its display name and `spx` value, rather than constructing a lookalike link. Keep that name when importing: for example, an inbound named `Personal VPN` with account `first-device` may export **Personal VPN-first-device**. Different people and devices must receive their own account's export; the inbound name alone does not identify whose credentials a profile uses.
 
 The pinned remote payload is `scripts/provision_remote.py`; it is not a workstation setup program and refuses direct invocation without the launcher's supplied options. Review the code and pinned installer before applying it. This path installs 3x-ui and its bundled Xray version; it does not silently upgrade an existing installation or promise automatic compatibility with every future client.
+
+### Recommended preset and legacy regional defaults
+
+For this Hiddify walkthrough, explicitly select the tested preset:
+
+```powershell
+.\scripts\Setup-Vpn.ps1 -VpnPort 8443 -Target www.apple.com -Fingerprint safari
+```
+
+```bash
+python3 scripts/bootstrap_server.py --vpn-port 8443 --target www.apple.com --fingerprint safari --plan
+```
+
+Add `-Apply` / `--apply` only for an authorized fresh VPS. This sets the new inbound and its export together. Keep existing accounts' UUIDs and keys when changing a target or fingerprint; re-export and replace the saved client profile afterward.
 
 ### Choose the client fingerprint by server country
 

@@ -17,7 +17,7 @@ https://github.com/Vokerlee/VPN-Proxy-in-Russia/blob/master/docs/quick-start.md
 param(
     [string]$ServerIp,
     [ValidateRange(1,65535)][int]$SshPort=22,
-    [ValidateRange(1,65535)][int]$VpnPort=443,
+    [ValidateSet(443,8443)][int]$VpnPort=443,
     [ValidateRange(1,65535)][int]$PanelPort=27297,
     [ValidatePattern('^[a-zA-Z0-9][a-zA-Z0-9.-]*$')][string]$Target='www.google.com',
     [ValidatePattern('^(auto|[a-zA-Z]{2})$')][string]$ServerCountry='auto',
@@ -35,7 +35,7 @@ $ServerIp=$address.ToString()
 if (@($SshPort,$VpnPort,$PanelPort | Select-Object -Unique).Count -ne 3) {
     throw 'SSH, VPN and administration ports must be different.'
 }
-Write-Output 'Plan: pinned official 3x-ui 3.8.5, one REALITY/Vision account, ForceIPv4, loopback panel.'
+Write-Output 'Plan: pinned official 3x-ui 3.8.5, one REALITY/Vision account, ForceIPv4, public browser panel.'
 Write-Output 'Fingerprint policy: US -> Safari; other countries -> Chrome; -Fingerprint overrides.'
 Write-Output 'Country lookup runs only during apply; -ServerCountry skips it.'
 Write-Output 'Existing installations/listeners are preserved. Windows proxy and running clients are untouched.'
@@ -87,11 +87,10 @@ try {
 } finally {
     $client.Close()
 }
-Write-Output 'In a second PowerShell terminal, keep this SSH forward running:'
-Write-Output ('ssh -N -o ExitOnForwardFailure=yes -p '+$SshPort+' -L 127.0.0.1:18080:127.0.0.1:'+$result.panel_port+' root@'+$ServerIp)
 $panelPath=([string]$result.web_path).Trim('/')
-$panelUrl='http://127.0.0.1:18080/'
+$panelUrl='http://'+$ServerIp+':'+$result.panel_port+'/'
 if ($panelPath) {$panelUrl+=$panelPath+'/'}
-Write-Output ('Then open '+$panelUrl+' in your browser.')
+Write-Output ('Open 3x-ui directly in your browser: '+$panelUrl)
+Write-Output ('If unreachable, allow inbound TCP '+$result.panel_port+' in the provider/custom firewall.')
 Write-Output 'Use the generated panel credentials in server.json, not the root password.'
 Write-Output 'Next: docs/quick-start.md#bring-the-profile-into-hiddify'

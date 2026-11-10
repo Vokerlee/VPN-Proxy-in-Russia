@@ -82,56 +82,62 @@ At the installer prompts:
 
 1. If asked for a database, keep **SQLite**, the built-in choice for a personal server.
 2. Choose an unused panel port, for example **27297**, when offered. A port is a numbered network entry point. This one is for managing the server, not for VPN traffic.
-3. For panel certificates, choose **Skip SSL / HTTP only**. The next steps carry the browser connection through encrypted SSH, so you do not need a domain or public certificate.
+3. For panel certificates, choose **Skip SSL / HTTP only** for direct HTTP browser access. The optional HTTPS instructions below explain certificates.
 4. Save the printed **panel port, URL path, username, and password** in a password manager. The panel credentials are different from your root/SSH login.
 
 ### Required: open the dashboard safely in your browser
 
-This connection is only for managing the dashboard. It does not carry your VPN traffic and does not need to stay open while using the VPN. Follow these steps after the installer finishes.
+The ordinary setup opens the panel directly by the server's public IP. You do not need a second terminal or an SSH forwarding connection to keep using it.
 
-**1. On the server**, in the SSH window you already opened, run:
+**1. On the server**, enable the public panel listener:
+
+```bash
+/usr/local/x-ui/x-ui setting -listenIP 0.0.0.0
+systemctl restart x-ui
+```
+
+**2. In your provider's firewall/security group**, allow incoming **TCP on your panel port**, for example **27297**. If the VPS already uses an active UFW firewall, add `ufw allow 27297/tcp` there too. Use your actual panel port, preserve SSH access, and do not enable or reset a firewall just for this step.
+
+**3. In your computer or phone's browser**, open the complete saved URL:
+
+```text
+http://YOUR_SERVER_IP:YOUR_PANEL_PORT/YOUR_PANEL_PATH/
+```
+
+Replace the IP, port and path with the installer result. Keep the saved path and its slashes. A panel with the root path `/` uses `http://YOUR_SERVER_IP:27297/`. The address is on your VPS; `127.0.0.1` would mean the device running your browser.
+
+Enter the **panel username and password**, then click **Login**. These are separate from the root/SSH password.
+
+**Check:** the login page opens directly and the panel accepts your credentials. Closing SSH afterward does not close browser access. If the page is unreachable, check the actual panel listener and both firewalls. A listener bound to `127.0.0.1` accepts only local connections; repeat step 1 to make an existing private panel public.
+
+<details>
+<summary>Optional: use HTTPS for browser-to-panel encryption</summary>
+
+The checked installer offers **Let's Encrypt IP certificate** without a domain. Select that option during installation and enter the public IP. For an existing installation, run `x-ui`, open **SSL Certificate Management**, and choose **Let's Encrypt SSL Certificate for IP Address** (menu 20, then 6 in 3.8.5).
+
+Issuance and automatic renewal need incoming **TCP 80** reachable from the certificate authority. Preserve any existing service on port 80; plan coexistence rather than stopping it. Keep the panel port allowed as well. Confirm certificate installation and renewal setup succeeded, then open the printed `https://...` URL including its panel port and saved path. Check that the browser trusts the certificate.
+
+If converting a private panel, also run `/usr/local/x-ui/x-ui setting -listenIP 0.0.0.0` and restart `x-ui`; installing a certificate alone does not change its listen address.
+
+</details>
+
+<details>
+<summary>Optional: keep the panel private and access it through SSH</summary>
+
+Choose this only when you want SSH to be required for browser access. For an HTTP panel, run on the VPS:
 
 ```bash
 /usr/local/x-ui/x-ui setting -listenIP 127.0.0.1
 systemctl restart x-ui
 ```
 
-This makes the dashboard private: only the server itself can reach it directly. Next, give your browser a secure way in.
-
-**2. On your computer**, open a **second PowerShell window or terminal**. Do not type this command inside the server's SSH session:
+On your computer, open a second terminal and keep this command running:
 
 ```bash
 ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:18080:127.0.0.1:YOUR_PANEL_PORT YOUR_LOGIN_USER@YOUR_SERVER_IP
 ```
 
-Replace these three placeholders before pressing Enter:
-
-| Replace | With |
-|---|---|
-| `YOUR_PANEL_PORT` | The panel port saved from the installer, for example `27297` |
-| `YOUR_LOGIN_USER` | Your server login user, such as `root` |
-| `YOUR_SERVER_IP` | Your server's public IP address |
-
-If your provider uses a custom SSH port, add `-p YOUR_SSH_PORT` after `ssh`. Enter the SSH password when asked. **Leave this window open**; no further output is normal. It is carrying your browser connection securely to the server. If it reports that local port 18080 is already in use, choose another unused local port in both this command and the browser address below.
-
-**3. In your computer's browser**, open:
-
-```text
-http://127.0.0.1:18080/YOUR_PANEL_PATH/
-```
-
-Replace `YOUR_PANEL_PATH` with the path printed by the installer. For example, a saved path `/abc123/` gives `http://127.0.0.1:18080/abc123/`. Keep the slashes and the path. Use your **panel username and password**, then click **Login**.
-
-**Check:** the dashboard opens. Keep the second terminal open while using it. You can close it when finished; the VPN service keeps running. To open the dashboard tomorrow, repeat steps 2 and 3. Step 1 only needs to be done once.
-
-<details>
-<summary>Optional advanced alternative: public HTTPS dashboard. Skip for the ordinary setup above.</summary>
-
-Use this instead of the private dashboard access above only if you intentionally want a public administration endpoint. You do not need it for the VPN to work. An already-private installation also needs its listen address changed deliberately before it can accept public connections.
-
-The checked installer offers **Let's Encrypt IP certificate** without a domain name. During installation, select that option and enter the public IP. Certificate issuance and renewal need incoming **TCP 80** reachable from the certificate authority, and browser access needs the chosen panel TCP port allowed from your administration IP in both applicable firewalls. Preserve any existing web service using port 80; plan coexistence rather than stopping it.
-
-Use the printed `https://...` URL including its path, and log in with the generated panel credentials. Confirm the certificate is trusted. A completed installation alone does not establish that certificate issuance or future renewal succeeded.
+Replace the port, login user and server IP with your values. Add `-p YOUR_SSH_PORT` for a custom SSH port. Open `http://127.0.0.1:18080/YOUR_PANEL_PATH/` and sign in with the panel credentials. Closing this forwarding terminal ends browser access; the VPN keeps running. No public panel-port rule is needed for this option.
 
 </details>
 
@@ -143,22 +149,24 @@ If you lose the panel URL or credentials, run `x-ui` over SSH and use the menu's
 
 ## 4. Choose the VPN port
 
-Use **443** for the VPN connection if that port is free. A **port** is a numbered network entry point; it lets the server distinguish VPN connections from SSH and dashboard access.
+This walkthrough uses **8443** for VPN traffic. A **port** is a numbered network entry point; it lets the server distinguish the VPN from SSH and the browser dashboard.
 
-**On the server**, check whether another program already uses 443:
+**On the server**, check that 8443 is free:
 
 ```bash
-ss -lntp 'sport = :443'
+ss -lntp 'sport = :8443'
 ```
 
-- **Only the column headings appear:** port 443 is free. Use **443** in the next chapter.
-- **A row appears:** another program is using 443. Keep it running and check **8443** with `ss -lntp 'sport = :8443'`. If that is free, use **8443** in the next chapter.
+- **Only column headings appear:** use **8443** in the next chapter.
+- **A listener appears:** preserve it and check **443**, the only allowed alternative, with `ss -lntp 'sport = :443'`. If both ports are occupied, stop and resolve the conflict without stopping an existing service or selecting another port.
+
+Changing a port can help when one particular port is filtered. It cannot bypass filtering of the server's whole IP address.
 
 Save the selected number. In 3x-ui you will enter it as the inbound’s **Port**. The exported connection link will then include it automatically.
 
 **In your provider’s dashboard**, check whether this server has incoming network restrictions, usually called **Firewall**, **Security group**, or **Network rules**. If it does, allow incoming **TCP** on your selected VPN port. TCP is the connection type used by this setup. If your provider already allows incoming connections, there is no rule to add there.
 
-You do not need to install or enable UFW for this walkthrough. Keep your existing SSH access; the private dashboard uses that same SSH connection.
+You do not need to install or enable UFW for this walkthrough. Keep your existing SSH access and the separate panel-port rule from section 3.
 
 <details>
 <summary>Optional: this server already has its own firewall. Skip if you have not configured one and your server image does not include one.</summary>
@@ -174,10 +182,10 @@ ufw status verbose
 If it says **inactive**, do not enable it as part of this step. If it says **active**, allow your selected port, for example:
 
 ```bash
-ufw allow 443/tcp
+ufw allow 8443/tcp
 ```
 
-Substitute 8443 if you selected that port. Keep the current SSH rules. If the server uses nftables or iptables instead, update its existing policy with that tool. Do not reset the rules on a remotely managed server.
+Substitute your actual VPN port if you selected another value. Keep the current SSH rules. If the server uses nftables or iptables instead, update its existing policy with that tool. Do not reset the rules on a remotely managed server.
 
 </details>
 

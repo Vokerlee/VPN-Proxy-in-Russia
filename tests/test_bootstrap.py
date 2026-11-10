@@ -40,6 +40,19 @@ class BootstrapTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             bootstrap.validate_options("203.0.113.10",fingerprint="chrome;echo x")
 
+    def test_public_inbound_ports_are_limited_to_443_and_8443(self):
+        for port in (443,8443):
+            self.assertEqual(bootstrap.validate_options("203.0.113.10",vpn_port=port)["vpn_port"],port)
+        for port in (80,2096,38457,51837,65535):
+            with self.subTest(port=port):
+                with self.assertRaisesRegex(ValueError,"443 or 8443"):
+                    bootstrap.validate_options("203.0.113.10",vpn_port=port)
+                with mock.patch.object(remote.os,"geteuid",return_value=0):
+                    with mock.patch.object(remote,"assert_fresh") as guard:
+                        with self.assertRaisesRegex(ValueError,"443 or 8443"):
+                            remote.run({"vpn_port":port})
+                        guard.assert_not_called()
+
     def test_native_ssh_prompt_and_host_key_check_are_preserved(self):
         opts=bootstrap.validate_options("203.0.113.10")
         command=bootstrap.ssh_command("ssh",opts)
@@ -118,12 +131,13 @@ class BootstrapTests(unittest.TestCase):
             result=remote.resolve_fingerprint_options(bootstrap.validate_options("203.0.113.10",server_country="DE"))
             self.assertEqual(result["fingerprint"],"chrome")
 
-    def test_panel_url_supports_root_and_previous_exports(self):
-        for path in ("/", ""):
-            self.assertEqual(bootstrap.panel_url({"web_path": path}), "http://127.0.0.1:18080/")
-        for path in ("saved-path", "/saved-path/"):
-            self.assertEqual(bootstrap.panel_url({"web_path": path}, 18082),
-                             "http://127.0.0.1:18082/saved-path/")
+    def test_public_panel_url_and_optional_forward_preserve_saved_paths(self):
+        for path in ("/", "", "saved-path", "/saved-path/"):
+            result={"host":"203.0.113.10","panel_port":27297,"web_path":path}
+            suffix=path.strip("/")
+            suffix=suffix+"/" if suffix else ""
+            self.assertEqual(bootstrap.panel_url(result), "http://203.0.113.10:27297/"+suffix)
+            self.assertEqual(bootstrap.panel_url(result,18082), "http://127.0.0.1:18082/"+suffix)
 
     def test_result_files_cannot_overwrite_an_existing_export(self):
         result={"client_link":"vless://PLACEHOLDER"}

@@ -33,7 +33,7 @@ On Linux/macOS, have OpenSSH and Python 3.8+ available. The automatic server set
 On Windows, preview the plan:
 
 ```powershell
-.\scripts\Setup-Vpn.ps1
+.\scripts\Setup-Vpn.ps1 -VpnPort 8443 -Target www.apple.com -Fingerprint safari
 ```
 
 Enter the VPS IPv4 address when asked. This first command does not connect or change anything.
@@ -41,13 +41,13 @@ Enter the VPS IPv4 address when asked. This first command does not connect or ch
 Then run the real setup:
 
 ```powershell
-.\scripts\Setup-Vpn.ps1 -Apply
+.\scripts\Setup-Vpn.ps1 -VpnPort 8443 -Target www.apple.com -Fingerprint safari -Apply
 ```
 
 If PowerShell blocks a script you have inspected and trust, you can allow just this process without changing the machine-wide execution policy:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Setup-Vpn.ps1 -Apply
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Setup-Vpn.ps1 -VpnPort 8443 -Target www.apple.com -Fingerprint safari -Apply
 ```
 
 Respect managed-device policy; the manual walkthrough remains available if script execution is prohibited.
@@ -55,9 +55,11 @@ Respect managed-device policy; the manual walkthrough remains available if scrip
 On Linux/macOS, the equivalent commands are:
 
 ```bash
-python3 scripts/bootstrap_server.py --plan
-python3 scripts/bootstrap_server.py --apply
+python3 scripts/bootstrap_server.py --vpn-port 8443 --target www.apple.com --fingerprint safari --plan
+python3 scripts/bootstrap_server.py --vpn-port 8443 --target www.apple.com --fingerprint safari --apply
 ```
+
+These commands explicitly choose the tested **8443 + Safari + www.apple.com** preset. If 8443 is occupied, use 443 only if it is free; otherwise stop and preserve both existing listeners. The helper's bare defaults remain 443/Google and a regional fingerprint policy; the commands above override them.
 
 The first SSH connection may ask you to confirm the server's host-key fingerprint. Compare it with the provider's console when available. After that, **SSH itself** asks for the root password. The password is hidden while you type; it never becomes a script argument, a configuration file, or a Git commit. SSH keys work too if you have already configured them.
 
@@ -70,51 +72,45 @@ The default setup uses the version this guide describes, **3x-ui 3.8.5**, rather
 You get:
 
 - One VLESS + RAW/TCP + REALITY inbound and one `xtls-rprx-vision` account.
-- Public VPN TCP port **443**, or **8443** if 443 is already occupied. It does not stop the existing listener.
+- Public VPN TCP port **8443** with the commands above. An occupied explicitly selected port stops setup; only a free 443 may be selected instead.
 - Generated UUID, REALITY keys, short ID, and panel credentials. The panel URL path is `/`.
-- A client fingerprint chosen from the VPS country: **Safari for the US**, **Chrome elsewhere**, with an explicit override available. This is a starting policy based on the [controlled US comparison](troubleshooting.md#reality-chrome-times-out-but-safari-works), not a guarantee for every network.
+- The **Safari** fingerprint and **www.apple.com** target/SNI selected explicitly above. The bare helper's regional policy is described in the [automation guide](automation.md#choose-the-client-fingerprint-by-server-country); country is not a substitute for a real client test.
 - **ForceIPv4** on the server’s outgoing path, so hostname-based website requests use IPv4.
-- A panel bound to **127.0.0.1:27297** on the VPS, accessed through SSH rather than exposed as public HTTP.
-- The selected VPN port allowed in an existing UFW firewall, if active. UFW is Ubuntu’s firewall-management tool; the helper does not install or enable it. Existing SSH rules and custom/provider firewalls are not reset.
+- A public HTTP panel on **YOUR_SERVER_IP:27297**, opened directly in a browser.
+- The VPN and panel TCP ports allowed in an existing UFW firewall, if active. UFW is Ubuntu’s firewall-management tool; the helper does not install or enable it. Existing SSH rules and custom/provider firewalls are not reset.
 - A private `server.json` and `hiddify-profile.txt` saved under the repository's ignored `.secrets/` folder.
 
 The helper checks that the server listener starts and probes its public TCP port from your computer. A reachable socket is still not an authenticated VPN test; importing the profile and running the final request below completes that check.
 
-For a custom SSH or VPN port, use `-SshPort` / `-VpnPort` on Windows, or `--ssh-port` / `--vpn-port` with Python. Use `-PanelPort` / `--panel-port` if the administration port is occupied. Read the [automation details](automation.md#start-with-only-a-vps-ip-and-root-password) before changing defaults.
+For a custom SSH port, use `-SshPort` / `--ssh-port`. Public VPN inbounds are restricted to **443 or 8443**; select one with `-VpnPort` / `--vpn-port`. Use `-PanelPort` / `--panel-port` if the administration port is occupied. Read the [automation details](automation.md#start-with-only-a-vps-ip-and-root-password) before changing defaults.
 
 During **Apply**, the helper looks up the VPS's public IP country using [Country](https://country.is/); it sends the public IP, never your credentials. **Plan mode makes no lookup or SSH connection.** To skip that lookup or correct its result, add `-ServerCountry US` on Windows or `--server-country US` with Python; use another two-letter code for another country. To choose a tested preset yourself, add `-Fingerprint safari` / `--fingerprint safari` (or `chrome`, `firefox`, etc.). An explicit fingerprint overrides the country policy. If automatic lookup fails, the helper stops before installation and tells you which option to supply.
 
-## Open 3x-ui without opening another public port
+## Open 3x-ui directly in your browser
 
-At the end, the helper prints a command similar to:
-
-```bash
-ssh -N -o ExitOnForwardFailure=yes -p 22 -L 127.0.0.1:18080:127.0.0.1:27297 root@YOUR_SERVER_IP
-```
-
-Open a **second terminal**, run the exact command printed for your server, and leave it running. SSH can ask for the password again. An apparently idle terminal is normal: it is forwarding the browser connection.
-
-Now open the printed root URL in your Windows/macOS/Linux browser:
+At completion, the helper prints the full panel URL. For the default port and root path it is:
 
 ```text
-http://127.0.0.1:18080/
+http://YOUR_SERVER_IP:27297/
 ```
 
-This `127.0.0.1` is **your computer**. SSH forwards it to the panel's loopback listener on the VPS. The remote hop is protected by SSH; it does not require a public panel certificate or provider firewall rule for 27297. Do not replace that URL with `http://SERVER_IP:27297`—the helper deliberately made the panel private.
+Replace `YOUR_SERVER_IP` with your VPS IPv4 address. Open this address on your computer or phone. No SSH forwarding window is required, and closing the setup terminal does not close panel access.
 
-![Open the panel: full local forwarded URL, credentials, then Login](../images/3x-ui-panel-login.svg)
+If your provider filters incoming traffic, allow **TCP 27297**, or the actual panel port you selected. The VPN port is a different rule. The helper adds the panel allow rule only when UFW is already active; it does not control the provider firewall.
 
-Open the generated `server.json` locally and find `panel_username` and `panel_password`. Enter those in the panel's **Username** and **Password** boxes and click **Login**. The root password is for SSH, not for this new panel account.
+![Open the panel: full server URL, credentials, then Login](../images/3x-ui-panel-login.svg)
 
-In the sidebar, click **Inbounds**. You should see **Personal VPN**, enabled, with the VPN port recorded in `server.json`. The account already exists: you do not need to click Add Inbound again.
+Open the generated `server.json` locally and find `panel_username` and `panel_password`. Enter them in the panel's **Username** and **Password** boxes and click **Login**. The root password is for SSH, not for the panel.
+
+In the sidebar, click **Inbounds**. You should see **Personal VPN**, enabled, on the VPN port recorded in `server.json`. The account already exists; do not add a duplicate inbound.
 
 ![First visit to 3x-ui: Login, Inbounds, Personal VPN, then the first-device share action](../images/3x-ui-first-visit.svg)
 
-**Optional check:** to inspect the IPv4 exit setting, use **Outbounds → direct → Edit → Strategy**. The setting was already applied by the helper; the [ForceIPv4 guide](force-ipv4.md) explains how to check it manually. Depending on the panel/core migration, its effective value can be stored under socket options even when a form displays the legacy field.
+**Optional check:** **Outbounds → direct → Edit → Strategy** shows the IPv4 exit setting. It was applied by the helper; the [ForceIPv4 guide](force-ipv4.md) explains the setting and effective socket option.
 
-When you close the SSH-forwarding terminal, browser access stops. The VPN service remains running on the VPS. Reopen the same forwarding command whenever you need to administer the panel. If local port 18080 is occupied, use another unused local port in the `-L` command and in the browser URL.
+For optional HTTPS or an intentionally private SSH-only panel, follow the [panel access alternatives](server-setup.md#required-open-the-dashboard-safely-in-your-browser). Older helper exports used a loopback-only listener: to make such a panel public, run `/usr/local/x-ui/x-ui setting -listenIP 0.0.0.0` on the VPS, restart `x-ui`, and allow the actual panel port.
 
-![The browser panel uses an SSH-forwarded administration path, separate from VPN traffic](../images/ports-paths.svg)
+![Separate browser-panel and VPN traffic paths](../images/ports-paths.svg)
 
 ## Bring the profile into Hiddify
 
@@ -138,11 +134,11 @@ A stopped helper tells you which stage needs attention. It does not roll back pa
 |---|---|
 | Existing 3x-ui detected | Open the existing panel or run `x-ui` over SSH to retrieve its settings; use the manual guide |
 | Cannot authenticate over SSH | Recheck IP, root login permission, actual SSH port, and provider credentials; use a real interactive terminal |
-| Port 443 is occupied | The helper chooses 8443 when available; allow the actual chosen port in the provider firewall |
+| Selected VPN port is occupied | Use the other allowed port (443 or 8443) only if free; if both are occupied, stop and preserve both listeners |
 | Public VPN TCP port is not reachable | In the provider website, find Firewall / Security group / Network rules and allow inbound **TCP** on the recorded VPN port; inspect custom host rules too |
 | Installer or API stage failed | Read the private `/root/vpn-guide-bootstrap-*.log` over SSH; do not share it unredacted |
 | Setup completed but local result files were not saved | Recover `/root/vpn-guide-bootstrap-result.json` privately over SSH |
-| Browser cannot open the panel | Keep the SSH forward running; use its local port and root URL `/` |
+| Browser cannot open the panel | Use the printed public IP, actual panel port and saved path; check the public listener and provider/custom firewall |
 | Hiddify errors after import | Follow the [handshake and generated-config checks](troubleshooting.md), including the documented recovery helper |
 
 **Optional, after the connection works:** read [server administration improvements](server-setup.md#5-optional-improve-server-administration-later) if you want a separate administrator account and tighter SSH access. The helper leaves these choices to you.

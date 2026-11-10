@@ -37,6 +37,8 @@ def validate_options(host, ssh_port=22, vpn_port=443, panel_port=27297, target="
         raise ValueError("use the VPS IPv4 address for this walkthrough")
     if any(not 1 <= p <= 65535 for p in (ssh_port, vpn_port, panel_port)):
         raise ValueError("ports must be between 1 and 65535")
+    if vpn_port not in (443, 8443):
+        raise ValueError("public VPN inbound port must be 443 or 8443")
     if len({ssh_port, vpn_port, panel_port}) != 3:
         raise ValueError("SSH, public VPN and administration panel ports must be different")
     if not re.fullmatch(r"[A-Za-z0-9.-]+", target) or target.startswith("-"):
@@ -62,9 +64,10 @@ def panel_command(result, local_port=18080):
             "-L", f"127.0.0.1:{local_port}:127.0.0.1:{result['panel_port']}", "root@" + result["host"]]
 
 
-def panel_url(result, local_port=18080):
+def panel_url(result, local_port=None):
     path = result["web_path"].strip("/")
-    return f"http://127.0.0.1:{local_port}/" + (path + "/" if path else "")
+    address = f"127.0.0.1:{local_port}" if local_port is not None else f"{result['host']}:{result['panel_port']}"
+    return f"http://{address}/" + (path + "/" if path else "")
 
 
 def save_result(result, output):
@@ -87,7 +90,7 @@ def main():
     modes.add_argument("--plan", action="store_true", help="show the plan without connecting (default)")
     modes.add_argument("--apply", action="store_true", help="provision a fresh Ubuntu/Debian systemd VPS over SSH")
     p.add_argument("--ssh-port", type=int, default=22)
-    p.add_argument("--vpn-port", type=int, default=443)
+    p.add_argument("--vpn-port", type=int, choices=(443, 8443), default=443)
     p.add_argument("--panel-port", type=int, default=27297)
     p.add_argument("--target", default="www.google.com")
     p.add_argument("--server-country", default="auto", help="VPS country code, e.g. US/DE; auto looks up its public IP during apply")
@@ -99,7 +102,7 @@ def main():
                                    args.vpn_port, args.panel_port, args.target,
                                    args.server_country, args.fingerprint)
         print("Fresh-server plan: official 3x-ui v3.8.5, one REALITY/Vision account, ForceIPv4,")
-        print("a loopback-only administration panel, and private local profile/credential files.")
+        print("a public browser administration panel, and private local profile/credential files.")
         print("Fingerprint policy: US → Safari; other countries → Chrome; explicit --fingerprint overrides.")
         print("Country lookup runs only during apply; --server-country skips it.")
         print("Existing installs/listeners are preserved. No SSH hardening, OS upgrade, client stop,")
@@ -147,9 +150,8 @@ def main():
                 print("The public VPN TCP port is reachable from this computer; authentication still needs a client test.")
         except OSError:
             print(f"ACTION: allow inbound TCP {result['vpn_port']} in the provider's firewall/security group and inspect any custom host firewall.")
-        print("Open the panel: leave this command running in a second terminal:")
-        print(subprocess.list2cmdline(panel_command(result)) if os.name == "nt" else shlex.join(panel_command(result)))
-        print("Then open: " + panel_url(result))
+        print("Open 3x-ui directly in your browser: " + panel_url(result))
+        print(f"If unreachable, allow inbound TCP {result['panel_port']} in the provider/custom firewall.")
         print("Log in with the generated panel credentials in server.json, not the root password.")
         print("Next: docs/quick-start.md#bring-the-profile-into-hiddify")
         return 0

@@ -16,15 +16,15 @@ FIGURES = [
         ("Run the official installer", "Choose an unused panel port", "The administration port is separate from the VPN listener."),
         ("Save the complete result", "Panel URL + credentials", "Store the URL path, username and password privately.")]),
     ("3x-ui-panel-login", "Open the administration panel", "3x-ui 3.8.5", [], "", [
-        ("Keep the SSH forwarding window open", "http://127.0.0.1:18080/YOUR_PATH/", "Open this on your computer. Replace YOUR_PATH with the saved panel path."),
+        ("Open the full server URL", "http://YOUR_SERVER_IP:27297/YOUR_PATH/", "Replace the IP, panel port and path with the saved installer result."),
         ("Enter the panel credentials", "Username + password", "Use the panel login, not the root password."),
         ("Sign in", "Login", "Confirm the panel and Xray versions on the dashboard.")]),
     ("3x-ui-add-inbound", "Create the public VPN listener", "3x-ui 3.8.5", ["Dashboard", "Inbounds", "Clients", "Outbounds", "Routing", "Xray Settings"], "Inbounds", [
         ("Open the main sidebar", "Inbounds", "Use the menu button if the sidebar is collapsed."),
-        ("Open the form", "Add Inbound", "Protocol: vless. Public port: 443 if available."),
+        ("Open the form", "Add Inbound", "Protocol: vless. Public port: 8443 if available."),
         ("Configure before saving", "REALITY + Vision", "The next diagram shows the transport and account fields.")]),
     ("3x-ui-reality-settings", "Fill in the REALITY form", "3x-ui 3.8.5", ["Inbounds", "New inbound", "Client account", "Transport"], "Transport", [
-        ("Select transport and security", "RAW / TCP  |  REALITY", "Target: www.google.com:443; SNI: www.google.com for this example."),
+        ("Select transport and security", "RAW / TCP  |  REALITY", "Target: www.apple.com:443; SNI: www.apple.com for this example."),
         ("Choose the client fingerprint", "Fingerprint / uTLS: safari", "For a Chrome timeout: try Safari, keep SNI, then export and import again."),
         ("For a new inbound only", "Get New Key", "Keep generated short IDs. Never regenerate a working profile's keys."),
         ("Set the client flow", "xtls-rprx-vision", "Use the generated UUID and VLESS encryption=none."),
@@ -39,7 +39,7 @@ FIGURES = [
         ("Open the row's action", "Info (i) / Share / QR", "Some layouts put the actions inside the three-dot menu."),
         ("Continue to connection details", "VLESS URL", "Export from the panel; do not type keys from a screenshot.")]),
     ("3x-ui-client-share", "Copy a usable client profile", "3x-ui 3.8.5", [], "", [
-        ("In client connection details", "Copy VLESS URL", "vless://YOUR_UUID@YOUR_SERVER_IP:443?..."),
+        ("In client connection details", "Copy VLESS URL", "vless://YOUR_UUID@YOUR_SERVER_IP:8443?..."),
         ("On another device", "Show QR code", "A QR code grants the same access as the complete connection link."),
         ("In Hiddify", "+  >  Add from clipboard", "Select the newly imported profile before pressing Connect.")]),
     ("3x-ui-force-ipv4", "Choose IPv4 on the VPS outbound", "3x-ui 3.8.5", ["Dashboard", "Inbounds", "Outbounds", "Routing", "Xray Settings"], "Outbounds", [
@@ -72,7 +72,7 @@ FIGURES = [
         ("Open an IP-check page in your browser", "cloudflare.com/cdn-cgi/trace", "Find the line starting with ip= and compare it with your server exit."),
         ("Try the website you wanted to use", "Open your website", "If the address check and website work, your first connection is complete.")]),
     ("3x-ui-first-visit", "Your first visit to the prepared panel", "3x-ui 3.8.5", ["Dashboard", "Inbounds", "Clients", "Outbounds", "Routing", "Xray Settings"], "Inbounds", [
-        ("Sign in through the forwarded local URL", "Login", "Use the generated panel account, not the SSH root password."),
+        ("Sign in through the public panel URL", "Login", "Use the generated panel account, not the SSH root password."),
         ("Open the existing listener", "Inbounds  >  Personal VPN", "The setup helper already created it; do not add a duplicate."),
         ("Expand the first-device client", "Info / Share  >  Copy", "Or use the generated private hiddify-profile.txt export.")]),
     ("hostvds-new-server", "Example: create a server on HostVDS", "HostVDS navigation example; provider labels may change", ["Servers", "New Instance", "Configuration", "Operating Systems"], "Servers", [
@@ -140,9 +140,8 @@ SCHEMES = [
                                                ("This computer :12334", "Hiddify's local proxy listener"),
                                                ("VPS :443 or :8443", "Public VPN listener"),
                                                ("Website :443", "The destination's HTTPS service")]),
-        ("Private browser access to the server dashboard", [("Browser :18080", "Your computer's forwarded port"),
-                                                             ("SSH to VPS :22", "Encrypted administration connection"),
-                                                             ("VPS loopback :27297", "Private dashboard listener")])]),
+        ("Direct browser access to the server dashboard", [("Your browser", "Open the full saved HTTP URL"),
+                                                             ("VPS :27297", "Public administration panel")])]),
     ("connection-modes", "One Connect button, three scopes", "Choose the scope deliberately; a running app does not automatically capture every request.", [
         ("Proxy / manual mode", [("Chosen application", "Explicitly uses the local proxy"),
                                   ("Local proxy", "Forwards this application's requests"),

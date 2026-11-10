@@ -12,7 +12,7 @@ The dashboard runs **Xray**, the network engine that handles the connections. Th
 
 ## 1. Open the correct form
 
-1. Open the dashboard using the browser address from [Step 2](server-setup.md#required-open-the-dashboard-safely-in-your-browser). For the default private setup, keep its SSH forwarding window open. Sign in with the panel credentials.
+1. Open the dashboard using the browser address from [Step 2](server-setup.md#required-open-the-dashboard-safely-in-your-browser). The ordinary setup uses the server's public IP and panel port; keep a forwarding window open only if you chose the optional private setup. Sign in with the panel credentials.
 2. In the main left sidebar, click **Inbounds**.
 3. Click **Add Inbound**. On a narrow screen, open the sidebar with the menu button first.
 
@@ -20,7 +20,7 @@ The dashboard runs **Xray**, the network engine that handles the connections. Th
 
 ## 2. Set the listener
 
-The **listener** waits for devices to connect on the selected port. Use the free port you chose in the previous page; allow that same TCP port in the server firewall and any provider firewall.
+The **listener** waits for devices to connect on the selected port. Use **443 or 8443 only**, as chosen in the previous page; allow that same TCP port in the server firewall and any provider firewall.
 
 | Field | Set it to | Check |
 |---|---|---|
@@ -28,7 +28,7 @@ The **listener** waits for devices to connect on the selected port. Use the free
 | Remark | A recognizable name, such as `Personal VPN` | This is a display name |
 | Protocol | `vless` | The imported client must also use VLESS |
 | Listen IP | Empty/default, or the intended public listener address | Do not set it to `127.0.0.1` for a public listener |
-| Port | `443`, if free | If using `8443`, use 8443 in the client and both firewalls |
+| Port | `8443`, if free | Use the selected port in the client and both firewalls |
 
 Do not replace a working listener just to match the examples. Preserve its actual port and connection parameters.
 
@@ -39,19 +39,19 @@ Do not replace a working listener just to match the examples. Preserve its actua
 | Transmission / Network | `TCP` or `RAW` | Newer Xray names TCP transport RAW; `tcp` remains an alias in relevant releases |
 | Security | **REALITY** | Different from ordinary certificate-based TLS |
 | Proxy Protocol | Off | Enable only when an upstream proxy actually sends PROXY headers |
-| Target / Dest | A reachable TLS endpoint, for example `www.google.com:443` | This endpoint must work from the VPS |
-| Server Names / SNI | `www.google.com` for that example | SNI is the website name sent during connection setup; use one covered by the target’s certificate |
-| Fingerprint / uTLS, when offered | US server: `safari`; elsewhere: start with `chrome` | Initial defaults for the exported client; test your actual network and engine |
+| Target / Dest | A reachable TLS endpoint, for example `www.apple.com:443` | This endpoint must work from the VPS |
+| Server Names / SNI | `www.apple.com` for that example | SNI is the website name sent during connection setup; use one covered by the target’s certificate |
+| Fingerprint / uTLS, when offered | Start with `safari` for this Hiddify walkthrough | Initial defaults for the exported client; test your actual network and engine |
 | Short IDs | Generate a short ID | A short random label used to recognize this connection; keep the exported value |
 | Private / Public Key | Click **Get New Key** for a new inbound | Keep the private key on the server |
 | SpiderX, when offered | `/` | Keep the exported value |
 | Sniffing | Off for the initial setup | Inspects initial traffic to identify its destination; unnecessary for this simple setup |
 
-**Using a US server? Start with Safari in this Hiddify walkthrough.** In the US investigation on 2026-11-07, changing only the client fingerprint gave **Safari 12/12 successful requests; Chrome 0/12**. Avoid the Chrome default for that failing setup. This is a tested choice for Hiddify 5.5.5 on the investigated network, not a rule that Chrome fails on every US server or with every client core.
+**Start with Safari in this Hiddify walkthrough, including non-US servers.** In the US investigation on 2026-11-07, changing only the client fingerprint gave **Safari 12/12 successful requests; Chrome 0/12**. Avoid the Chrome default for that failing setup. This is a tested choice for Hiddify 5.5.5 on the investigated network, not a rule that Chrome fails on every US server or with every client core.
 
 **Safari also fixed the tested Hiddify timeout on a non-US endpoint.** If the server’s TCP port is reachable but Chrome fails, try Safari using the steps below, regardless of country. The optional setup helper accepts an explicit fingerprint override; a country-based default cannot replace a connection test.
 
-**Google SNI and the Chrome fingerprint are different fields.** `www.google.com` is the example target website; `chrome` imitates a browser's initial connection message. The successful Safari test kept the same Google target and SNI. There is no evidence here that Google targets themselves must be avoided on US servers.
+**Target/SNI and fingerprint are separate choices.** This walkthrough now uses `www.apple.com:443`, SNI `www.apple.com`, and Safari as its starting preset. On the tested non-US endpoint, that combination passed 6/6 Windows Hiddify engine requests and 2/2 actual GUI VPN requests after the exported profile was refreshed. Earlier controlled Safari/Chrome comparisons kept Google SNI unchanged; choosing a different target is not evidence that Google caused those failures or that Apple prevents filtering.
 
 For an existing account: **Inbounds → edit the REALITY inbound → Fingerprint / uTLS → Safari → Save**, then export its link or QR again and reimport it in Hiddify. Check that the new link contains **`fp=safari`**. Keep its UUID, keys, short ID, SNI, and port unchanged. This field supplies the client export; an already imported profile does not update just because you saved the panel form. See the [fingerprint troubleshooting steps](troubleshooting.md#reality-chrome-times-out-but-safari-works).
 
@@ -61,10 +61,10 @@ For an existing account: **Inbounds → edit the REALITY inbound → Fingerprint
 **TLS** is the encryption used by HTTPS websites. The REALITY target must provide suitable TLS and be reachable from your rented server (VPS). On that server, test the example target:
 
 ```bash
-curl -I --connect-timeout 5 --max-time 15 https://www.google.com/
+curl -4 -I --connect-timeout 5 --max-time 15 https://www.apple.com/
 ```
 
-You should receive HTTP response headers rather than a timeout or connection error. This checks website reachability; the device test in Step 4 will check the actual VPN connection.
+You should receive HTTP response headers rather than a timeout or connection error. The target must support TLS 1.3 and HTTP/2; see the [official REALITY requirements](https://github.com/XTLS/REALITY/blob/main/README.en.md). This checks website reachability; the device test in Step 4 will check the actual VPN connection.
 
 </details>
 
@@ -103,12 +103,12 @@ The **connection profile** is a private link containing the account’s connecti
 A placeholder link looks like this; import the panel's real export rather than copying this example:
 
 ```text
-vless://YOUR_UUID@YOUR_SERVER_IP:443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.google.com&fp=safari&pbk=YOUR_PUBLIC_KEY&sid=YOUR_SHORT_ID&type=tcp&spx=%2F#Personal-VPN
+vless://YOUR_UUID@YOUR_SERVER_IP:8443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.apple.com&fp=safari&pbk=YOUR_PUBLIC_KEY&sid=YOUR_SHORT_ID&type=tcp&spx=%2F#Personal-VPN
 ```
 
 Check server IP, VPN port, UUID, Flow, REALITY public key, short ID, SNI, fingerprint, and transport. A correct IP with the wrong key or short ID can establish TCP and still fail REALITY authentication.
 
-Create another client account for another person/device when you need separate revocation or usage accounting. You can reuse the same inbound; a second listener port is not required.
+For a desktop and phone, use two separately named client accounts, `desktop` and `phone`, on this same inbound. Export each account's own link; each device keeps its own credentials and can be revoked separately. A second listener port is not required. When replacing an initial test account, verify both new accounts first, then remove the old account from the central client list as well as the inbound so exactly two accounts remain.
 
 ![Client details actions: Copy VLESS URL or Show QR code](../images/3x-ui-client-share.svg)
 
@@ -119,10 +119,10 @@ Create another client account for another person/device when you need separate r
 <details>
 <summary>Open the terminal listener and log checks</summary>
 
-On the VPS, replacing `443` with the actual inbound port:
+On the VPS, replacing `8443` with the actual inbound port:
 
 ```bash
-ss -lntp 'sport = :443'
+ss -lntp 'sport = :8443'
 journalctl -u x-ui --since '10 minutes ago' --no-pager
 ```
 

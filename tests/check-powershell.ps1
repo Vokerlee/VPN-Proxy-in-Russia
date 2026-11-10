@@ -35,12 +35,21 @@ try {
     Write-Output 'Setup defaults to a plan without SSH or exports.'
     $refused=$false
     try {
-        & (Join-Path $repo 'scripts\Setup-Vpn.ps1') -ServerIp '203.0.113.10' -VpnPort 22|Out-Null
+        & (Join-Path $repo 'scripts\Setup-Vpn.ps1') -ServerIp '203.0.113.10' -VpnPort 443 -PanelPort 443|Out-Null
     } catch {
         if($_.Exception.Message -like '*ports must be different*') {$refused=$true} else {throw}
     }
     if(-not $refused) {throw 'Conflicting ports were not rejected.'}
     Write-Output 'Setup rejects conflicting ports.'
+    $refused=$false
+    try {
+        & (Join-Path $repo 'scripts\Setup-Vpn.ps1') -ServerIp '203.0.113.10' -VpnPort 38457|Out-Null
+    } catch {
+        if($_.Exception.Message -like '*VpnPort*') {$refused=$true} else {throw}
+    }
+    if(-not $refused) {throw 'A public VPN port outside 443/8443 was accepted.'}
+    Write-Output 'Setup rejects public VPN ports outside 443 and 8443.'
+
 } finally {
     if(Test-Path -LiteralPath $work) {Remove-Item -LiteralPath $work -Recurse -Force}
 }

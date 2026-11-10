@@ -38,6 +38,12 @@ Captures at both ends showed incomplete Chrome-style handshakes reaching the VPS
 
 The Google target/SNI stayed unchanged when Safari worked. **Do not confuse Google's website name with the Chrome browser fingerprint**, or replace working target names on the strength of this result. Different client cores can produce different handshakes for the same fingerprint label; retest after changing engines or versions.
 
+A later non-US deployment reproduced an intermittent Chrome failure with the same desktop account: in an alternating Windows Hiddify engine comparison, the full Chrome configuration passed 0/2 HTTPS requests and Safari passed 2/2 while the Google target stayed fixed. After the owner requested a non-Google target, Safari with `www.apple.com` passed 6/6 requests after the server settled, followed by 2/2 requests through the actual Hiddify GUI VPN connection. Both account exports were refreshed from 3x-ui, and the existing desktop profile was replaced without changing its UUID. Initial requests immediately after target/service changes timed out; do not count only later successes or call a restart an instant fix.
+
+Direct reachability on that later deployment subsequently failed: native Windows and Linux SSH timed out, direct TCP checks on SSH/VPN/panel ports failed, but the same account authenticated through an existing proxy and the panel returned HTTP 200 there. See [investigation D](network-path-debugging.md#recorded-investigation-d-success-followed-by-direct-reachability-loss). The earlier 6/6 and GUI 2/2 results do not describe the latest direct state.
+
+These results establish compatibility on that tested path. They do not rank hostnames by visibility or promise protection against a future destination-IP block. If SSH and VPN traffic both fail from one network while the server remains reachable elsewhere, investigate the network path before changing account credentials.
+
 **This can happen outside the US too.** A second, non-US endpoint tested on 2026-11-07 produced **Chrome 0/4 and Safari 4/4** in alternating Windows Hiddify 5.5.5 requests with the same account and connection settings. After reimporting the panel’s Safari export, the app’s actual VPN Connect button passed two website requests with the expected exit address. Use the fingerprint steps above for this symptom regardless of server country.
 
 That second investigation had two separate stages: initially, even TCP connections could not reach the server; later, TCP worked but Hiddify’s Chrome handshake still failed. Changing fingerprints helps diagnose the second stage. Always repeat the TCP check when conditions change, and test a website after ping succeeds.
@@ -116,9 +122,17 @@ The tests recorded for this guide found that Xray client **25.1.30** failed agai
 
 Some newer REALITY servers require changes to the initial encrypted connection setup, which older engines may lack. Hiddify 5.5.5 connected successfully in the recorded tests. The [technical explanation](xray-internals.md#why-a-valid-profile-can-stop-working-after-an-update) covers the version-specific details.
 
+## The whole server is unreachable from one network
+
+If both SSH and the VPN fail from a Russian connection while the server still responds from another country, that is evidence of a network-dependent reachability problem. It is consistent with filtering or routing failure on the affected path; it does not by itself identify the responsible operator or prove a nationwide block. A failed ping alone is weaker evidence because ICMP may be disabled.
+
+Changing SNI, browser fingerprint, UUID or port does not bypass a destination-IP block. A non-443 port can help only when the restriction is specific to a port or traffic pattern. Safari and the Apple target passed the recorded Hiddify tests; no tested preset guarantees continued reachability or prevents later IP blocking.
+
+Check the server in the provider console and compare the same SSH/VPN endpoints from independent networks before resetting accounts. For an assistant, follow the repository's direct-SSH gate and stop live work after a failed direct login rather than switching to a proxy. Keep any separately authorized alternate-path evidence clearly labeled.
+
 ## The same profile works through another VPN
 
-Label the direct and existing-proxy exits separately, repeat the same account over both paths, and compare packet headers at the client and VPS. The [network-path investigation guide](network-path-debugging.md) gives the commands, controlled tests and recorded anonymous case evidence. It covers random ports, target/SNI/fingerprint comparisons, missing handshake bytes and the limits of identifying the dropping operator.
+Label the direct and existing-proxy exits separately, repeat the same account over both paths, and compare packet headers at the client and VPS. The [network-path investigation guide](network-path-debugging.md) gives the commands, controlled tests and recorded anonymous case evidence. It covers historical port experiments, target/SNI/fingerprint comparisons, missing handshake bytes and the limits of identifying the dropping operator.
 
 ## The profile works, but the app's generated configuration fails
 

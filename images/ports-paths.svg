@@ -26,18 +26,14 @@
 <text x="862.5" y="209" font-size="17" fill="#114b91" font-weight="700">Website :443</text>
 <text x="862.5" y="237" font-size="14" fill="#53657d" font-weight="400">The destination&#x27;s HTTPS</text>
 <text x="862.5" y="255" font-size="14" fill="#53657d" font-weight="400">service</text>
-<text x="40" y="337" font-size="17" fill="#203c5a" font-weight="700">Private browser access to the server dashboard</text>
-<rect x="40.0" y="355" width="321.3333333333333" height="118" rx="12" fill="#ffffff" stroke="#9bb8d7"/>
-<text x="54.0" y="384" font-size="17" fill="#114b91" font-weight="700">Browser :18080</text>
-<text x="54.0" y="412" font-size="14" fill="#53657d" font-weight="400">Your computer&#x27;s forwarded port</text>
-<line x1="365.3333333333333" y1="414" x2="394.3333333333333" y2="414" stroke="#236bb0" stroke-width="2.5" marker-end="url(#arrow)"/>
-<rect x="399.3333333333333" y="355" width="321.3333333333333" height="118" rx="12" fill="#ffffff" stroke="#9bb8d7"/>
-<text x="413.3333333333333" y="384" font-size="17" fill="#114b91" font-weight="700">SSH to VPS :22</text>
-<text x="413.3333333333333" y="412" font-size="14" fill="#53657d" font-weight="400">Encrypted administration connection</text>
-<line x1="724.6666666666666" y1="414" x2="753.6666666666666" y2="414" stroke="#236bb0" stroke-width="2.5" marker-end="url(#arrow)"/>
-<rect x="758.6666666666666" y="355" width="321.3333333333333" height="118" rx="12" fill="#ffffff" stroke="#9bb8d7"/>
-<text x="772.6666666666666" y="384" font-size="17" fill="#114b91" font-weight="700">VPS loopback :27297</text>
-<text x="772.6666666666666" y="412" font-size="14" fill="#53657d" font-weight="400">Private dashboard listener</text>
+<text x="40" y="337" font-size="17" fill="#203c5a" font-weight="700">Direct browser access to the server dashboard</text>
+<rect x="40.0" y="355" width="501.0" height="118" rx="12" fill="#ffffff" stroke="#9bb8d7"/>
+<text x="54.0" y="384" font-size="17" fill="#114b91" font-weight="700">Your browser</text>
+<text x="54.0" y="412" font-size="14" fill="#53657d" font-weight="400">Open the full saved HTTP URL</text>
+<line x1="545.0" y1="414" x2="574.0" y2="414" stroke="#236bb0" stroke-width="2.5" marker-end="url(#arrow)"/>
+<rect x="579.0" y="355" width="501.0" height="118" rx="12" fill="#ffffff" stroke="#9bb8d7"/>
+<text x="593.0" y="384" font-size="17" fill="#114b91" font-weight="700">VPS :27297</text>
+<text x="593.0" y="412" font-size="14" fill="#53657d" font-weight="400">Public administration panel</text>
 <text x="40" y="552" font-size="14" fill="#53657d" font-weight="400">Conceptual scheme. Follow the adjacent guide for exact settings, button paths and verification.</text>
 </g>
 </svg>

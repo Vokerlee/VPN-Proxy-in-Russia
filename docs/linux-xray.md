@@ -71,7 +71,7 @@ This example is for RAW/TCP + REALITY + Vision, the connection type created in t
     "settings": {
       "vnext": [{
         "address": "YOUR_VPN_SERVER_IP",
-        "port": 443,
+        "port": 8443,
         "users": [{
           "id": "YOUR_UUID",
           "encryption": "none",
@@ -83,8 +83,8 @@ This example is for RAW/TCP + REALITY + Vision, the connection type created in t
       "network": "tcp",
       "security": "reality",
       "realitySettings": {
-        "serverName": "www.google.com",
-        "fingerprint": "chrome",
+        "serverName": "www.apple.com",
+        "fingerprint": "safari",
         "publicKey": "YOUR_PUBLIC_KEY",
         "shortId": "YOUR_SHORT_ID",
         "spiderX": "/"

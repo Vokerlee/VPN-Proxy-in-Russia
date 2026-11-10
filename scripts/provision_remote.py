@@ -130,6 +130,8 @@ def panel_share_link(options, account, public, sid, links):
 def run(options):
     if os.geteuid() != 0:
         raise RuntimeError("The setup needs root on the VPS.")
+    if options.get("vpn_port") not in (443, 8443):
+        raise ValueError("public VPN inbound port must be 443 or 8443")
     assert_fresh()
     os_release = Path("/etc/os-release").read_text()
     if not any(f'ID={value}' in os_release or f'ID="{value}"' in os_release for value in ("ubuntu", "debian")):
@@ -178,8 +180,8 @@ def run(options):
                 installer.write_bytes(response.read())
             command(["bash", str(installer), VERSION], timeout=1800, env=install_env)
         binary = "/usr/local/x-ui/x-ui"
-        print("Restricting the panel to loopback; SSH will carry browser access...", flush=True)
-        command([binary, "setting", "-listenIP", "127.0.0.1", "-webBasePath", web_path])
+        print("Enabling direct browser access to the panel...", flush=True)
+        command([binary, "setting", "-listenIP", "0.0.0.0", "-webBasePath", web_path])
         command(["systemctl", "restart", "x-ui"])
         token_output = command([binary, "setting", "-getApiToken"], capture=True)
         token_line = next((line for line in token_output.splitlines() if "apiToken: " in line), None)
@@ -239,11 +241,12 @@ def run(options):
         if ufw.returncode == 0:
             status = command(["ufw", "status"], capture=True, env=env)
             if status.startswith("Status: active"):
-                command(["ufw", "allow", str(options["vpn_port"]) + "/tcp"], env=env)
-                firewall = "Added the VPN TCP allow rule to the already-active UFW policy; SSH rules were preserved."
+                for port in (options["vpn_port"], options["panel_port"]):
+                    command(["ufw", "allow", str(port) + "/tcp"], env=env)
+                firewall = "Added VPN and panel TCP allow rules to the already-active UFW policy; SSH rules were preserved."
         xray = next((p for p in Path("/usr/local/x-ui/bin").glob("xray-*") if p.is_file() and os.access(p, os.X_OK)), None)
         if xray is None:
-            raise RuntimeError("Installed Xray binary not found; open the loopback panel to inspect the installation.")
+            raise RuntimeError("Installed Xray binary not found; open the panel to inspect the installation.")
         core_version = command([str(xray), "version"], capture=True).splitlines()[0]
         for attempt in range(20):
             try:
@@ -254,7 +257,7 @@ def run(options):
                     raise RuntimeError("The new VPN listener did not start; inspect the panel and server log.")
                 time.sleep(1)
         result = {"host": options["host"], "ssh_port": options["ssh_port"], "panel_port": options["panel_port"],
-            "web_path": web_path, "panel_username": username, "panel_password": password,
+            "web_path": web_path, "panel_listen": "0.0.0.0", "panel_username": username, "panel_password": password,
             "vpn_port": options["vpn_port"], "target": options["target"], "panel_version": VERSION,
             "core_version": core_version, "client_link": panel_share_link(options, account, public, sid, api("clients/links/first-device")),
             "server_country": options["server_country"], "fingerprint": options["fingerprint"],
