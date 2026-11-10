@@ -14,7 +14,7 @@ The **setup helper** installs server software only when explicitly applied. The 
 
 Use [the two-hop walkthrough](two-hop-vpn.md) and `python3 scripts/bootstrap_relay.py --help`. It supports a reusable Moscow hub, separate country routes on 443/8443, explicit management proxies, private backups and canonical client exports. The original single-server helpers remain available. IPv6 activation and OS configuration are the user's provider-specific task; the relay helper only checks existing addresses and routes.
 
-The relay route starts at a Moscow IPv4 inbound, crosses to the foreign VPS on IPv6, then exits over IPv4. Use the foreign relay account only in Moscow's outbound; export separate Moscow device accounts for Hiddify. Pass `--entry-port 443` for NL and `--entry-port 8443` for FR. The shared FR and FI layout uses account-based rules on port 8443. [See the port map](schemes/README.md#add-a-country) Keep an existing single-server route as a separate mode.
+The relay route starts at a Moscow IPv4 inbound, crosses to the foreign VPS on IPv6, then exits over IPv4. Use the foreign relay account only in Moscow's outbound; export separate Moscow device accounts for Hiddify. Pass `--entry-port 443` for NL and `--entry-port 8443` for FI. The shared NL and FR layout uses account-based rules on port 443. [See the port map](schemes/README.md#add-a-country) Keep an existing single-server route as a separate mode.
 
 ## Start with only a VPS IP and root password
 

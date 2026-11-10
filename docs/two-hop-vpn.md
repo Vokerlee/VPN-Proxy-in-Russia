@@ -213,14 +213,14 @@ Keep each owner's credentials separate. A desktop and phone can share the same i
 
 ## 5. Add a second foreign country to the same Moscow hub
 
-Use route key `fr` and Moscow’s other allowed port, 8443.
+Use route key `fi` and Moscow’s other allowed port, 8443.
 
 ```bash
 python3 scripts/bootstrap_relay.py \
   --hub-host 203.0.113.10 \
   --exit-host 198.51.100.30 \
   --exit-ipv6 2001:db8:3::1 \
-  --route fr \
+  --route fi \
   --entry-port 8443 \
   --exit-port 8443 \
   --clients desktop,phone \
@@ -229,7 +229,7 @@ python3 scripts/bootstrap_relay.py \
 
 Apply only after that foreign server's IPv6 is configured. The helper reuses Moscow's panel, attaches existing owner accounts without rotating their UUIDs, and adds a separate inbound-to-outbound rule for the new country. It preserves the first country's route.
 
-With one public IPv4 address and this separate-listener design, 8443 and 443 provide **two country entry points**. More countries can share an existing inbound with [Xray user routing](https://xtls.github.io/en/config/routing#ruleobject). Give each device/country combination a distinct account, such as `FR-desktop` and `FI-desktop`, and route its account label to the corresponding foreign outbound. Put the account-specific rules above the inbound's general rule. This is an advanced configuration separate from the current two-listener helper. Do not invent additional public inbound ports.
+With one public IPv4 address and this separate-listener design, 8443 and 443 provide **two country entry points**. More countries can share an existing inbound with [Xray user routing](https://xtls.github.io/en/config/routing#ruleobject). Give each device/country combination a distinct account, such as `desktop` for NL and `FR-desktop` for FR, and route its account label to the corresponding foreign outbound. Put the account-specific rules above the inbound's general rule. This is an advanced configuration separate from the current two-listener helper. Do not invent additional public inbound ports.
 
 Reapplying the same route with unchanged settings reuses it. A route key already bound to different settings is refused; do not delete its registry or reinstall the hub to force a change.
 
@@ -237,7 +237,7 @@ Reapplying the same route with unchanged settings reuses it. A route key already
 
 From the Moscow server, direct TCP to the foreign IPv4 SSH, VPN and panel ports timed out. The foreign IPv6 ports were reachable, and both the original foreign VPN over IPv6 and the new relay authenticated. The new path returned the foreign IPv4 exit. From a desktop, the complete chain passed six isolated Windows Hiddify HTTPS requests, two requests using Hiddify's actual VPN Connect button, and a separate UDP DNS request. The test watchdog then disconnected Hiddify and restored the previous Windows proxy settings. A second country's live route was not part of this test.
 
-All four NL accounts passed HTTPS checks after moving Moscow’s entry to port 443. Hiddify’s Connect button passed two more checks on port 443. The old 8443 listener was retired after those tests. FR and FI still require IPv6 configured in their guests before they can use the planned shared 8443 listener.
+All four NL accounts passed HTTPS checks after moving Moscow’s entry to port 443. Hiddify’s Connect button passed two more checks on port 443. The old 8443 listener was retired after those tests. FI was added on port 8443. All four FI device profiles passed HTTPS checks with the expected FI exit. FR is planned to share port 443 with NL using separate accounts. FR deployment awaits SSH and IPv6 reachability.
 
 ## Recovery and evidence
 

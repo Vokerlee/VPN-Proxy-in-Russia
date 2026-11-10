@@ -68,7 +68,7 @@ Apply this gate to both fresh and existing servers. An earlier successful proxy 
 
 ## Allowed public VPN inbound ports
 
-**Never create, move or test a public VPN inbound on a port other than TCP 443 or 8443.** This is the repository owner's explicit rule. Use 443 for the Moscow NL route and 8443 for FR. FI can share 8443 with account-based routing. Preserve existing listeners. If neither allowed port is available, stop provisioning and report the conflict rather than selecting a random/high port. This restriction applies to public VPN inbounds, not SSH, the administration panel, or temporary loopback client proxies. Historical investigations on other ports are evidence only and do not authorize repeating those configurations.
+**Never create, move or test a public VPN inbound on a port other than TCP 443 or 8443.** This is the repository owner's explicit rule. Use Moscow port 443 for NL and FR, with account-based routing for FR. Use 8443 for FI. Preserve existing listeners. If neither allowed port is available, stop provisioning and report the conflict rather than selecting a random/high port. This restriction applies to public VPN inbounds, not SSH, the administration panel, or temporary loopback client proxies. Historical investigations on other ports are evidence only and do not authorize repeating those configurations.
 
 ## Single-server automation
 

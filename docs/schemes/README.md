@@ -55,7 +55,7 @@ flowchart LR
     fr["FR exit"]
     fi["FI exit"]
     m443 -->|"NL account"| nl
-    m8443 -->|"FR account"| fr
+    m443 -->|"FR account"| fr
     m8443 -->|"FI account"| fi
     classDef entry fill:#e7e0f6,stroke:#715894,color:#35244a
     class m443,m8443 entry
@@ -63,11 +63,11 @@ flowchart LR
 
 ```text
 Moscow :443   / NL profile  ──> NL exit
-Moscow :8443  / FR account  ──> FR exit
+Moscow :443   / FR account  ──> FR exit
 Moscow :8443  / FI account  ──> FI exit
 ```
 
-This is the layout once all three exits are configured. On shared port 8443, Xray matches the authenticated account label to its outbound. For example, `FR-desktop` and `FI-desktop` use the same port and go to different servers. The current setup helper configures a separate inbound per country. A shared inbound needs account-based routing. [Xray routing reference](https://xtls.github.io/en/config/routing#ruleobject)
+This is the layout once all three exits are configured. On shared port 443, Xray matches the authenticated account label to its outbound. For example, `NL and FR accounts, such as `desktop` and `FR-desktop` use the same port and go to different exits. The current setup helper configures a separate inbound per country. A shared inbound needs account-based routing. [Xray routing reference](https://xtls.github.io/en/config/routing#ruleobject)
 
 ## Find the link that stopped working
 
