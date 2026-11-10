@@ -1,4 +1,4 @@
-[← Setup overview](../README.md) · Step 2 of 4
+[← Single-server overview](single-server.md) · Step 2 of 4
 
 # Install and prepare the VPN server
 

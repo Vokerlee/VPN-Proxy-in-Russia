@@ -1,4 +1,4 @@
-[← Setup overview](../README.md) · Step 1 of 4
+[← Single-server overview](single-server.md) · Step 1 of 4
 
 # Get the computer that will run your VPN
 

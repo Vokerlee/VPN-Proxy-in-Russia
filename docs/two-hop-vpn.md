@@ -11,6 +11,18 @@ Device -- IPv4 --> Moscow -- IPv6 --> foreign server -- IPv4 --> website
 
 The [single-server walkthrough](single-server.md) and [its automation](quick-start.md) remain available. The relay helper adds a dedicated IPv6 inbound to an existing foreign panel and preserves its old IPv4 inbound and accounts.
 
+## Before you start
+
+Get two Linux VPSs and save the SSH login for each. SSH opens a terminal on the server. Use the provider's username, IP address and port when you connect. The commands labeled **on Moscow** run in Moscow’s SSH terminal. Commands labeled **on NL** run in a separate SSH terminal on NL. [Choosing a VPS](choose-server.md) · [Connecting over SSH](server-setup.md#2-connect-over-ssh)
+
+| Where you are | What you need |
+|---|---|
+| Your computer | A terminal for SSH, a browser for 3x-ui and Hiddify for the final test |
+| Moscow | Public IPv4 for devices and working IPv6 for the relay connection |
+| NL | An assigned IPv6 address for the relay and working IPv4 for websites |
+
+Keep two browser tabs open when the panels are ready. Label them **Moscow** and **NL**. Save each panel’s full URL and panel credentials separately from its SSH credentials.
+
 ## 1. Configure IPv6 yourself using your VPS provider's instructions
 
 **IPv6 configuration is the user's task. The automation never activates IPv6, changes addresses, edits Netplan or installs network routes.** It checks the configuration and stops if the required IPv6 address or default route is missing.
@@ -29,7 +41,7 @@ Different VPS providers require different configuration. Do not assume a configu
 
 A /124 contains **16 addresses**. A subnet allocation is not proof that the guest OS already has an address or route.
 
-On each server, inspect:
+Run these commands in each server’s SSH terminal. The last command checks for Netplan on that server.
 
 ```bash
 ip -br address
@@ -80,7 +92,7 @@ On both servers:
 curl -6 --noproxy '*' --connect-timeout 5 --max-time 15 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
-The response must contain that server's IPv6 exit address. Then verify the foreign IPv6 endpoint is reachable from Moscow. Public IPv6 addresses on both servers do not by themselves prove that route works.
+Look for an IPv6 address on the `ip=` line. If the command times out, check the provider’s address, gateway and IPv6 firewall for that server. After you create the NL relay listener, check Moscow’s connection to that listener in the next section.
 
 ## 2. Choose the two legs
 
@@ -100,12 +112,34 @@ The foreign relay inbound accepts authenticated traffic from the configured Mosc
 
 ## How the two 3x-ui panels connect
 
-The **foreign inbound** supplies the link that **Moscow uses as its outbound**. Each panel manages its own Xray instance.
+An **inbound** accepts a connection. An **outbound** sends the traffic on to its next stop. The relay account on NL gives Moscow the credentials it needs to connect. Your desktop and phone have their own accounts on Moscow.
 
-1. In the foreign panel, [create a VLESS/REALITY inbound](server-inbound.md) bound to its assigned **IPv6** address. Use port 443, the foreign target and fingerprint from the table, and a dedicated `relay-nl` account. Keep the previous IPv4 inbound if you use one. Route this relay's traffic through [the IPv4 direct outbound](force-ipv4.md) and restrict it to the Moscow IPv6 source. Open **Inbounds → Relay nl → relay-nl → Info / Share**. Copy the relay account's VLESS URL and check that it uses the foreign IPv6 address in brackets and port 443.
-2. In the Moscow panel, open **Outbounds → + Outbounds → JSON**. Paste that URL into the link field and click **Import**. In the resulting form set **Tag** to `relay-nl`, verify the IPv6 endpoint, target/SNI, Chrome fingerprint and Vision flow, then click **Create**. The separate **More → Import Outbounds** action expects JSON, not a VLESS URL. See the [3x-ui 3.8.5 outbound form](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/xray/outbounds/OutboundFormModal.tsx).
-3. In Moscow, create the IPv4 entry inbound on 443 with the entry target and device accounts from the table. Keep it disabled until its route is ready. Open **Routing** and add a rule with **Inbound Tags** set to the Moscow entry inbound and **Outbound Tag** set to `relay-nl`. Put the rule before more general traffic rules while preserving the API rule. Save the rule, enable the Moscow inbound, and restart Xray if prompted. See the [routing form](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/xray/routing/RuleFormModal.tsx).
-4. Export a **Moscow device account** from Moscow's Inbounds page and import it into Hiddify. Keep the foreign relay account private on the server. Hiddify connects to Moscow; Moscow connects to the foreign relay.
+For the manual setup, open or install 3x-ui on each server. The installer gives you the panel address and login. Keep the dashboard port separate from the VPN port. If you use the helper in section 3, it can install a missing panel and create the accounts and rules below. [Install and open 3x-ui](server-setup.md#3-install-3x-ui)
+
+### On NL, create the relay account
+
+1. Open **Inbounds → Add Inbound**. Set **Remark** to `Relay nl`, **Listen IP** to the assigned NL IPv6 address, and **Port** to **443**. Use VLESS, TCP or RAW, REALITY, target `www.google.com:443`, SNI `www.google.com` and fingerprint `chrome`. In **Listen IP**, enter the address by itself. The exported link will put brackets around it.
+2. Generate REALITY keys and a short ID. Add a client named `relay-nl` with **Flow** set to `xtls-rprx-vision`. The account is for Moscow to use. [Inbound form and client fields](server-inbound.md#3-set-transport-and-security)
+3. Set **Outbounds → direct → Edit → Strategy → ForceIPv4**. In **Routing**, scope the relay rules to the new NL inbound. Match Moscow’s IPv6 address with `/128` in **Source IP** and select `direct` as **Outbound Tag**. Add a rule below it for the same inbound with **Outbound Tag** set to `blocked`, so traffic from other sources has no exit. To enforce IPv4-only destinations, add a rule above both that matches this inbound and destination IP `::/0` and selects `blocked`. Keep the panel’s API rule. [IPv4 exit settings](force-ipv4.md)
+4. Allow TCP 443 over IPv6 from Moscow in any provider or guest firewall that filters incoming traffic. Enable the relay inbound, save, and restart Xray if prompted.
+5. Expand **Relay nl** in **Inbounds** and open **Info / Share** for `relay-nl`. Copy the private VLESS link. Check that the address after `@` is the NL IPv6 address in brackets, followed by `:443`. If the panel exports IPv4 instead, open the panel using its IPv6 URL and export again. Check the link before importing.
+
+On Moscow, replace the example address below with the actual NL IPv6 address:
+
+```bash
+nc -6 -vz -w 5 2001:db8:2::1 443
+```
+
+A successful check shows that Moscow can open the TCP port. If `nc` is unavailable, install the distribution’s Netcat package or use the relay helper’s authenticated test. If the port times out, check the IPv6 route and both firewalls before editing VLESS settings.
+
+### On Moscow, connect the device inbound to NL
+
+1. Open **Outbounds → + Outbounds → JSON**. Paste the NL relay link into the link field and click **Import**. Set **Tag** to `relay-nl`. Check the IPv6 address, port, SNI, Chrome fingerprint and Vision flow, then click **Create**. The link import is inside the **+ Outbounds** form. [Outbound form in 3x-ui 3.8.5](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/xray/outbounds/OutboundFormModal.tsx)
+2. Open **Inbounds → Add Inbound**. Name this entry `VLESS Moscow NL`. Use Moscow’s IPv4 endpoint on **443**, VLESS, TCP or RAW, REALITY, target `yandex.ru:443`, SNI `yandex.ru` and fingerprint `safari`. Generate separate REALITY keys and a short ID for this inbound. Add one client account per device, such as `desktop` and `phone`, with Vision flow. Save the inbound with **Enable** off while you add its route.
+3. Open **Routing** and use the **+** button to add a rule. Under **Inbound Tags**, select the new Moscow inbound. Under **Outbound Tag**, select `relay-nl`. Put this rule above general rules that could match the same traffic. Keep the API rule. Save and apply the settings, enable the Moscow inbound, and restart Xray if prompted. [Routing form in 3x-ui 3.8.5](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/xray/routing/RuleFormModal.tsx)
+4. Allow TCP 443 over IPv4 in Moscow’s provider and guest firewalls where applicable. In **Inbounds**, open **Info / Share** for the Moscow device account. This link should use Moscow’s public IPv4 address and port 443. Give each device its own link.
+
+[See the connection diagrams](schemes/README.md) · [Which panel screens to capture](../images/README.md#3x-ui-screens-for-the-two-hop-guide)
 
 ## 3. Preview and apply the relay helper
 
@@ -158,9 +192,13 @@ There is a separate `--hub-ssh-proxy` option. These are explicit loopback proxy 
 
 ## 4. Verify the complete device path
 
-Import the intended device's exact new panel export into Hiddify. Preserve the panel's account/profile name. A link whose server is still the foreign IPv4 address is the old single-server profile.
+On your phone or computer, copy the full **Moscow device** link. Open Hiddify and choose **+ → Clipboard**, select the new profile, then tap **Connect**. On desktop, choose **Settings → Inbound → Service mode → VPN / TUN** to route ordinary apps. Accept the VPN permission prompt if shown. [Hiddify walkthrough](clients.md)
 
-First test the generated entry profile with an isolated client:
+Open a website and then open the IP check page. The `ip=` line should show **NL’s IPv4 address**. If it shows your usual address or another VPN’s exit, check the selected profile, Hiddify’s service mode and the system proxy. If the page times out, test the device-to-Moscow port and the Moscow-to-NL relay separately. [IP check page](https://www.cloudflare.com/cdn-cgi/trace) · [Troubleshooting](troubleshooting.md)
+
+For an optional command-line check, use an installed Xray executable and the private Moscow device export. The relay helper saves that export under `.secrets/`.
+
+Run this on your administration computer, replacing the example paths and expected IPv4 address:
 
 ```bash
 python3 scripts/vpn_profile.py test \

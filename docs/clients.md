@@ -22,14 +22,14 @@ On Windows, install the Windows app. You do not need WSL (Windows Subsystem for 
 ## 2. Import your connection link
 
 1. Copy the whole `vless://...` link from [your account in 3x-ui](server-inbound.md#5-export-the-connection).
-2. Open Hiddify and click **+ / New profile → Add from clipboard**.
+2. Open Hiddify and click **+ → Clipboard** (shown as **Add from clipboard** in some builds).
 3. Select the imported profile, for example **Personal VPN**.
 
 On a phone, you can scan the account’s QR code instead of copying the link. Both contain the same connection settings. Keep the link and QR code private: anyone with them can use that account. The dashboard’s browser address is a different link and cannot be imported as a VPN profile.
 
 Keep the name supplied by 3x-ui. It can combine the inbound and device account, such as **Personal VPN-desktop** or **Personal VPN-phone**. Use your own device's export; another person's similarly named profile can contain different credentials. Import the whole link, including its name and any `spx` parameter, rather than rebuilding it by hand.
 
-**Use the Safari fingerprint for the starting REALITY preset in this walkthrough, including non-US servers.** Before importing, check the link for **`fp=safari`**. The current example also uses **`sni=www.apple.com`** and VPN port **8443**. For an existing working server, preserve its exported values unless you are deliberately changing them. If it has `fp=chrome` and you have the investigated timeout symptom, follow [the panel's Safari steps](server-inbound.md#3-set-transport-and-security) and import the new export. The controlled US comparison kept the Google SNI unchanged and succeeded with Safari in 12/12 requests while Chrome failed in 12/12. This was verified with the installed Hiddify 5.5.5 engine; other engines and networks need their own check.
+For the two-hop setup, import the **Moscow device account**. The tested NL profile uses Moscow’s IPv4 address on port **443**, Yandex SNI and Safari. The single-server example uses port **8443**, Apple SNI and Safari. Use the settings in your own export and reimport it after changing the server address, port or fingerprint. [Two-hop panel steps](two-hop-vpn.md#on-moscow-connect-the-device-inbound-to-nl)
 
 ![Hiddify: New profile, Add from clipboard, select Personal VPN](../images/hiddify-import.svg)
 
@@ -60,7 +60,7 @@ If you followed the earlier advice to change Fake DNS, Region, or the hidden Win
 1. **On a desktop**, open **Settings → Inbound → Service mode** and select **VPN / TUN**. This is the mode for using the VPN with your normal applications; TUN is its virtual network connection. On a phone, use the normal VPN mode.
 2. Return to the home screen, select your profile, and press **Connect**.
 3. Accept the operating system’s VPN or administrator permission request.
-4. Open `https://www.cloudflare.com/cdn-cgi/trace` in your browser. Find the line starting with **`ip=`**. It should show your server’s outgoing address, rather than your ordinary internet address.
+4. Open `https://www.cloudflare.com/cdn-cgi/trace` in your browser. Find the line starting with **`ip=`**. For the two-hop NL profile, it should show NL’s IPv4 address. For a single-server profile, compare it with that server’s outgoing address.
 5. Open a website you wanted to use through the VPN.
 
 If the address is unfamiliar, open the same test URL with Hiddify disconnected and compare. A server may have a different outgoing address from its login address, particularly when it also has IPv6. If the browser cannot load the page or still shows your ordinary address, first recheck [Outbound domain strategy → IPv4 only](#3-important-set-outbound-domain-strategy-to-ipv4-only), reconnect, and then use [the additional checks](#if-the-connection-fails-try-these-settings) if needed.

@@ -17,8 +17,9 @@ Install Hiddify, copy the link and choose **+ → Clipboard**. Select the saved 
 You need two rented servers, also called VPSs. **3x-ui** is the browser dashboard where you set up accounts. **Hiddify** is the app your device uses to connect.
 
 1. Set up IPv6 on both servers. Get the address and gateway from each provider and follow its instructions for your OS. [IPv6 setup](docs/two-hop-vpn.md#1-configure-ipv6-yourself-using-your-vps-providers-instructions)
-2. Copy the relay account link from the exit server into Moscow’s **Outbounds**. Moscow uses that link to pass traffic to the exit. [Connect the panels](docs/two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
-3. Copy your device’s link from Moscow into Hiddify. Open an [IP check page](https://www.cloudflare.com/cdn-cgi/trace) and look for the exit server’s IPv4 address next to `ip=`.
+2. Install and open 3x-ui on each server. If a panel is already running, sign in to it. [Install the dashboard](docs/server-setup.md#3-install-3x-ui)
+3. Copy the relay account link from the exit server into Moscow’s **Outbounds**. Moscow uses that link to pass traffic to the exit. [Connect the panels](docs/two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
+4. Copy your device’s link from Moscow into Hiddify. Open an [IP check page](https://www.cloudflare.com/cdn-cgi/trace) and look for the exit server’s IPv4 address next to `ip=`.
 
 [Full setup](docs/two-hop-vpn.md) · [Pictures and connection maps](docs/schemes/README.md) · [Setup scripts](docs/automation.md)
 

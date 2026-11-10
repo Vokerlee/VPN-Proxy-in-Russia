@@ -1,4 +1,4 @@
-[← Setup overview](../README.md) · Step 3 of 4
+[← Single-server overview](single-server.md) · Step 3 of 4
 
 # Create your first connection account
 
@@ -9,6 +9,8 @@ An **inbound** is the server entry point that accepts a device's connection. **V
 The dashboard runs **Xray**, the network engine that handles the connections. These labels refer to **3x-ui 3.8.5**. The panel's HTTP/HTTPS port is separate from the inbound's VPN port.
 
 **Do this page if you need a connection account.** Already have an enabled account and its exported VLESS link? Skip this page and [open Step 4: connect your device](clients.md). Otherwise, follow sections 1–5 in order. The terminal checks and reference links are optional.
+
+For a two-hop setup, use this page to find the form fields and follow the role-specific addresses and ports in the relay guide. [Moscow and NL panel steps](two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
 
 ## 1. Open the correct form
 
@@ -108,7 +110,7 @@ vless://YOUR_UUID@YOUR_SERVER_IP:8443?encryption=none&flow=xtls-rprx-vision&secu
 
 Check server IP, VPN port, UUID, Flow, REALITY public key, short ID, SNI, fingerprint, and transport. A correct IP with the wrong key or short ID can establish TCP and still fail REALITY authentication.
 
-For a desktop and phone, use two separately named client accounts, `desktop` and `phone`, on this same inbound. Export each account's own link; each device keeps its own credentials and can be revoked separately. A second listener port is not required. When replacing an initial test account, verify both new accounts first, then remove the old account from the central client list as well as the inbound so exactly two accounts remain.
+For a desktop and phone, use two separately named client accounts, `desktop` and `phone`, on this same inbound. Export each account's own link; each device keeps its own credentials and can be revoked separately. Both accounts can use the same listener. When replacing a test account, verify the new accounts before removing the test account from the inbound and central client list.
 
 ![Client details actions: Copy VLESS URL or Show QR code](../images/3x-ui-client-share.svg)
 

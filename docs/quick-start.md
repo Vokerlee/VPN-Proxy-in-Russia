@@ -118,7 +118,7 @@ The server and account are ready. Open the generated `hiddify-profile.txt` in a 
 
 **[Now follow Step 4: install Hiddify, import this link, and connect →](clients.md)**
 
-**In Hiddify, set Settings → DNS → Outbound domain strategy → IPv4 only before reconnecting.** This is the author’s reported Android fix. The helper’s server-side ForceIPv4 setting does not set this option in your phone’s app.
+**In Hiddify, set Settings → DNS → Outbound domain strategy → IPv4 only before reconnecting.** This helped during the first Android test. The timeout later returned, so use it as a troubleshooting check. The helper’s server-side ForceIPv4 setting does not set this option in your phone’s app.
 
 The linked page gives the exact buttons, browser check, and optional additional recovery steps. You do not need to create another account in 3x-ui or run a preference-repair script first.
 
