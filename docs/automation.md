@@ -2,7 +2,7 @@
 
 # Let the scripts do the repetitive work
 
-**Optional toolbox.** Pick only the helper for your task; this page is not a sequence to run from top to bottom. For setup without repository helpers, [start with the manual guide](../README.md#follow-these-steps-in-order).
+**Optional toolbox.** Pick only the helper for your task; this page is not a sequence to run from top to bottom. For a manual setup, start with the [two-hop guide](two-hop-vpn.md) or the [single-server walkthrough](single-server.md).
 
 The examples use a rented remote server (**VPS**), its administrator account (**root**), the **3x-ui** browser dashboard, and the **Hiddify** VPN app. **Xray** is a network engine used on the server and in standalone client tests. A **profile** or **share link** is the private link containing an account’s connection settings.
 
@@ -10,7 +10,15 @@ Once you know which step you want to automate, the helpers can handle repetitive
 
 The **setup helper** installs server software only when explicitly applied. The diagnostic and client-preference helpers do not install software. None of the helpers changes a provider firewall or stops existing clients. Run them from the repository root—the folder containing `README.md` and `scripts/`. Python helpers require **Python 3.8+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
 
+## Set up the two-hop relay
+
+Use [the two-hop walkthrough](two-hop-vpn.md) and `python3 scripts/bootstrap_relay.py --help`. It supports a reusable Moscow hub, separate country routes on 443/8443, explicit management proxies, private backups and canonical client exports. The original single-server helpers remain available. IPv6 activation and OS configuration are the user's provider-specific task; the relay helper only checks existing addresses and routes.
+
+The relay route starts at a Moscow IPv4 inbound, crosses to the foreign VPS on IPv6, then exits over IPv4. Use the foreign relay account only in Moscow's outbound; export separate Moscow device accounts for Hiddify. Pass `--entry-port 443` for NL and `--entry-port 8443` for FR. The shared FR and FI layout uses account-based rules on port 8443. [See the port map](schemes/README.md#add-a-country) Keep an existing single-server route as a separate mode.
+
 ## Start with only a VPS IP and root password
+
+This section is for the original single-server mode.
 
 Follow the [illustrated quick start](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
 
@@ -61,6 +69,7 @@ This regional policy is an initial selection, not evidence that all US networks 
 | Your next step | Helper | Changes by default |
 |---|---|---|
 | Prepare a fresh VPS from its IP and root password | `scripts/Setup-Vpn.ps1` or `python3 scripts/bootstrap_server.py` | Plan only; apply provisions the fresh VPS |
+| Add a two-hop IPv6 route or a second country | `python3 scripts/bootstrap_relay.py` | Plan only; apply adds a route and preserves existing ones |
 | Check the VPS service, listener and effective settings | `bash scripts/server-check.sh` | None; local checks only |
 | Inspect a private share link | `python3 scripts/vpn_profile.py inspect` | None; values that grant access are hidden |
 | Create a Linux/standalone Xray client file | `python3 scripts/vpn_profile.py config` | Writes only the explicit output file |

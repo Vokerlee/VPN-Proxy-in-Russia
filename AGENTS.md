@@ -4,7 +4,7 @@ This repository is both a human VPN walkthrough and a small set of opt-in setup/
 
 ## Human-first documentation rules
 
-The default reader path is manual and starts with no server: choose/rent a server, install its browser dashboard, create a connection account, then install/connect the client app. Keep automation explicitly optional. Do not make setup scripts, preview/apply flags, PowerShell execution policy, or agent instructions a prerequisite for the ordinary walkthrough.
+The README starts with the two-hop setup: device IPv4 → Moscow hub → foreign IPv6 relay → IPv4 website. Explain where the two panels connect and how to test each leg. Keep the single-server walkthrough in docs/single-server.md and keep its existing automation available. Use small readable text diagrams on the README; put detailed UI illustrations in the relevant guide. Keep automation optional.
 
 Define names before relying on them: VPS means a rented remote server; root is an administrator account; 3x-ui is the browser dashboard; Xray is the network engine; Hiddify is the connection app; a profile is the private connection link. Introduce ports, SSH and proxy modes where the reader needs them. Do not send a beginner to an expert glossary to complete a required step. Each guide must also make sense when opened directly: define an app or technical term at its first substantive use on that page. Use full product names, including Invisible Man - XRay Client. Keep migration-only app references out of the ordinary beginner steps. Explain a setting through its effect and the reader’s next action; avoid arguments about what a test does not prove unless the limitation changes that action.
 
@@ -13,10 +13,12 @@ Support Windows and Linux as administration/client platforms without calling the
 ## Repository map
 
 ```text
-README.md                       Short entry point and guide index
+README.md                       Main two-hop walkthrough and guide index
 AGENTS.md                       This repository's agent workflow
 .gitignore                      Excludes private profiles, exports, backups and test artifacts
 docs/
+  two-hop-vpn.md                IPv6 prerequisites, panel linking, relay helper, second country
+  single-server.md              Original one-server walkthrough and navigation
   choose-server.md              From zero: what a VPS is, how to rent it and save login details
   quick-start.md                Optional automated VPS path: IP/root authentication -> panel -> Hiddify
   server-setup.md               Manual VPS preparation and recoverable administration
@@ -36,7 +38,10 @@ images/
 scripts/
   Setup-Vpn.ps1                 Windows launcher; no local Python required; default plan only
   bootstrap_server.py           Python launcher; default plan only; native OpenSSH authentication
-  provision_remote.py           Remote fresh-VPS payload; never run as local setup
+  provision_remote.py           Fresh single-server or panel-only payload
+  bootstrap_relay.py            Two-hop launcher; default plan, preserve existing routes
+  relay_remote.py               Remote 3x-ui relay configuration and verification
+  ssh_http_connect.py           Explicit loopback HTTP CONNECT for SSH management
   Repair-Hiddify.ps1            Preference preview; explicit apply with backup; never stops apps
   vpn_profile.py                Inspect, generate config, isolated authenticated tunnel test
   server-check.sh               Read-only Linux VPS health/config summary
@@ -44,6 +49,7 @@ scripts/
   check_docs.py                 Offline local links, anchors, SVG and accidental-profile checks
 tests/
   test_bootstrap.py             Input boundaries, fresh-install guard, payload/export behavior
+  test_relay.py                 Relay routing, account reuse, IPv6 preflight and safe failure
   test_vpn_profile.py           Profile validation, overwrite/backup and NO_PROXY regression
   test_docs_and_server_check.py Guide navigation and diagnostic argument validation
   check-powershell.ps1          Syntax/fixture checks; simulated process guard; no real app access
@@ -62,9 +68,9 @@ Apply this gate to both fresh and existing servers. An earlier successful proxy 
 
 ## Allowed public VPN inbound ports
 
-**Never create, move or test a public VPN inbound on a port other than TCP 443 or 8443.** This is the repository owner's explicit rule. Prefer the documented 8443 preset; 443 is the only alternative. Preserve existing listeners. If neither allowed port is available, stop provisioning and report the conflict rather than selecting a random/high port. This restriction applies to public VPN inbounds, not SSH, the administration panel, or temporary loopback client proxies. Historical investigations on other ports are evidence only and do not authorize repeating those configurations.
+**Never create, move or test a public VPN inbound on a port other than TCP 443 or 8443.** This is the repository owner's explicit rule. Use 443 for the Moscow NL route and 8443 for FR. FI can share 8443 with account-based routing. Preserve existing listeners. If neither allowed port is available, stop provisioning and report the conflict rather than selecting a random/high port. This restriction applies to public VPN inbounds, not SSH, the administration panel, or temporary loopback client proxies. Historical investigations on other ports are evidence only and do not authorize repeating those configurations.
 
-## Automatic setup when the user supplies a VPS IP and root access
+## Single-server automation
 
 The automatic path targets a **fresh Ubuntu/Debian systemd VPS**. An explicit request to set up that server authorizes the documented setup steps; do not ask for repetitive confirmations already covered by that request. Tool/sandbox approvals still apply. A request to edit docs or inspect a repository is not permission to provision a server.
 
@@ -85,6 +91,16 @@ The automatic path targets a **fresh Ubuntu/Debian systemd VPS**. An explicit re
 10. Import the generated `hiddify-profile.txt` into the client and follow the complete settings/verification path. Test a real HTTPS request through the local proxy and compare egress. Report what was tested and what remains unverified.
 
 Keep a working SSH session during any separately authorized access-control change. Do not disable root login or password authentication before a replacement administrator/key has been tested.
+
+## Primary two-hop setup
+
+Read docs/two-hop-vpn.md before using scripts/bootstrap_relay.py. When the user requests a live setup, get the live chain working before spending time on script or guide polish. The original single-server mode remains available. Use NL, FR and FI in route names and diagrams. Document the Moscow port map and the manual IPv6 prerequisites in docs/schemes/README.md. A hub may have separate country inbounds on 443 and 8443; preserve other routes and account identities when adding a country. More than two countries can use account-based routing on a shared allowed port; do not add arbitrary inbound ports or claim that the current helper configures account-based routing. Use the exact panel exports.
+
+IPv6 activation and OS network configuration are the user's manual responsibility. The relay automation must only inspect addresses/routes and fail if prerequisites are absent. Never guess a gateway, assume all providers use the same Netplan file, or automatically edit Netplan, add addresses or install routes.
+
+Direct SSH remains the default gate. An explicit user instruction to use an existing proxy takes precedence over the no-fallback rule above. In that case use only the explicitly authorized proxy, label management access as indirect, and do not claim direct access succeeded. The relay helper accepts explicit loopback HTTP-proxy options and opens its own connections; these are management-only. The deployed inter-server leg must use the actual foreign IPv6 address, not a local SSH forward or administration proxy.
+
+Back up both existing panels before mutations. Create new inbounds disabled until routing is ready. Bind the foreign relay to its assigned IPv6 address, restrict the relay route to the hub IPv6 source, and verify foreign IPv4 egress. Test the existing foreign VPN from Moscow by address family when diagnosing reachability, then authenticate through the new IPv6 relay before enabling the Moscow entry. Scope the hub route to its own inbound tag so another country remains unchanged. Never add a direct Moscow fallback when the foreign relay is unavailable.
 
 ## Existing clients and desktop networking
 
