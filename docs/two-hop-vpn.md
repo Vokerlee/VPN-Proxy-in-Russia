@@ -239,6 +239,8 @@ From the Moscow server, direct TCP to the foreign IPv4 SSH, VPN and panel ports 
 
 All four NL accounts passed HTTPS checks after moving Moscow’s entry to port 443. Hiddify’s Connect button passed two more checks on port 443. FI was added on port 8443, and all four FI device profiles returned the expected FI exit. FR now shares Moscow port 443 with NL. The FR account rule runs before the general NL rule for that inbound. All four FR profiles returned the expected FR exit in isolated Windows Hiddify checks. The NL and FI desktop profiles also returned their expected exits after FR was added.
 
+A later live test switched the inter-server IPv6 links for NL, FR and FI to XHTTP + REALITY, using `stream-one` on Moscow’s outbounds and `auto` on the foreign inbounds. Each relay kept its existing address, port and account. XHTTP uses an empty client flow on that leg. All twelve device profiles passed isolated Windows Hiddify HTTPS requests through their expected exits, and UDP DNS passed through each XHTTP relay. Device entry still uses RAW + REALITY + Vision. Mobile-data access remains unverified. The helper and manual steps above describe the original RAW inter-server transport.
+
 ## Recovery and evidence
 
 Private remote backups are under /root/vpn-relay-backups. The ownership registry is /etc/vpn-guide-relay/routes.json. The local relay.json records completed stages and backup locations. An incomplete run is not permission to wipe a panel. Inspect its disabled inbound and backup before resuming.
