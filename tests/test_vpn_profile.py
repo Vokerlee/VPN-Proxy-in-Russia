@@ -17,6 +17,47 @@ LINK = f"vless://{ACCOUNT}@203.0.113.10:8443?security=reality&flow=xtls-rprx-vis
 
 
 class ProfileTests(unittest.TestCase):
+    def test_classical_option_survives_hiddify_generation_and_refuses_native_loss(self):
+        link = LINK + "&keyshare=classical"
+        profile = vpn.parse_profile(link)
+        self.assertEqual(profile.key_share, "classical")
+        self.assertEqual(profile.summary()["key_share"], "classical")
+        result = vpn.client_config(profile, 12345, "hiddify")
+        self.assertEqual(result["outbounds"][0]["tls"]["reality"]["key_share"], "classical")
+        with self.assertRaisesRegex(ValueError, "Hiddify"):
+            vpn.client_config(profile, 12345)
+
+    def test_key_share_addition_preserves_canonical_query_and_fragment(self):
+        canonical = LINK + "#Panel%20account"
+        variant = vpn.hiddify_link(canonical, "classical")
+        self.assertEqual(variant, LINK + "&keyshare=classical#Panel%20account")
+        self.assertEqual(vpn.hiddify_link(canonical, "hybrid"), canonical)
+        self.assertEqual(vpn.hiddify_link(variant, "classical"), variant)
+        with self.assertRaises(ValueError):
+            vpn.hiddify_link(variant, "hybrid")
+
+    def test_xhttp_has_empty_flow_and_preserves_path_mode_and_host(self):
+        link = LINK.replace("type=tcp", "type=xhttp").replace("flow=xtls-rprx-vision&", "")
+        link += "&path=%2Frelay-nl&mode=stream-one&host=www.example.com"
+        profile = vpn.parse_profile(link)
+        self.assertEqual(profile.flow, "")
+        self.assertEqual(profile.transport, "xhttp")
+        native = vpn.client_config(profile, 12345)["outbounds"][0]
+        self.assertEqual(native["streamSettings"]["xhttpSettings"],
+                         {"path": "/relay-nl", "mode": "stream-one", "host": "www.example.com"})
+        hiddify = vpn.client_config(profile, 12345, "hiddify")["outbounds"][0]
+        self.assertNotIn("flow", hiddify)
+        self.assertEqual(hiddify["transport"]["path"], "/relay-nl")
+        with self.assertRaises(ValueError):
+            vpn.parse_profile(link + "&flow=xtls-rprx-vision")
+        with self.assertRaisesRegex(ValueError, "Advanced XHTTP"):
+            vpn.parse_profile(link + "&extra=%7B%22unsupported%22%3Atrue%7D")
+
+    def test_misspelled_or_unsupported_key_shares_are_rejected(self):
+        for option in ("keyshare=classic", "key_share=classical", "keyShare=classical"):
+            with self.subTest(option=option), self.assertRaises(ValueError):
+                vpn.parse_profile(LINK + "&" + option)
+
     def test_valid_profile_keeps_nondefault_server_port(self):
         p = vpn.parse_profile(LINK)
         config = vpn.client_config(p, 10809)

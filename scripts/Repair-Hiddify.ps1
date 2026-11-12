@@ -52,6 +52,7 @@ foreach ($key in $updates.Keys) {
     Write-Output ('  {0}: {1} -> {2}' -f $key, $oldText, $updates[$key])
 }
 Write-Output 'Read docs/clients.md for the setting explanations and API/monitoring tradeoff.'
+Write-Output 'For mobile handshake failures, check docs/handshakes-and-versions.md. Classical mode belongs to the profile TLS/REALITY configuration.'
 if (-not $Apply) {
     Write-Output 'Preview only. Close Hiddify yourself, then repeat with -Apply to save a backup and apply.'
     return

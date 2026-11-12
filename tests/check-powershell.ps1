@@ -49,6 +49,22 @@ try {
     }
     if(-not $refused) {throw 'A public VPN port outside 443/8443 was accepted.'}
     Write-Output 'Setup rejects public VPN ports outside 443 and 8443.'
+    $refused=$false
+    try {
+        & (Join-Path $repo 'scripts\Setup-Vpn.ps1') -ServerIp '203.0.113.10' -CoreVersion 26.9.9 -KeyShare classical|Out-Null
+    } catch {
+        if($_.Exception.Message -like '*Classical requires*') {$refused=$true} else {throw}
+    }
+    if(-not $refused) {throw 'An incompatible classical/core pair was accepted.'}
+    & (Join-Path $repo 'scripts\Setup-Vpn.ps1') -ServerIp '203.0.113.10' -CoreVersion 26.9.9 -KeyShare hybrid -Transport xhttp|Out-Null
+    Write-Output 'Setup validates core, key share and optional XHTTP before SSH.'
+    $refused=$false
+    try {
+        & (Join-Path $repo 'scripts\Setup-Vpn.ps1') -ServerIp '203.0.113.10' -Clients 'desktop,desktop'|Out-Null
+    } catch {
+        if($_.Exception.Message -like '*labels must be unique*') {$refused=$true} else {throw}
+    }
+    if(-not $refused) {throw 'Duplicate device accounts were accepted.'}
 
 } finally {
     if(Test-Path -LiteralPath $work) {Remove-Item -LiteralPath $work -Recurse -Force}

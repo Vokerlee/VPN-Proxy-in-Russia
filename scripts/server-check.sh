@@ -104,12 +104,21 @@ for inbound in c.get("inbounds", []):
     s=inbound.get("streamSettings") or {}
     print("Inbound:", {k:inbound.get(k) for k in ("tag","listen","port","protocol")},
           "transport=",s.get("network"),"security=",s.get("security"),
-          "accounts=",len((inbound.get("settings") or {}).get("clients",[])))
+          "accounts=",len((inbound.get("settings") or {}).get("clients",[])),
+          "flows=", sorted({client.get("flow", "") for client in (inbound.get("settings") or {}).get("clients", [])}),
+          "xhttp_mode=", (s.get("xhttpSettings") or {}).get("mode"))
 for outbound in c.get("outbounds", []):
     if outbound.get("protocol")=="freedom":
         sock=((outbound.get("streamSettings") or {}).get("sockopt") or {})
         print("Direct outbound:",outbound.get("tag"),"family strategy=",
               sock.get("domainStrategy") or (outbound.get("settings") or {}).get("domainStrategy") or "AsIs")
+    elif outbound.get("protocol")=="vless":
+        stream=outbound.get("streamSettings") or {}
+        peers=(outbound.get("settings") or {}).get("vnext", [])
+        print("VLESS outbound:",outbound.get("tag"),"transport=",stream.get("network"),
+              "xhttp_mode=",(stream.get("xhttpSettings") or {}).get("mode"),
+              "IPv6_endpoint=",bool(peers and ":" in peers[0].get("address", "")))
+print("Classical/hybrid key share is a client-profile setting. Match it to the printed core version; see docs/handshakes-and-versions.md.")
 PYCODE
 fi
 if ((network)); then

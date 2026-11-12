@@ -1,14 +1,17 @@
 """Offline bootstrap checks. No SSH calls or server installations are performed."""
 import importlib.util
 import io
+import hashlib
 import json
 from pathlib import Path
 import tempfile
+import sys
 import unittest
 from unittest import mock
 from urllib.parse import parse_qs, urlsplit
 
 ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 
 def load(name):
     spec=importlib.util.spec_from_file_location(name, ROOT/"scripts"/(name+".py"))
@@ -27,6 +30,55 @@ def panel_link_fixture(port=8443, fingerprint="safari"):
 
 
 class BootstrapTests(unittest.TestCase):
+    def test_download_digest_failure_preserves_the_original_core(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            binary = root / "usr/local/x-ui/bin/xray-linux-amd64"
+            binary.parent.mkdir(parents=True)
+            binary.write_bytes(b"original-core")
+            binary.chmod(0o700)
+            release = {"assets": [{"name": "Xray-linux-64.zip",
+                "digest": "sha256:" + hashlib.sha256(b"expected-archive").hexdigest(),
+                "browser_download_url": "https://github.com/XTLS/Xray-core/releases/download/v26.7.28/Xray-linux-64.zip"}]}
+            opener = mock.Mock()
+            opener.open.side_effect = [io.BytesIO(json.dumps(release).encode()), io.BytesIO(b"corrupt-archive")]
+            def rooted(value):
+                path = Path(value)
+                return root / str(path).lstrip("/") if str(path).startswith(("/usr/local/x-ui", "/root/", "/etc/")) else path
+            with mock.patch.object(remote, "Path", side_effect=rooted), \
+                    mock.patch.object(remote.platform, "machine", return_value="x86_64"), \
+                    mock.patch.object(remote.urllib.request, "build_opener", return_value=opener):
+                command = mock.Mock()
+                with self.assertRaisesRegex(RuntimeError, "SHA-256"):
+                    remote.install_pinned_core("26.7.28", command)
+                command.assert_not_called()
+            self.assertEqual(binary.read_bytes(), b"original-core")
+
+    def test_core_and_key_share_are_checked_before_any_connection(self):
+        options = bootstrap.validate_options("203.0.113.10")
+        self.assertEqual(options["core_version"], "26.7.28")
+        self.assertEqual(options["key_share"], "classical")
+        self.assertEqual(options["clients"], ["desktop", "phone"])
+        with self.assertRaisesRegex(ValueError, "classical"):
+            bootstrap.validate_options("203.0.113.10", core_version="26.9.9")
+        newer = bootstrap.validate_options("203.0.113.10", core_version="26.9.9", key_share="hybrid")
+        self.assertEqual(newer["key_share"], "hybrid")
+        for clients in ("desktop,desktop", "../phone", "desktop,phone;command"):
+            with self.assertRaises(ValueError):
+                bootstrap.validate_options("203.0.113.10", clients=clients)
+
+    def test_xhttp_payload_has_no_vision_flow(self):
+        options = bootstrap.validate_options("203.0.113.10", transport="xhttp", fingerprint="safari")
+        value = remote.inbound_payload(options, "PRIVATE", "PUBLIC", "ACCOUNT", "abcd")
+        self.assertEqual(json.loads(value["settings"])["clients"][0]["flow"], "")
+        self.assertEqual(json.loads(value["streamSettings"])["xhttpSettings"],
+                         {"path": "/vpn", "mode": "auto"})
+
+    def test_remote_payload_bundles_the_profile_module(self):
+        payload = bootstrap.remote_payload(bootstrap.validate_options("203.0.113.10"))
+        compile(payload, "remote-bootstrap", "exec")
+        self.assertIn("types.ModuleType('vpn_profile')", payload)
+
     def test_untrusted_inputs_cannot_become_shell_options(self):
         for host in ["-oProxyCommand=evil", "example.com;echo x", "2001:db8::1"]:
             with self.assertRaises(ValueError):

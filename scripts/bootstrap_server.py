@@ -4,6 +4,7 @@
 Default is --plan (no connection). --apply installs/configures a fresh VPS only.
 Guide: docs/quick-start.md; details: docs/automation.md#start-with-only-a-vps-ip-and-root-password
 The root password is handled by OpenSSH, never stored or accepted as a CLI flag.
+For the main two-hop setup, use scripts/bootstrap_relay.py; this launcher is the single-server option.
 """
 import argparse
 import ipaddress
@@ -18,6 +19,8 @@ import subprocess
 import sys
 import time
 
+from provision_remote import validate_core_options
+
 ROOT = Path(__file__).resolve().parents[1]
 # The shell guard runs before package installation, even when python3 is missing.
 REMOTE_COMMAND = "bash -c " + shlex.quote(
@@ -31,7 +34,8 @@ FINGERPRINTS = ("auto", "chrome", "safari", "firefox", "edge", "ios", "android",
 
 
 def validate_options(host, ssh_port=22, vpn_port=443, panel_port=27297, target="www.google.com",
-                     server_country="auto", fingerprint="auto"):
+                     server_country="auto", fingerprint="auto", core_version="26.7.28",
+                     key_share="classical", transport="raw", xhttp_path="/vpn", clients="desktop,phone"):
     address = ipaddress.ip_address(host)
     if address.version != 4:
         raise ValueError("use the VPS IPv4 address for this walkthrough")
@@ -48,13 +52,31 @@ def validate_options(host, ssh_port=22, vpn_port=443, panel_port=27297, target="
         raise ValueError("server country must be auto or a two-letter code such as US or DE")
     if fingerprint not in FINGERPRINTS:
         raise ValueError("unsupported fingerprint; see --help")
+    core_version = validate_core_options(core_version, key_share, transport)
+    if not xhttp_path.startswith("/") or any(ord(c) < 33 or ord(c) == 127 for c in xhttp_path):
+        raise ValueError("XHTTP path must start with / and contain no whitespace or control characters")
+    labels = clients.split(",")
+    if len(set(labels)) != len(labels) or any(not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", label) for label in labels):
+        raise ValueError("Use unique comma-separated client labels")
     return {"host": str(address), "ssh_port": ssh_port, "vpn_port": vpn_port,
             "panel_port": panel_port, "target": target,
-            "server_country": country, "fingerprint": fingerprint}
+            "server_country": country, "fingerprint": fingerprint, "core_version": core_version,
+            "key_share": key_share, "transport": transport, "xhttp_path": xhttp_path, "clients": labels}
+
+
+def remote_payload(options):
+    source = (ROOT / "scripts/vpn_profile.py").read_text(encoding="utf-8")
+    return ("import json,sys,types\n"
+            "m=types.ModuleType('vpn_profile')\nsys.modules[m.__name__]=m\n"
+            "exec(" + repr(source) + ",m.__dict__)\n"
+            "BOOTSTRAP_OPTIONS=json.loads(" + repr(json.dumps(options)) + ")\n" +
+            (ROOT / "scripts/provision_remote.py").read_text(encoding="utf-8"))
 
 
 def ssh_command(ssh, options):
-    return [ssh, "-T", "-o", "StrictHostKeyChecking=ask", "-o", "ConnectTimeout=15",
+    return [ssh, "-F", "NUL" if os.name == "nt" else "/dev/null", "-T",
+            "-o", "ProxyCommand=none", "-o", "ProxyJump=none", "-o", "ControlMaster=no",
+            "-o", "StrictHostKeyChecking=ask", "-o", "ConnectTimeout=15",
             "-o", "ServerAliveInterval=15", "-o", "ServerAliveCountMax=3",
             "-p", str(options["ssh_port"]), "root@" + options["host"], REMOTE_COMMAND]
 
@@ -75,8 +97,14 @@ def save_result(result, output):
     output.mkdir(mode=0o700, parents=True, exist_ok=True)
     if os.name != "nt":
         output.chmod(0o700)
-    for name, text in [("server.json", json.dumps(result, indent=2) + "\n"),
-                       ("hiddify-profile.txt", result["client_link"] + "\n")]:
+    files = [("server.json", json.dumps(result, indent=2) + "\n"),
+                       ("hiddify-profile.txt", result["client_link"] + "\n"),
+                       ("panel-profile.txt", result.get("canonical_link", result["client_link"]) + "\n")]
+    for label, link in result.get("client_links", {}).items():
+        if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", label):
+            raise ValueError("Server result contains an invalid client filename")
+        files.append(("client-" + label + ".txt", link + "\n"))
+    for name, text in files:
         fd = os.open(output / name, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(text)
@@ -94,16 +122,24 @@ def main():
     p.add_argument("--panel-port", type=int, default=27297)
     p.add_argument("--target", default="www.google.com")
     p.add_argument("--server-country", default="auto", help="VPS country code, e.g. US/DE; auto looks up its public IP during apply")
-    p.add_argument("--fingerprint", choices=FINGERPRINTS, default="auto", help="auto selects Safari for US, Chrome elsewhere; an explicit preset overrides that policy")
+    p.add_argument("--fingerprint", choices=FINGERPRINTS, default="safari", help="Safari is the tested starting point; auto retains the legacy regional selection")
+    p.add_argument("--core-version", default="26.7.28", help="pin the server core independently of the 3x-ui panel")
+    p.add_argument("--key-share", choices=("classical", "hybrid"), default="classical")
+    p.add_argument("--transport", choices=("raw", "xhttp"), default="raw")
+    p.add_argument("--xhttp-path", default="/vpn")
+    p.add_argument("--clients", default="desktop,phone", help="unique comma-separated device account labels")
     p.add_argument("--output-dir", type=Path)
     args = p.parse_args()
     try:
         options = validate_options(args.host or input("VPS IPv4 address: ").strip(), args.ssh_port,
                                    args.vpn_port, args.panel_port, args.target,
-                                   args.server_country, args.fingerprint)
-        print("Fresh-server plan: official 3x-ui v3.8.5, one REALITY/Vision account, ForceIPv4,")
+                                   args.server_country, args.fingerprint, args.core_version,
+                                   args.key_share, args.transport, args.xhttp_path, args.clients)
+        print("Fresh-server plan: official 3x-ui v3.8.5, named VLESS/REALITY accounts, ForceIPv4,")
         print("a public browser administration panel, and private local profile/credential files.")
-        print("Fingerprint policy: US → Safari; other countries → Chrome; explicit --fingerprint overrides.")
+        print("Core " + options["core_version"] + "; " + options["transport"] +
+              "; Hiddify key share " + options["key_share"] + ".")
+        print("Default fingerprint: Safari. Explicit auto uses US → Safari and other countries → Chrome.")
         print("Country lookup runs only during apply; --server-country skips it.")
         print("Existing installs/listeners are preserved. No SSH hardening, OS upgrade, client stop,")
         print("provider-firewall change, or workstation system-proxy change will be attempted.")
@@ -113,8 +149,7 @@ def main():
         ssh = shutil.which("ssh")
         if not ssh:
             raise ValueError("OpenSSH client is required; see docs/quick-start.md")
-        payload = "import json\nBOOTSTRAP_OPTIONS = json.loads(" + repr(json.dumps(options)) + ")\n"
-        payload += (ROOT / "scripts/provision_remote.py").read_text(encoding="utf-8")
+        payload = remote_payload(options)
         print("SSH will ask you to verify a new host key, then enter root's password securely.")
         print("The setup can take several minutes; keep this terminal open.", flush=True)
         # OpenSSH reads its password/host-key response from the controlling terminal.
