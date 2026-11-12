@@ -108,3 +108,11 @@ In our tests, the IPv6 route was usable while the IPv4 route to the same foreign
 The extra server adds cost, another panel and another possible failure point. First verify phone → Moscow, then Moscow → foreign IPv6, then the foreign IPv4 exit. XHTTP between servers changes the middle connection. A phone's initial REALITY handshake is still part of the first connection.
 
 **Ready to set it up?** Choose [one server](../single-server.md) or [two servers](../two-hop-vpn.md). If you haven’t rented anything yet, [start with the rental page](../choose-server.md).
+
+## Why this can help with filtering
+
+Your home or mobile provider sees the device connecting to the Russian server. The foreign server is the destination of a separate connection made by that server. The design aims to make direct foreign VPN use less obvious at the device’s first hop; it doesn’t establish that the traffic looks harmless to every filtering system. The hosting and transit networks can still observe the server-to-server connection.
+
+IPv4 and IPv6 addresses are separate destinations. Blocking one IPv4 address doesn’t automatically block the same server’s IPv6 address, although an operator can block both or filter the protocol itself. Our recorded IPv6 success is a reason to test that route, rather than evidence that Russia generally leaves IPv6 unblocked.
+
+Research has found differences between IPv4 and IPv6 censorship. However, the **ProtoScan** study’s method didn’t measure IP-address blocking and missed much of Russia’s provider-level censorship. It therefore doesn’t support a claim that IPv6 VPN addresses are usually unblocked in Russia. [ProtoScan: Measuring censorship in IPv6, methodology and Russia findings](https://hammas9.github.io/pdfs/foci.pdf)

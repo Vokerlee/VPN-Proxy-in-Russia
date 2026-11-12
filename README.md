@@ -57,9 +57,13 @@ There’s also a **control panel**: a website where you manage the server’s VP
 
 **One server is the easier place to start.** You rent a server abroad, and your device connects to it through your internet provider.
 
-**Two servers give you another route.** Your device connects to a server in Russia, and that server passes the traffic to your server abroad.
+**Two servers move the foreign connection off your phone.** Your device connects to a server in Russia, and that server passes the traffic to your server abroad.
 
-This is useful when the foreign server is hard to reach directly. It costs more and takes more setup. In our example, the servers talk using IPv6—another kind of internet address—which you’ll configure using each hosting company’s instructions. Two servers can still be blocked; this is another route to try, not a promise that it will always work.
+The idea is to make the foreign VPN connection less obvious on your home or mobile provider’s network: the destination it sees is your Russian server, rather than a foreign hosting address. The connection abroad starts at the Russian server instead. That connection is still visible to its hosting provider and the networks along the way; a Russian address alone doesn’t hide VPN traffic.
+
+We also use **IPv6 between the servers**. An IP block on the foreign server’s IPv4 address doesn’t automatically block its separate IPv6 address. In our tests, Moscow could reach the foreign server over IPv6 while IPv4 access failed—that’s the practical benefit of having both. We can’t say IPv6 addresses are usually unblocked across Russia; it depends on the provider and route. [Why IPv6 can help, and what the evidence says](docs/schemes/README.md#what-the-second-server-adds)
+
+You pay for an extra server and configure IPv6 using each hosting company’s instructions. Your phone can keep connecting to the Russian server over IPv4.
 
 ## Where do I start?
 
