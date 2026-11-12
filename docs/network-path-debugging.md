@@ -4,9 +4,17 @@
 
 Use this investigation when a VPN times out even though its account looks correct, or when it works through another connection. Start with a few controlled comparisons; run a larger settings comparison only when the results justify it.
 
-A **VPS** is your rented server. **3x-ui** is its browser dashboard; **Xray** is the network engine forwarding traffic. **Hiddify** and **Invisible Man - XRay Client** are client applications. A **profile** is the private connection link for one account. **TCP** establishes the underlying connection; **TLS** negotiates the protected session. TLS starts with a **ClientHello** message. A **uTLS fingerprint** changes the shape of that message. **SNI** is the website name sent during TLS setup, and the REALITY **target** is the website endpoint contacted by the VPS.
+## Before you start
 
-Addresses below are documentation placeholders. Replace `203.0.113.10` with the VPS address and `198.51.100.20` with your direct public client address. Keep live addresses, account links, keys, passwords and panel paths in private notes.
+This is the deeper investigation page. Start with [the short troubleshooting table](troubleshooting.md#first-choose-the-symptom-that-matches-yours) if you haven’t narrowed the problem down yet.
+
+You’ll need your device’s connection link and permission to administer the server. Some checks need a second network and a terminal on both ends. Commands marked **Windows** run in PowerShell on the affected PC; commands marked **VPS** run after SSH login to the rented server. A **proxy** forwards requests for another program. Keep any working VPN open while running separate tests.
+
+The **VPS** is the rented server. **3x-ui** is its browser dashboard, and **Xray** carries the VPN traffic. Hiddify and Invisible Man - XRay Client are device apps. If you haven’t set these up yet, use [the setup guide](../README.md#where-do-i-start).
+
+The basic question is: can we reach the server, can the account connect, and can it open a website? Check those separately. **TCP** makes the underlying connection; **TLS** starts its encryption with a message called ClientHello. **SNI** is a website name in that message, and a **fingerprint** changes its browser-like shape. You’ll only need those details for the later comparisons.
+
+Addresses below are placeholders. Replace `203.0.113.10` with the server’s address and `198.51.100.20` with the client’s direct public address. Keep real credentials, connection links and captures private.
 
 ## 1. Label each path before testing
 
@@ -45,11 +53,13 @@ On the VPS, run the [read-only server checks](automation.md#check-the-vps-withou
 
 SSH can complete TCP, exchange version banners and then stall during key exchange. Run `ssh -vv -o ConnectTimeout=10 root@203.0.113.10` to identify the last stage. Some post-connect stalls can outlast the initial connection timeout; use a separate process deadline when automating the diagnostic. Preserve normal host-key verification. A failure before the password prompt does not test the password.
 
-Now test the panel's exact account export with an isolated client:
+Now test the panel’s original hybrid account export with a separate client process. Run this from the repository folder on your computer; [download the files first](quick-start.md#before-the-first-command) if needed. Replace the file path, executable path and expected exit address:
 
 ```bash
 python3 scripts/vpn_profile.py test --link-file PRIVATE_PROFILE_FILE --xray /path/to/xray --expect-ip 203.0.113.10 --timeout 10
 ```
+
+For a **classical** Hiddify link, use `--engine hiddify --hiddify /path/to/HiddifyCli` instead of `--xray /path/to/xray`. [Engine choices and Windows commands](automation.md#classical-profiles-need-the-hiddify-engine)
 
 This starts a temporary loopback proxy, sends a real HTTPS request, verifies its exit, and terminates its own child. It does not test the app's GUI Connect button, system routing or whole-device UDP. Use fresh logs from that request rather than an old installation error.
 
@@ -128,6 +138,11 @@ For deeper diagnosis, an administrator can briefly run an echo listener on a fre
 
 If small random messages and ordinary HTTP also disappear directly but arrive through the alternate path, the failure is broader than a REALITY fingerprint or large ClientHello. TCP/TLS fragmentation trials may test a narrower hypothesis, but a failed trial is not a fix and does not identify a filtering operator. A public block-list match is supporting context; no match cannot establish that a path is unfiltered.
 
+## Earlier investigations
+
+<details>
+<summary>Read the recorded cases — these aren’t setup steps</summary>
+
 ## Recorded investigation A: 2026-11-09
 
 This was a separate deployment, called **deployment A** here, with an account represented here by `DEVICE_ACCOUNT`. Live addresses and account exports remain outside the repository. The checked server ran 3x-ui 3.8.5 and Xray 26.9.9; the isolated native Linux client was Xray 26.10.31. Windows tests used the installed Hiddify engine; the previously recorded app baseline was 5.5.5, and a fresh independent engine version was not recorded for this run.
@@ -200,8 +215,13 @@ The direct Linux route used the physical Ethernet gateway. The Windows SSH check
 
 This supersedes the initial direct success as the latest reachability result. It supports path-dependent filtering or routing failure before the VPN handshake; no nationwide, permanent ban or responsible operator was established. No new two-ended packet capture was performed in this comparison. Further SNI/uTLS changes were not presented as a repair for a TCP connection that could not be established.
 
+
+</details>
+
 ## What to record before stopping
 
 Keep a sanitized report with the date/time zone, versions, exact failures and durations, direct/proxy exit distinction, comparison table, successful control exit, packet byte ranges and unresolved attribution. Record the final listener/profile state and which temporary processes/forwards were removed. Preserve the working existing VPN.
 
 The next discriminating test is the same exact profile on another access network, such as mobile data with Wi-Fi disabled, or actual router/provider filter logs for the destination. Avoid assigning blame from a timeout, server country or public block list alone.
+
+**Next:** keep the first failing check and its fresh error in your report. Return to [troubleshooting](troubleshooting.md) to fix that part before comparing more settings.

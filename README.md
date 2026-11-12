@@ -1,18 +1,54 @@
-# Your own VPN, one step at a time
+# Let’s set up your own VPN
 
-Want a VPN for your phone and computer that you control yourself? This guide takes you from choosing where it will run to opening your first website through it.
+If you’ve used a VPN app before, you know the usual routine: choose a country, press Connect, and hope it works. Here we’ll set up a VPN you manage yourself. You’ll still use an app on your phone or computer, but you’ll decide which server it connects to and who can use it.
 
-You’ll need to pay for a **server**: a computer in a data centre that stays on while your devices are disconnected. The guide shows you how to rent one, which buttons to press and what to copy. You can follow it without previous server experience. Some steps involve pasting commands into a terminal; each step tells you where to run them.
+You don’t need previous experience with servers. You will need a computer for the setup, a paid server rental, and a little patience with the first few steps. We’ll explain the unfamiliar bits as we go.
 
-At the end, you’ll open an app called **Hiddify**, choose your connection and press **Connect**. Your phone and computer will each have their own connection link.
+## What does a VPN actually do?
 
-**Where should you start?**
+Without a VPN, your device connects to websites through your internet provider. With this setup, it first opens an encrypted connection to a computer you rent. That computer connects to the websites for you and sends their replies back.
 
-- **Setting up your first VPN?** Start with [one server](docs/single-server.md). It costs less and has fewer things to configure.
-- **Can’t reliably connect to a server abroad?** The [two-server guide](docs/two-hop-vpn.md) puts a server in Russia between you and the server abroad. It gives you another connection route, with an extra server to pay for and maintain.
-- **Someone already sent you a connection link?** Go straight to [installing Hiddify and connecting](docs/clients.md). You don’t need to set up a server.
+```text
+Without a VPN:  Your phone → Internet provider → Website
+With this VPN:  Your phone → Your VPN server → Website
+               (the connection to your server is encrypted)
+```
 
-Choose a route below. The detailed pages walk through it in order, and the script instructions stay folded away unless you want them.
+Your internet provider still carries the connection and can see that you’re talking to the server. Websites normally see the server’s internet address instead of yours. This can help you reach sites that don’t open on your usual connection. It doesn’t make you anonymous: a website can still recognize an account you sign in to, and a provider can still block the connection to your server.
+
+## What are the server and client?
+
+The **server** is a computer in a hosting company’s data centre. You rent it by the provider’s billing period and leave it running. You don’t need to buy a physical computer or keep your laptop on. Hosting companies often call it a **VPS**.
+
+The **client** is the app on your phone or computer that connects to that server. We use **Hiddify**. You’ll give it a private connection link containing the address and login settings it needs. Your phone and computer will each get their own link.
+
+There’s also a **control panel**: a website where you manage the server’s VPN accounts. We use one called **3x-ui**. We’ll install it together. You don’t need to know its settings yet.
+
+## One server or two?
+
+**One server is the easier place to start.** You rent a server abroad, and your device connects straight to it:
+
+```text
+Your device → Server abroad → Website
+```
+
+**Two servers give you another route.** Your device connects to a server in Russia, and that server passes the traffic to your server abroad:
+
+```text
+Your device → Server in Russia → Server abroad → Website
+```
+
+This is useful when the foreign server is hard to reach directly. It costs more and takes more setup. In our example, the servers talk using IPv6—another kind of internet address—which you’ll configure using each hosting company’s instructions. Two servers can still be blocked; this is another route to try, not a promise that it will always work.
+
+## Where do I start?
+
+- **I have nothing set up.** Open [the one-server walkthrough](docs/single-server.md). Its first step is [renting a server](docs/choose-server.md).
+- **I want the two-server route.** Open [the two-server walkthrough](docs/two-hop-vpn.md). It starts with what to rent and which details to save.
+- **I already have a server.** Go to [installing its control panel](docs/server-setup.md). If the panel already opens, go to [creating device accounts](docs/server-inbound.md).
+- **Someone gave me a VPN link.** You only need [the Hiddify setup page](docs/clients.md).
+- **My VPN stopped working.** Start with [the troubleshooting table](docs/troubleshooting.md#first-choose-the-symptom-that-matches-yours).
+
+The two routes are outlined below. Follow one of them. The script shortcuts stay folded away unless you want to use them.
 
 ## Path 1 — One server
 
@@ -30,7 +66,7 @@ You pay for one server abroad. Your phone or computer connects to it, and it ope
 <details>
 <summary>Set up one server with scripts</summary>
 
-On Linux/macOS, start with the plan:
+First [download the repository and open a terminal in its folder](docs/quick-start.md#before-the-first-command). On Linux/macOS, start with the plan:
 
 ```bash
 python3 scripts/bootstrap_server.py --host 203.0.113.10 --vpn-port 8443 --target www.apple.com --core-version 26.7.28 --key-share classical --fingerprint safari --clients desktop,phone --plan
@@ -64,7 +100,7 @@ You pay for two servers. Your device connects to the one in Russia, which passes
 <details>
 <summary>Set up two servers with scripts</summary>
 
-Configure IPv6 on both VPSs first. Then preview the route from the repository folder:
+Configure IPv6 on both servers first. [Download the repository and open a terminal in its folder](docs/quick-start.md#before-the-first-command), then preview the route:
 
 ```bash
 python3 scripts/bootstrap_relay.py \

@@ -2,23 +2,18 @@
 
 # Make the VPN server use an IPv4 exit
 
-**Looking for the Hiddify timeout fix? Use [Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only) first. That is an app setting; this page changes the server.**
+If your VPN works but websites show an address with colons instead of dots, you may be seeing the server’s **IPv6** address. That can be normal. Use this page if you specifically want websites to see its **IPv4** address instead.
 
-**Optional: use this page if you want the server to use an IPv4 exit address.** A working connection with an IPv6 exit does not require this change. After changing the form, run the verification section; the JSON reference is optional.
-
-This page changes **3x-ui**, the server’s browser dashboard. **Hiddify** is the app connecting from your device, and a **proxy** forwards an application’s requests through the server.
-
-The address a website sees after you connect is the server's **exit address**. It can be IPv4 (a dotted address such as `203.0.113.10`) or IPv6 (an address with colons, such as `2001:db8::10`).
-
-If you want websites to see the server's IPv4 address, change the outgoing connection setting in **3x-ui**, the server's browser dashboard. This does not require changing your own computer's operating system or disabling IPv6 everywhere.
-
-A client may connect to `YOUR_SERVER_IPV4:443` and still show the VPS's IPv6 address in an IP check. There are two separate connections:
+IPv4 looks like `203.0.113.10`; IPv6 looks like `2001:db8::10`. The address a website sees is the server’s **exit address**. It can differ from the address your phone uses to connect to the server.
 
 ```text
-Client -- IPv4 tunnel --> VPS -- IPv4 or IPv6 --> Website
+Your device → VPN server → Website
+              chooses the address used on this last connection
 ```
 
-Hiddify has two separate client options: **DNS → Outbound domain strategy → IPv4 only**, the author’s reported Android fix, and **Routing → IPv6 routing**, which controls a different part of the client’s traffic handling. Both apply on your device. To choose how the server reaches websites, change the server’s outbound as shown below. A command-line downloader such as curl also leaves the proxy to resolve the requested website when it sends a hostname through an HTTP proxy.
+You need access to **3x-ui**, the server’s browser dashboard, and a working device connection in **Hiddify**. [Set up a device first](clients.md) if you haven’t connected yet. In a two-server setup, make this change on the **foreign server**, which opens the website connections.
+
+This won’t fix a phone that can’t reach its VPN server. For that, use [troubleshooting](troubleshooting.md). You don’t need to disable IPv6 on the device or server for this change.
 
 ## Use the form: no JSON required
 
@@ -36,8 +31,6 @@ Do not change **Routing → Domain Strategy** to `ForceIPv4`: that field serves 
 
 If you cannot find Outbounds, check the panel version on its dashboard. In 3.8.5 an alternative is **Xray Settings → Advanced → Outbounds**, above the JSON editor, but that alternative does involve editing JSON. Do not assume a tutorial's tabs match every release.
 
-![3x-ui button path: Outbounds, direct Edit, ForceIPv4, Save](../images/3x-ui-force-ipv4.svg)
-
 ## What the choices mean
 
 | Choice | Behavior for a destination hostname |
@@ -51,6 +44,8 @@ If you cannot find Outbounds, check the panel version on its dashboard. In 3.8.5
 Do not disable the VPS's IPv6 networking or loopback merely to select an IPv4 VPN exit.
 
 ## Verify through the VPN
+
+First, with Hiddify connected in normal VPN mode, open [the address check](https://www.cloudflare.com/cdn-cgi/trace) in your browser. The `ip=` line should now show an IPv4 address belonging to the exit server. If you use manual Proxy mode, use the command below instead.
 
 For Hiddify's default local proxy on Windows, run in PowerShell:
 
@@ -100,3 +95,5 @@ To undo the change, return the same outbound's strategy to its previous value (o
 - [3x-ui 3.8.5 sidebar](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/layouts/AppSidebar.tsx)
 - [3x-ui 3.8.5 freedom strategy field](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/xray/outbounds/protocols/freedom.tsx)
 - [Xray socket resolution strategies](https://xtls.github.io/en/config/transports/sockopt.html#sockoptobject)
+
+**Next:** return to [your device connection](clients.md#4-connect-and-check-a-website), or [the two-server panel steps](two-hop-vpn.md#on-nl-create-the-relay-account) if that brought you here.

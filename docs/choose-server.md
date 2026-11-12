@@ -20,7 +20,9 @@ The original setup in this project used [HostVDS](https://hostvds.com/) for a se
 
 Choose the location where you want traffic to leave the VPN, such as a European or US location offered by your provider. A nearby location may reduce latency, but an actual connection test is more useful than geography alone. Check current payment methods, included traffic, and whether the provider accepts customers from your location before purchasing.
 
-A second server in Russia is **not needed** for the ordinary setup. The [optional sharing chapter](share-proxy.md) describes cases where an intermediate proxy host is useful. Do not buy two servers just because a diagram in an advanced chapter shows two machines.
+For one server, choose a country abroad. For two servers, rent one in Russia and one abroad; the example uses Moscow and the Netherlands (**NL**). Before paying for the two-server route, check that **both plans include IPv6** and that the providers explain how to configure it. IPv6 is a second kind of internet address used for the connection between these servers. [Compare the routes](../README.md#one-server-or-two)
+
+Check the total recurring price, including any extra charge for IPv4, traffic and tax. Keep the server while you use the VPN; deleting your local setup folder does not cancel its rental. To stop paying later, follow the hosting company’s cancellation or deletion procedure.
 
 ## Create one server: HostVDS example
 
@@ -36,8 +38,6 @@ If you want a concrete place to start, use [HostVDS](https://hostvds.com/). The 
 Choose the plain Ubuntu operating-system image for the manual installation in this guide. HostVDS also offers application templates that may include 3x-ui already. If you deliberately use one, follow its supplied panel access instructions and skip reinstalling a panel that already exists.
 
 If no root password arrives, HostVDS documents **Servers → Actions: Security → Change root password → Save new password** in its [access troubleshooting guide](https://hostvds.com/knowledge/7). Keep the resulting password private.
-
-![HostVDS example buttons: Servers, New Instance, Ubuntu, and Deploy](../images/hostvds-new-server.svg)
 
 <details>
 <summary>Using another provider? Open these alternative creation steps. Skip if you already created your server.</summary>
@@ -77,7 +77,7 @@ Open the new server's **Details / Access / Credentials** page. The provider may 
 
 A **firewall** decides which incoming connections the server accepts. Some providers put an extra one in their web dashboard, often called **Firewall**, **Security group**, or **Network rules**.
 
-Keep the supplied SSH access allowed. Later, you will allow the actual VPN TCP port chosen during setup, usually 443 or 8443. If you use a public browser panel, its separate access rule and HTTPS setup matter too. The next chapter explains those ports when you reach them; there is no need to open every port in advance.
+Keep the supplied SSH access allowed. Later, you will allow the actual VPN TCP port chosen during setup, usually 443 or 8443. The browser dashboard will use its own separate port. The next chapter explains those ports when you reach them; there is no need to open every port in advance.
 
 ## Provider references
 
@@ -88,4 +88,6 @@ Provider forms and billing offers change. The actions above describe the task; c
 
 **Step 1 is complete when:** your server is running and you have its IP address and login method.
 
-**[Next step: install and open the server dashboard →](server-setup.md)**
+**For one server:** [install and open its dashboard →](server-setup.md)
+
+**For two servers:** rent the second server too, then [return to the IPv6 checks →](two-hop-vpn.md#1-configure-ipv6-yourself-using-your-vps-providers-instructions).

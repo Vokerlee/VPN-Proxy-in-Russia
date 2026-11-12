@@ -6,7 +6,7 @@
 
 The examples use a rented remote server (**VPS**), its administrator account (**root**), the **3x-ui** browser dashboard, and the **Hiddify** VPN app. **Xray** is a network engine used on the server and in standalone client tests. A **profile** or **share link** is the private link containing an account’s connection settings.
 
-Once you know which step you want to automate, the helpers can handle repetitive tasks such as generating a configuration or checking a connection. A helper is not an extra requirement for using the VPN.
+If you haven’t downloaded these files yet, follow [getting the repository and opening a terminal](quick-start.md#before-the-first-command). Pick a task from [the helper table](#pick-the-helper-for-the-job); don’t run every command on this page. Each script’s output tells you where it saved private files or which check failed.
 
 The **setup helper** installs server software only when explicitly applied. The diagnostic and client-preference helpers do not install software. None of the helpers changes a provider firewall or stops existing clients. Run them from the repository root—the folder containing `README.md` and `scripts/`. Python helpers require **Python 3.8+**, the server helper uses Bash, and the Windows repair helper uses PowerShell 5.1+.
 
@@ -20,7 +20,7 @@ The relay route starts at a Moscow IPv4 inbound, crosses to the foreign VPS on I
 
 This section is for the single-server path.
 
-Follow the [illustrated quick start](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
+Follow the [script walkthrough](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
 
 The launchers use **SSH**, an encrypted terminal connection, through the operating system’s **OpenSSH** program. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. Public VPN inbound ports are restricted to **443 or 8443**. A busy default 443 falls back to 8443; provider-firewall work is reported as a separate action when needed. Allow the VPN port and the separate panel TCP port; the helper adds both rules only when UFW is already active.
 
@@ -67,6 +67,10 @@ Add `-Apply` / `--apply` only for an authorized fresh VPS. This sets the new inb
 
 ### Choose the client fingerprint by server country
 
+<details>
+<summary>Older automatic country policy — keep Safari for the normal walkthrough</summary>
+
+
 During Apply, the shared payload looks up the **VPS IP**, not your computer's location, using [Country's public-IP API](https://country.is/). With **`--fingerprint auto`** or **`-Fingerprint auto`**, the legacy policy selects **Safari for `US`** and **Chrome for other countries**. The normal launcher default is explicit Safari. The panel's exported client metadata and the generated share link receive the same choice. The resolved country and fingerprint are also saved in private `server.json`.
 
 Use these options to skip geolocation or override its answer. The examples show plan mode; add `-Apply` / `--apply` only for the fresh server you intend to provision.
@@ -85,6 +89,8 @@ An explicit fingerprint always wins and does not require geolocation. Available 
 
 This regional policy is an initial selection, not evidence that all US networks reject Chrome or that every other preset works everywhere else. The controlled comparisons found Chrome/Safari differences on both a US and a non-US endpoint. If your actual Hiddify test needs Safari, use the explicit `--fingerprint safari` / `-Fingerprint safari` override during fresh setup. For an existing server, change its export in the panel and reimport it; do not rerun the fresh-server installer. Test a real HTTPS request after import; see [what a TLS fingerprint changes](xray-internals.md#what-a-tls-fingerprint-changes-and-why-chrome-can-fail). Helpers that inspect or convert an existing profile preserve its selected fingerprint rather than silently replacing it according to geography.
 
+</details>
+
 ## Pick the helper for the job
 
 | Your next step | Helper | Changes by default |
@@ -96,10 +102,9 @@ This regional policy is an initial selection, not evidence that all US networks 
 | Create a Linux/standalone Xray client file | `python3 scripts/vpn_profile.py config` | Writes only the explicit output file |
 | Compare a profile using an installed Xray core | `python3 scripts/vpn_profile.py test` | Temporary loopback client/files; removed afterward |
 | Recover Hiddify's saved settings | `scripts/Repair-Hiddify.ps1` | Preview only; `-Apply` saves a backup and writes preferences |
-| Rebuild the guide's button diagrams | `python3 scripts/render_illustrations.py` | Rewrites the known SVGs in `images/` |
 | Check documentation links and image references | `python3 scripts/check_docs.py` | None |
 
-Each helper's `--help` or comment-based help points back to the guide explaining its choices. The scripts are readable source, not downloaded code hidden behind an installer.
+Each helper's `--help` or comment-based help points back to the guide explaining its choices. Open a script in a text editor if you want to see what it does before running it.
 
 ## Check the VPS without changing it
 
@@ -162,7 +167,7 @@ The helper supports **VLESS + REALITY + encryption=none** with RAW (Vision or em
 python3 scripts/vpn_profile.py config --engine xray --link-file .secrets/panel-profile.txt --output .secrets/client.json --port 10801
 ```
 
-Paste the link at the hidden prompt. Or add `--link-file .secrets/profile.txt`. The generated file listens on **127.0.0.1 only** and contains the account credentials, so do not publish it. The helper's default port is **10809**; the command above explicitly selects the Linux walkthrough's **10801**.
+The command above reads the link from **.secrets/panel-profile.txt**. If you leave out `--link-file`, it asks you to paste the link at a hidden prompt instead. The generated file listens on **127.0.0.1 only** and contains the account credentials, so do not publish it. The helper's default port is **10809**; the command above explicitly selects the Linux walkthrough's **10801**.
 
 Existing output is refused. If you deliberately want to replace it, `--overwrite` first saves a uniquely named backup. No service is restarted. To install the result as a Linux service configuration, follow [the Linux walkthrough](linux-xray.md#put-your-account-settings-in-a-client-file).
 
@@ -184,6 +189,8 @@ py scripts/vpn_profile.py test --engine hiddify --hiddify 'C:\Program Files\Hidd
 This starts a separate `HiddifyCli srun` child on a temporary loopback port and closes that child after the request. It exercises the saved profile's key share, transport, path and flow. The ordinary `--engine xray` path remains available for hybrid profiles.
 
 ## Test a real authenticated tunnel
+
+**Choose the engine to match your link.** The default classical device links from this guide need [the Hiddify commands above](#classical-profiles-need-the-hiddify-engine). The commands in this section are for an original panel export or hybrid profile.
 
 Use an already installed official Xray executable for your operating system. Download it from [XTLS/Xray-core releases](https://github.com/XTLS/Xray-core/releases), check the published hashes where available, and keep different versions in different directories when comparing them.
 
@@ -209,7 +216,7 @@ A Linux test from WSL and a Windows test exercise different native cores and OS 
 
 ## Repair Hiddify preferences on Windows
 
-**Optional fallback, not the first Hiddify fix.** First set [Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only) and reconnect. That briefly helped an earlier Android test. For mobile handshake failures, check the [version and key-share table](handshakes-and-versions.md) first. This preferences helper changes DNS/service preferences; the profile's key-share field is a separate setting.
+**Windows fallback for a failed app configuration.** Start with [the symptom table](troubleshooting.md#first-choose-the-symptom-that-matches-yours). A working connection doesn’t need a preference repair. For mobile handshake failures, check the [version and key-share table](handshakes-and-versions.md) first. This preferences helper changes DNS/service preferences; the profile's key-share field is a separate setting.
 
 Read the [Hiddify recovery explanation](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) first. Start with a preview from PowerShell:
 
@@ -237,11 +244,7 @@ To undo the repair, close Hiddify and copy the printed backup back over the pref
 
 ## Maintain the guide itself
 
-Rebuild button illustrations with:
-
-```bash
-python3 scripts/render_illustrations.py
-```
+The setup pages use written steps while we collect real screenshots. See [the capture list](../images/README.md). The old generated SVG assets and their renderer are kept for history; don’t put them back into the walkthroughs.
 
 A successful inspect command prints the server and selected protocol fields while hiding UUID/key/short-ID values. A successful tunnel test prints the actual Xray version, a success message, and the endpoint response containing `ip=`. On a failure, use the linked troubleshooting step instead of treating a completed process as a working tunnel.
 

@@ -2,20 +2,11 @@
 
 # A map of the VPN
 
-## Follow one request
+If you’re wondering which machine does what, start here. A **server** is a rented computer that stays online. The **client** is Hiddify on your phone or computer. A **connection link** tells the client which server to contact and which account to use.
 
-```mermaid
-flowchart TB
-    device["📱 Phone or laptop"]
-    hub["🖥️ Moscow · port 443"]
-    nl["🖥️ NL · port 443"]
-    web["🌐 Website"]
-    device -->|"IPv4 · VLESS"| hub
-    hub -->|"IPv6 · XHTTP + REALITY"| nl
-    nl -->|"IPv4"| web
-    classDef server fill:#dcebf8,stroke:#436580,color:#122d40
-    class hub,nl server
-```
+With one server, your device talks to the server abroad. With two, it talks to a Russian server first. The examples below use **Moscow** in Russia, **NL** for the Netherlands, **FR** for France and **FI** for Finland. IPv4 and IPv6 are two kinds of internet address; the two-server route uses IPv6 for the middle connection.
+
+## Follow one request
 
 ```text
 Device ── IPv4 + VLESS ──> Moscow :443
@@ -23,20 +14,12 @@ Moscow ── IPv6 + XHTTP ──> NL :443
 NL     ── IPv4 ─────────> Website
 ```
 
-Moscow accepts the first VLESS connection and opens the second one. Replies come back along the same path. In the tested setup, the device uses Yandex and Safari. Moscow uses Google, Chrome and XHTTP for its connection to NL. The phone profile uses classical mode with the compatible entry core. [Handshake versions](../handshakes-and-versions.md)
+Moscow receives the connection from your device and opens another one to NL. VLESS is the VPN connection protocol used here; XHTTP is the way we carry traffic between the servers. Replies come back along the same path. In the tested setup, the device uses Yandex and Safari. Moscow uses a Google target name, a Chrome-shaped first message and XHTTP for its connection to NL. These settings describe connection setup, not which websites you can visit. The phone profile uses classical mode with the compatible entry core. [Handshake versions](../handshakes-and-versions.md)
 
 ## Where each link goes
 
-```mermaid
-flowchart LR
-    exit["NL Inbounds<br/>relay-nl account"]
-    outbound["Moscow Outbounds<br/>relay-nl"]
-    entry["Moscow Inbounds<br/>desktop account"]
-    app["📱 Hiddify"]
-    exit -->|"Copy the relay link"| outbound
-    entry -->|"Copy the device link"| app
-    entry -. "Moscow routing rule" .-> outbound
-```
+An **inbound** accepts traffic into a server. An **outbound** sends it on. You’ll see these names in 3x-ui, the browser dashboard for managing the VPN. A **routing rule** connects an inbound or account to the outbound it should use.
+
 
 ```text
 NL Inbounds / relay-nl  ── copy link ──> Moscow Outbounds / relay-nl
@@ -46,20 +29,6 @@ Moscow Inbounds / desktop ── copy link ──> Hiddify
 In Moscow’s **Routing** page, send traffic from the Moscow NL inbound to the outbound named `relay-nl`. [The panel steps](../two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
 
 ## Add a country
-
-```mermaid
-flowchart LR
-    m443["Moscow · port 443"]
-    m8443["Moscow · port 8443"]
-    nl["NL exit"]
-    fr["FR exit"]
-    fi["FI exit"]
-    m443 -->|"NL account"| nl
-    m443 -->|"FR account"| fr
-    m8443 -->|"FI account"| fi
-    classDef entry fill:#e7e0f6,stroke:#715894,color:#35244a
-    class m443,m8443 entry
-```
 
 ```text
 Moscow :443   / NL profile  ──> NL exit
@@ -95,3 +64,5 @@ The nearby entry and foreign exit give you two independently testable connection
 In our tests, the IPv6 route was usable while the IPv4 route to the same foreign host failed. That is evidence for testing both address families on your own providers. A Russian entry can still be filtered, and we have no measured reduction in blocking probability for IPv6 or for the two-server design.
 
 The extra server adds cost, another panel and another possible failure point. First verify phone → Moscow, then Moscow → foreign IPv6, then the foreign IPv4 exit. XHTTP between servers changes the middle connection. A phone's initial REALITY handshake is still part of the first connection.
+
+**Ready to set it up?** Choose [one server](../single-server.md) or [two servers](../two-hop-vpn.md). If you haven’t rented anything yet, [start with the rental page](../choose-server.md).

@@ -8,21 +8,41 @@ A server can answer ping or let you log in while its VPN connection fails. Those
 
 **Hiddify** is the app on your device. **3x-ui** is the server’s browser dashboard, and **Xray** is the network engine it manages. A network engine is also called a **core**. Your rented server is the **VPS**, and its **exit address** is the address websites see when you use it.
 
-![Check the local listener, remote port, account handshake and website request in order](../images/troubleshooting-path.svg)
+## First, choose the symptom that matches yours
+
+| What you see | Start here |
+|---|---|
+| The app says connected, but the browser did not change | [Check the Windows proxy](#the-app-is-green-but-windows-still-uses-the-old-proxy) |
+| Connection refused on localhost | [Find the local listener](#connection-refused-on-localhost) |
+| Hiddify times out on every network | [Check the VPN port](#ping-works-so-test-the-vpn-port-next), then the [account and versions](#the-tcp-port-opens-but-reality-fails) |
+| Wi-Fi works but mobile data doesn’t | [Check the phone connection](#wi-fi-works-but-mobile-data-hangs) |
+| REALITY TCP port opens, but `fp=chrome` times out | [Try the tested Safari fingerprint](#reality-chrome-times-out-but-safari-works) |
+| Hiddify still times out after that change | [Test the VPN TCP port](#ping-works-so-test-the-vpn-port-next) |
+| `reality verification failed` or `processed invalid connection` | [Check the handshake and core version](#the-tcp-port-opens-but-reality-fails) |
+| TCP opens but every fingerprint times out, or the profile works through another VPN | [Compare direct and alternate paths](network-path-debugging.md) |
+| The IP check shows IPv6 | [Check the server's egress](force-ipv4.md) |
+| HTTPS works, but the app's latency test fails | [Check the test endpoint](#the-latency-test-and-a-real-request-disagree) |
+| Hiddify's plain profile works, its full app configuration fails | [Reduce the optional settings](#the-profile-works-but-the-apps-generated-configuration-fails) |
 
 ## Wi-Fi works but mobile data hangs
 
-Start with the [version and handshake table](handshakes-and-versions.md). Hiddify 5.5.5's newer hybrid ClientHello can be much larger than the older client's opening message. On a compatible older server, `keyshare=classical` requests the smaller one. Xray 26.9.9 rejects that option.
+Try this without changing the server first:
 
-In this deployment, Moscow on 26.7.28 with a classical phone profile produced a successful NL mobile test. Wi-Fi success, a green app button and a ping are separate observations. Record the mobile operator, phone OS, client/core versions and the exact new log error when a mobile request fails.
+1. Turn Wi-Fi off and confirm a normal website opens with Hiddify disconnected. If mobile internet itself doesn’t work, fix that first.
+2. In Hiddify, select the same device profile that worked on Wi-Fi, connect, and try the same website.
+3. Check the app version in **About**. Ask the server’s owner for its **Xray version**, or read it on the 3x-ui dashboard if you manage it.
+4. For this guide’s **26.7.28** device server, import the adjusted phone link containing **`keyshare=classical`**. [How to make that link](server-inbound.md#5-export-the-connection). Don’t add it to a **26.9.9** entry; that server rejects it.
+5. If it still fails, open **Hiddify → Logs**, repeat one failed website request and save the new error and time. Record the mobile operator and whether the same profile still works on Wi-Fi.
 
-Test one change at a time. If a website briefly loads and then stalls, capture the connection on the entry server while retrying on mobile data. Check whether the initial ClientHello is complete and whether later packets are acknowledged. A different fingerprint, Russian SNI or IPv6 route by itself provides no general guarantee.
+**Classical** and **hybrid** are two ways the app starts its encrypted connection. They send different first messages, and the server must accept the selected one. The older/classical combination worked in the reported NL phone test. It isn’t a fix for every operator. [Versions and measurements](handshakes-and-versions.md)
 
-## Hiddify: first check Outbound domain strategy
+If traffic works for a few seconds and stops, record that too. It doesn’t identify the cause by itself. The [network investigation page](network-path-debugging.md) covers further checks for someone who can administer the server.
 
-**Initially reported as an Android improvement on 2026-11-07; the timeout later returned.** In **Hiddify → Settings → DNS → Outbound domain strategy**, select **IPv4 only**, reconnect, and test a website. If the server’s TCP port opens but websites still time out, check the fingerprint below too.
+## Optional: check Hiddify DNS
 
-[See the short button-by-button walkthrough](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only). The earlier changes to Fake DNS, Region, and IPv6 routing had not fixed the phone. Windows preference-file edits are not the first step for this symptom.
+**Optional DNS check.** This briefly helped an earlier Android test, but the timeout returned. DNS turns website names into internet addresses. In **Hiddify → Settings → DNS → Outbound domain strategy**, select **IPv4 only**, reconnect, and test a website. If the server’s TCP port opens but websites still time out, check the fingerprint below too.
+
+[See the short button-by-button walkthrough](clients.md#optional-dns-check-ipv4-only). The earlier changes to Fake DNS, Region, and IPv6 routing had not fixed the phone. Windows preference-file edits are not the first step for this symptom.
 
 This is an app setting. The similarly named server outbound setting in 3x-ui controls the server’s website connections; it is not the same control.
 
@@ -32,13 +52,14 @@ This is an app setting. The similarly named server outbound setting in 3x-ui con
 
 1. Open **3x-ui → Inbounds** and edit the existing REALITY inbound.
 2. Set **Fingerprint / uTLS → Safari**, then **Save**. Keep the target/SNI, port, UUID, keys, short ID, and Flow unchanged.
-3. Open the account's **Info / Share / QR** action and export again. Check that the link contains **`fp=safari`**.
-4. Import the new link or scan the new QR in Hiddify, select that profile, and reconnect. Saving the panel form alone does not update the old profile on your phone.
+3. Open the account’s **Info / Share** action and export again. Check that the link contains **`fp=safari`**. For a classical **26.7.28** connection, add `&keyshare=classical` before `#` again; the fresh panel export may omit it. [Text-edit example](server-inbound.md#5-export-the-connection)
+4. Import the adjusted link into Hiddify, select that profile, and reconnect. Saving the panel form alone does not update the old profile on your phone.
 5. Open a real website and the [exit-address check](clients.md#4-connect-and-check-a-website). A latency badge alone is not a complete connection test.
 
-![Button path: edit the existing 3x-ui inbound, choose Safari, save, export the account again and reimport in Hiddify](../images/3x-ui-change-fingerprint.svg)
-
 **Optional cleanup if import left two copies:** first select and test the new profile. Then open **Hiddify → Profiles → old profile’s ⋮ → Delete → OK**. This removes the old saved profile from this device; it does not delete the account on your server. If Hiddify added a number to the new name, use **⋮ → Edit → Name → Save** to restore the name shown by 3x-ui after removing the old copy.
+
+<details>
+<summary>Read the fingerprint test results behind this advice</summary>
 
 **What was isolated on 2026-11-07:** alternating requests through the installed Windows Hiddify 5.5.5 engine, to the same original VLESS/REALITY/Vision account and US server, produced **Chrome 0/12 successes and Safari 12/12**. Only the fingerprint changed. Both fingerprints authenticated through an SSH control path. The Safari REALITY phone check was still pending when those results were recorded; the separately tested Trojan/TLS phone connection is a different setup.
 
@@ -56,24 +77,12 @@ These results establish compatibility on that tested path. They do not rank host
 
 That second investigation had two separate stages: initially, even TCP connections could not reach the server; later, TCP worked but Hiddify’s Chrome handshake still failed. Changing fingerprints helps diagnose the second stage. Always repeat the TCP check when conditions change, and test a website after ping succeeds.
 
-## First, choose the symptom that matches yours
 
-| What you see | Start here |
-|---|---|
-| The app says connected, but the browser did not change | [Check the Windows proxy](#the-app-is-green-but-windows-still-uses-the-old-proxy) |
-| Connection refused on localhost | [Find the local listener](#connection-refused-on-localhost) |
-| Hiddify times out | [Set its outbound domain strategy to IPv4 only](#hiddify-first-check-outbound-domain-strategy) |
-| REALITY TCP port opens, but `fp=chrome` times out | [Try the tested Safari fingerprint](#reality-chrome-times-out-but-safari-works) |
-| Hiddify still times out after that change | [Test the VPN TCP port](#ping-works-so-test-the-vpn-port-next) |
-| `reality verification failed` or `processed invalid connection` | [Check the handshake and core version](#the-tcp-port-opens-but-reality-fails) |
-| TCP opens but every fingerprint times out, or the profile works through another VPN | [Compare direct and alternate paths](network-path-debugging.md) |
-| The IP check shows IPv6 | [Check the server's egress](force-ipv4.md) |
-| HTTPS works, but the app's latency test fails | [Check the test endpoint](#the-latency-test-and-a-real-request-disagree) |
-| Hiddify's plain profile works, its full app configuration fails | [Reduce the optional settings](#the-profile-works-but-the-apps-generated-configuration-fails) |
+</details>
 
 ## The app is green, but Windows still uses the old proxy
 
-A manual-mode Hiddify connection does not select its proxy for Windows. Read the current choice in PowerShell:
+In **Proxy** mode, Hiddify starts a local forwarding port but doesn’t tell Windows to use it. These checks run on your **Windows computer**, in PowerShell. Read the current choice:
 
 ```powershell
 Get-ItemProperty 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Internet Settings' |
@@ -86,7 +95,7 @@ If it shows `127.0.0.1:10801` while Hiddify listens on `12334`, Windows still se
 curl.exe --noproxy localhost,127.0.0.1 --proxy http://127.0.0.1:12334 --connect-timeout 5 --max-time 15 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
-If that returns the VPS exit IP, use **Hiddify → Settings → Inbound → Service mode → System Proxy** when you intentionally want Windows applications to follow Hiddify. Or keep both clients in their present modes and configure an individual application. See the [illustrated Windows proxy steps](ports-and-modes.md#windows-selects-a-proxy-it-does-not-merge-them).
+If that returns the VPS exit IP, use **Hiddify → Settings → Inbound → Service mode → System Proxy** when you intentionally want Windows applications to follow Hiddify. Or keep both clients in their present modes and configure an individual application. See the [Windows proxy steps](ports-and-modes.md#windows-selects-a-proxy-it-does-not-merge-them).
 
 ## Connection refused on localhost
 
@@ -124,7 +133,7 @@ failed to find an available destination
 2. Check account enablement, expiry, quota, and IP restrictions.
 3. Check the server clock with `timedatectl status` and the device’s date/time settings. Correct either clock if it is wrong.
 4. Record the app version and its **network engine/core version**. The app’s About or Logs page may show both; an app and its engine can have different version numbers.
-5. Test the same profile with a known compatible current core, using [the temporary client helper](automation.md#test-a-real-authenticated-tunnel).
+5. Check that the key-share mode matches the server version. A classical Hiddify profile needs the [Hiddify test helper](automation.md#classical-profiles-need-the-hiddify-engine); use standalone Xray only for a compatible hybrid profile.
 
 The tests recorded for this guide found that Xray client **25.1.30** failed against Xray server **26.9.9**, while client **26.10.31** connected with the same account link and provider. [Invisible Man - XRay Client](clients.md#switching-from-invisible-man---xray-client), a Windows VPN/proxy app used in the original guide, bundled that older engine in release 3.2.5. If your engine is similarly outdated, update the client and retest; copying the account link again leaves the engine unchanged.
 
@@ -134,7 +143,7 @@ Some newer REALITY servers require changes to the initial encrypted connection s
 
 If both SSH and the VPN fail from a Russian connection while the server still responds from another country, that is evidence of a network-dependent reachability problem. It is consistent with filtering or routing failure on the affected path; it does not by itself identify the responsible operator or prove a nationwide block. A failed ping alone is weaker evidence because ICMP may be disabled.
 
-Changing SNI, browser fingerprint, UUID or port does not bypass a destination-IP block. A non-443 port can help only when the restriction is specific to a port or traffic pattern. Safari and the Apple target passed the recorded Hiddify tests; no tested preset guarantees continued reachability or prevents later IP blocking.
+Changing SNI, browser fingerprint, UUID or port does not bypass a destination-IP block. The other allowed VPN port, 8443 or 443, can help only when the restriction is specific to a port or traffic pattern. Safari and the Apple target passed the recorded Hiddify tests; no tested preset guarantees continued reachability or prevents later IP blocking.
 
 Check the server in the provider console and compare the same SSH/VPN endpoints from independent networks before resetting accounts. For an assistant, follow the repository's direct-SSH gate and stop live work after a failed direct login rather than switching to a proxy. Keep any separately authorized alternate-path evidence clearly labeled.
 
@@ -146,7 +155,7 @@ Label the direct and existing-proxy exits separately, repeat the same account ov
 
 A profile contains the account’s connection settings. Hiddify adds its own settings, including DNS (website name lookups) and rules that choose which traffic uses the VPN. Those additions can explain why a valid account link works in one test but fails in the app.
 
-**Check the visible [Outbound domain strategy setting](#hiddify-first-check-outbound-domain-strategy) and, for the investigated US REALITY symptom, [the fingerprint](#reality-chrome-times-out-but-safari-works).** The initial DNS improvement later stopped working; the hidden preference edits below were not isolated as the cause either.
+**Check the visible [Outbound domain strategy setting](#optional-check-hiddify-dns) and, for the investigated US REALITY symptom, [the fingerprint](#reality-chrome-times-out-but-safari-works).** The initial DNS improvement later stopped working; the hidden preference edits below were not isolated as the cause either.
 
 In the earlier Windows investigation, the installed Hiddify Windows core repeatedly connected with a small configuration, while the complete generated configuration failed. Rebuilding the app configuration with **Region Other**, **Fake DNS off**, **independent DNS cache off**, and **Clash API off** was followed by a successful request through the app’s proxy. Because several options changed together, re-enable them one at a time if you want to find which option affects your device.
 
@@ -164,7 +173,7 @@ If websites fail but the port is reachable, read the error from that request rat
 
 ## Server checks
 
-Run these **on the VPS**, not on your Windows PC:
+Log in to the rented server using SSH, as shown in [the server setup](server-setup.md#2-connect-over-ssh). Run these there as root, or prefix them with `sudo` if your administrator account needs it:
 
 ```bash
 systemctl is-active x-ui
@@ -174,7 +183,7 @@ timedatectl status
 journalctl -u x-ui --since '10 minutes ago' --no-pager
 ```
 
-Use the actual inbound port. No separate `xray.service` may exist when Xray runs under 3x-ui. You can also run the [read-only server check helper](automation.md#check-the-vps-without-changing-it).
+Use the actual inbound port instead of 443. You want `x-ui` to be **active**, a listener on that port, a correct clock and no fresh startup errors. If the listener is missing or the service is stopped, fix that before changing the phone profile. No separate `xray.service` may exist when Xray runs under 3x-ui. You can also run the [read-only server check helper](automation.md#check-the-vps-without-changing-it).
 
 Check direct internet access from the VPS separately:
 

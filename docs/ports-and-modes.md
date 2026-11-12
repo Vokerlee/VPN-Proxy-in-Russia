@@ -10,7 +10,13 @@ A **port** is a numbered endpoint that lets several network programs share one m
 
 Hiddify’s network engine is also called its **core**. **DNS** turns website names into IP addresses. **SSH** is the secure terminal connection used here to manage the server; it can also carry optional private dashboard access.
 
-Follow one browser request from your desk to a website, and those numbers become much less mysterious.
+## Which mode should I use?
+
+- **Phone:** use the normal VPN connection and accept the phone’s permission prompt.
+- **Computer, ordinary use:** choose **VPN / TUN** under **Settings → Inbound → Service mode**.
+- **Testing Hiddify while another VPN stays connected:** choose **Proxy** and use an explicit test command below. Your browser won’t automatically switch to Hiddify in this mode.
+
+You need Hiddify installed and a connection link already imported. If you haven’t done that yet, [start with the app setup](clients.md). The commands below run on **your computer**, not on the rented server. PowerShell examples are for Windows.
 
 ## The ports you will see
 
@@ -29,8 +35,6 @@ These are examples, not globally reserved values for those apps. A program choos
 Port 443 has a familiar HTTPS convention; that does not mean your local proxy must use it. On the VPS, REALITY occupies its public listener. On your PC, 12334 can remain a perfectly ordinary local proxy port.
 
 `127.0.0.1` means **this machine**. It is your PC when entered in Windows, and the VPS when entered over SSH. Changing it to `0.0.0.0` changes who can reach the listener; it does not make the proxy more effective.
-
-![Separate paths and example ports for VPN traffic and direct panel access](../images/ports-paths.svg)
 
 ## Manual Proxy mode: start a listener, then choose an application
 
@@ -72,8 +76,6 @@ Keep their ports separate. A second program cannot bind the same address, port, 
 
 A system proxy also has limits. Some programs ignore it, some use their own proxy settings, and Windows services using the separate **WinHTTP** networking interface can have their own configuration. Games and other programs using **UDP**, a different transport from TCP, need a mode that can carry their traffic, such as VPN/TUN.
 
-![Windows proxy buttons: Set up, address 127.0.0.1, port 12334, Save](../images/windows-proxy.svg)
-
 ## VPN / TUN mode: move the traffic selection into routing
 
 **TUN** is a virtual network interface that the app uses to receive traffic selected by the operating system’s routes. In **Settings → Inbound → Service mode**, select **VPN / TUN** if you need applications that ignore the HTTP proxy to use the client. Windows may ask for administrator permission. On phones, the OS presents a VPN permission dialog.
@@ -83,8 +85,6 @@ Conceptually, the app starts the core, creates or attaches a virtual network int
 TUN is broader than System Proxy, but it still follows configured routes, per-app choices, and bypass rules. Do not assume “kill switch,” “all DNS protected,” or “every address family captured” without checking those policies.
 
 Avoid enabling two route-managing TUN clients at once unless you deliberately understand their interaction. You can still keep another application's window open without having it manage routes.
-
-![Manual, System Proxy and TUN modes route different scopes of application traffic](../images/connection-modes.svg)
 
 ## What Disconnect changes
 
@@ -128,3 +128,5 @@ Do not import or reset WinHTTP settings just to repair a browser. Diagnose the a
 WSL’s **mirrored** mode shares more of Windows’ network behavior; **NAT** mode gives the Linux environment a separate virtual network. With mirrored networking, Windows and WSL can generally use localhost to reach one another’s services. Under default NAT, a Linux process reaching a Windows service may need the Windows host address, and a loopback-only listener may not accept that path. Do not solve it by exposing an unauthenticated proxy to the whole LAN. See [Microsoft's WSL networking guide](https://learn.microsoft.com/en-us/windows/wsl/networking) before changing bind addresses.
 
 For an unambiguous Windows test, run `curl.exe` from PowerShell against the Windows listener. For an unambiguous Linux test, run Linux curl against a Linux listener. Match the test to the thing you are trying to prove.
+
+**You’re done when:** the app you want to use follows Hiddify and the [address check](clients.md#4-connect-and-check-a-website) shows the expected server. [Return to connecting your device](clients.md).

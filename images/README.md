@@ -1,6 +1,19 @@
-# Screenshots and diagrams
+# Real screenshots for the guide
 
-The existing SVGs are navigation diagrams. Their captions describe their purpose and checked UI version. Real screenshots will show the forms used by the walkthroughs.
+The guide needs pictures of the actual buttons and forms. The generated SVG UI pictures are no longer embedded in the walkthroughs. Their files remain here for history; don’t use them as replacements for screenshots.
+
+## Match screenshots to the page
+
+| Guide page | Screens to capture |
+|---|---|
+| [Rent a server](../docs/choose-server.md) | Provider’s create-server form, operating-system choice, then address/access details with secrets covered |
+| [Install the panel](../docs/server-setup.md) | Panel login, dashboard and opened Xray version selector |
+| [Make device links](../docs/server-inbound.md) | Add Inbound form, REALITY settings, desktop/phone client rows and account export action |
+| [Connect a device](../docs/clients.md) | Hiddify’s add-from-clipboard action, service mode and home screen before/after Connect |
+| [Link two servers](../docs/two-hop-vpn.md) | Foreign XHTTP inbound, Moscow link import, saved outbound and routing rule/order |
+| [Choose an IPv4 exit](../docs/force-ipv4.md) | Outbounds → direct → Edit, with the Strategy selector open |
+
+Take each screenshot at the point a reader would reach that screen. A full form can need two or three crops. Keep enough of the sidebar or page heading to show where you are.
 
 ## Screenshots to send in order
 
@@ -43,10 +56,6 @@ Cover UUIDs, private keys, short IDs, complete VLESS links, QR codes, passwords,
 
 For published examples, replace live addresses with `203.0.113.10` or `2001:db8:2::1`. Keep the original screenshots with secrets outside Git. Supply the app/panel version and capture date for each image.
 
-## Rebuild the existing diagrams
+## Adding the captures
 
-```bash
-python3 scripts/render_illustrations.py
-```
-
-This rewrites the known SVGs. Captions should continue identifying them as diagrams. Real screenshots can be placed next to the matching instructions after they are supplied and redacted.
+Keep the originals outside Git. Add only redacted copies, with a short caption saying which panel/app version they show. Place each image beside the action it helps with, rather than adding a gallery at the top of a page. Until a screenshot is available, keep the written button steps; don’t add an empty image frame.

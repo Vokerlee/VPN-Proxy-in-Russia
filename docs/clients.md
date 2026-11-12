@@ -1,89 +1,89 @@
-[← Setup overview](../README.md) · Step 4 of 4
+[← Choose a setup](../README.md) · [Create device accounts](server-inbound.md)
 
-# Connect your computer or phone
+# Connect your phone or computer
 
-**Hiddify** is the app you install on your device to connect to your VPN server. A **connection profile** is the private `vless://...` link containing the server address and your account settings. Get that link from **3x-ui**, the server’s browser dashboard, or from the person who manages your VPN.
+This is the last part: add your connection to **Hiddify**, the VPN app, and check that it works. If someone has already sent you a VPN link, you can start here. You don’t need access to their server dashboard.
 
-**Follow sections 1–4:** install, import, set the outbound domain strategy, and connect. Everything after **Your first connection is complete** is optional troubleshooting. Button labels below are from Hiddify **5.5.5**.
+Have your device’s private connection link ready. It starts with `vless://` and contains the server address and account settings. The dashboard’s `http://…` browser address is a different link; Hiddify can’t use that as a VPN connection.
+
+Need to make a link first? Follow [the device account page](server-inbound.md). For the two-server setup, use a **device link from Moscow**, not the link used to connect the servers.
+
+The buttons below were checked in **Hiddify 5.5.5**. If you install another version, some labels may differ.
 
 ## 1. Install Hiddify
 
-**On Android, download the current APK from [Hiddify's official GitHub releases](https://github.com/hiddify/hiddify-app/releases/latest), rather than using the Play Store build for this walkthrough.** This keeps the app/core version aligned with the current release used for troubleshooting. It does not mean every Play Store installation is broken; compare actual versions when investigating.
+Use [Hiddify’s official downloads](https://github.com/hiddify/hiddify-app/releases). The tests in this guide used **5.5.5**; find that release if you want to reproduce the same setup. A later release needs its own connection check.
 
-1. Open that release page on your phone and find **Downloads → Android**.
-2. Choose **APK Universal** if you are unsure which processor your phone uses, or **APK ARMv8** for a compatible ARM64 phone.
-3. Open the downloaded APK. If Android asks, allow installation from that browser/file manager, finish installation, then turn that permission off again if you do not need it.
-4. Open Hiddify and check **About** for the installed version. These button instructions were checked with **5.5.5**; the release page may offer a newer version later.
+- **Android:** open the release on your phone and download its Android APK. Choose Universal if you’re unsure which build to use. Open the download and allow installation from that browser if Android asks. You can switch that permission off afterward.
+- **Windows, Linux or Mac:** download the package for your computer and install it. On Windows, you don’t need WSL or any Linux tools.
+- **iPhone or iPad:** follow [Hiddify’s iOS installation instructions](https://hiddify.com/app/How-to-install-Hiddify-app/).
 
-For Windows, Linux, and macOS, use the matching download on the same GitHub release page. The [official installation page](https://hiddify.com/app/How-to-install-Hiddify-app/) covers the other platform-specific installation routes, including iOS.
-
-On Windows, install the Windows app. You do not need WSL (Windows Subsystem for Linux, an optional environment for running Linux programs inside Windows).
+Open Hiddify. You should see its home screen, ready for a connection to be added.
 
 ## 2. Import your connection link
 
-1. Copy the whole `vless://...` link from [your account in 3x-ui](server-inbound.md#5-export-the-connection).
-2. Open Hiddify and click **+ → Clipboard** (shown as **Add from clipboard** in some builds).
-3. Select the imported profile, for example **Personal VPN**.
+1. Copy your whole `vless://…` link. Use the **phone** account on your phone and **desktop** on your computer.
+2. In Hiddify, press **+ → Clipboard**. Some versions call it **Add from clipboard**.
+3. Select the new connection. Its name can include both the server and device, such as **Personal VPN-phone**.
 
-On a phone, you can scan a QR generated from the intended device link. For classical mode, use the adjusted Hiddify link or a QR generated from it. A dashboard QR can contain the original hybrid export; check `keyshare=classical` before importing. Keep the link and QR code private: anyone with them can use that account. The dashboard’s browser address is a different link and cannot be imported as a VPN profile.
+If you used our one-server scripts, copy the link from **client-phone.txt** or **client-desktop.txt** in the output folder. The two-server scripts call those files **phone.txt** and **desktop.txt**. If someone manages the server for you, ask them for your device’s link.
 
-Keep the name supplied by 3x-ui. It can combine the inbound and device account, such as **Personal VPN-desktop** or **Personal VPN-phone**. Use your own device's export; another person's similarly named profile can contain different credentials. Import the whole link, including its name and any `spx` parameter, rather than rebuilding it by hand.
-
-For the two-hop setup, import the **Moscow device account**. The tested NL profile uses Moscow’s IPv4 address on port **443**, Yandex SNI and Safari. The single-server example uses port **8443**, Apple SNI and Safari. Use the settings in your own export and reimport it after changing the server address, port or fingerprint. [Two-hop panel steps](two-hop-vpn.md#on-moscow-connect-the-device-inbound-to-nl)
-
-![Hiddify: New profile, Add from clipboard, select Personal VPN](../images/hiddify-import.svg)
-
-**A server outside the US can need Safari too.** If its TCP port opens but Hiddify still times out, follow [the Safari export steps](troubleshooting.md#reality-chrome-times-out-but-safari-works), then import the new link. This also fixed the tested non-US connection. Changing the panel setting alone leaves your phone’s old profile unchanged.
+You can scan a QR code instead if it was made from that same link. Keep links and QR codes private: they let someone use the account.
 
 ## Check the profile's handshake mode
 
-If your server uses the tested **Xray 26.7.28** preset, import the helper's **client-phone.txt** or **client-desktop.txt**, or the device link supplied by the owner. It includes `keyshare=classical`. Hiddify's saved JSON should show `"key_share": "classical"` inside **tls → reality**. The server on **26.9.9** needs a hybrid profile instead. [Versions and handshake sizes](handshakes-and-versions.md)
+For the tested phone setup in this guide, the server runs **Xray 26.7.28** and the link includes **`keyshare=classical`**. This selects how the app starts the encrypted connection. The scripts already add it; the [manual account instructions](server-inbound.md#5-export-the-connection) show how to add it yourself.
 
-To inspect a saved local profile in Hiddify 5.5.5, open **Profiles → ⋯ → Edit**, then choose **Config Editor → Text**. Locate the `tls.reality` object. Save a backup of the original export before editing. Use a separate account for each device.
+If your server runs **26.9.9**, don’t add that option: it requires the newer hybrid mode instead. If someone supplied your connection, keep their settings or ask them to confirm the server version. [Why the versions matter](handshakes-and-versions.md)
 
-Test the same phone once on Wi-Fi and once with Wi-Fi switched off. A successful PC check establishes the PC route; the phone's mobile route needs its own successful website request.
+<details>
+<summary>Check the imported setting in Hiddify 5.5.5</summary>
 
-## 3. Important: set Outbound domain strategy to IPv4 only
+Open **Profiles → your profile’s ⋯ → Edit → Config Editor → Text**. Find **tls → reality**. For a classical profile, it should contain `"key_share": "classical"`. Keep a copy of the original link before editing anything. Close the editor without changes if you only wanted to check.
 
-**This was initially reported as an Android fix on 2026-11-07, but the failure later returned.** Keep this DNS check, but do not treat it as a proven cure for every timeout. For the investigated REALITY timeout, also check [Chrome versus Safari](troubleshooting.md#reality-chrome-times-out-but-safari-works).
+</details>
 
-1. In **Hiddify**, disconnect if connected.
-2. Open **Settings → DNS**.
-3. Tap **Outbound domain strategy**.
-4. Select **IPv4 only**. Save or confirm if the app asks.
-5. Return to the home screen and reconnect, then check a website as shown below.
+## 3. Choose how your apps use the VPN
 
-**Choose this exact field.** It is on Hiddify’s **DNS** page. **Routing → IPv6 routing** is a different control, and the server’s **3x-ui → Outbounds → ForceIPv4** is a separate setting. Changing either of those does not replace this step.
+On a **phone**, use the normal VPN connection. Hiddify will ask for the phone’s VPN permission when you connect.
 
-![Hiddify buttons: Settings, DNS, Outbound domain strategy, IPv4 only, reconnect](../images/hiddify-outbound-ipv4.svg)
+On a **computer**, open **Settings → Inbound → Service mode** and choose **VPN / TUN**. That lets ordinary apps use the connection without each needing its own proxy settings. TUN is the virtual network connection the app creates.
 
-DNS turns names into IP addresses. This option makes Hiddify use IPv4 results for its outbound/direct name lookups. Choose **IPv4 only**, rather than **Prefer IPv4**, for the setup described here.
-
-If you followed the earlier advice to change Fake DNS, Region, or the hidden Windows preferences and the phone still failed, check **Outbound domain strategy** before editing anything else. No Android system-file editing or Windows repair script is needed for this setting.
+If another VPN is already running and you need to keep it connected, use [the separate proxy test](#press-connect-then-prove-the-route) instead of switching on a second VPN mode. Otherwise, return to Hiddify’s home screen.
 
 ## 4. Connect and check a website
 
-**Already using another VPN?** To check Hiddify while keeping that connection untouched, use the [optional manual proxy test](#press-connect-then-prove-the-route) below instead of activating another VPN/TUN connection.
+1. Select your connection and press **Connect**.
+2. Accept the VPN or administrator permission prompt if shown.
+3. Open [the address check](https://www.cloudflare.com/cdn-cgi/trace) in your browser. Look for **`ip=`**. It should show the address your server uses to reach websites. For two servers, that’s the foreign server’s address.
+4. Open a website you wanted to use through the VPN.
+5. On your phone, repeat with Wi-Fi switched off so you test mobile data too.
 
-1. **On a desktop**, open **Settings → Inbound → Service mode** and select **VPN / TUN**. This is the mode for using the VPN with your normal applications; TUN is its virtual network connection. On a phone, use the normal VPN mode.
-2. Return to the home screen, select your profile, and press **Connect**.
-3. Accept the operating system’s VPN or administrator permission request.
-4. Open `https://www.cloudflare.com/cdn-cgi/trace` in your browser. Find the line starting with **`ip=`**. For the two-hop NL profile, it should show NL’s IPv4 address. For a single-server profile, compare it with that server’s outgoing address.
-5. Open a website you wanted to use through the VPN.
-
-If the address is unfamiliar, open the same test URL with Hiddify disconnected and compare. A server may have a different outgoing address from its login address, particularly when it also has IPv6. If the browser cannot load the page or still shows your ordinary address, first recheck [Outbound domain strategy → IPv4 only](#3-important-set-outbound-domain-strategy-to-ipv4-only), reconnect, and then use [the additional checks](#if-the-connection-fails-try-these-settings) if needed.
-
-![Hiddify: Connect, grant VPN permission, open an IP-check page](../images/hiddify-connect.svg)
+If you don’t know which address to expect, ask the person managing the server or compare with a check made on the server. The outgoing address can differ from the login address, especially with IPv6. Seeing any different address isn’t enough if another VPN is still connected.
 
 ## Your first connection is complete
 
-**You can stop here when the address check and your websites work.** You do not need to edit hidden preferences, compare network engines, or run a script.
+If your websites open and the address check matches, you’re done. Use **Disconnect** when you want to stop using this connection. You can close the server’s dashboard; it doesn’t need to stay open.
 
-The sections below are optional. Use them only for a failed connection or when switching from an older client.
+If a check fails, start with [the troubleshooting table](troubleshooting.md#first-choose-the-symptom-that-matches-yours). You don’t need to try every setting below.
+
+## Optional DNS check: IPv4 only
+
+**Optional DNS check for a failed connection.** DNS looks up the internet address for a website name. This setting briefly helped an earlier Android test, but the problem returned. Use it when investigating a timeout, rather than changing it on a working connection.
+
+1. Disconnect in Hiddify.
+2. Open **Settings → DNS → Outbound domain strategy**.
+3. Select **IPv4 only**, save if asked, and reconnect.
+4. Repeat the website check. If it doesn’t help, restore your previous value.
+
+This setting is on your device. The similarly named setting in the server dashboard controls the server’s connections to websites. They are separate. For Wi-Fi working while mobile data fails, start with [the mobile checks](troubleshooting.md#wi-fi-works-but-mobile-data-hangs).
+
+<details>
+<summary>More checks, command-line tests and older client notes</summary>
 
 ## If the connection fails: try these settings
 
-**Optional: skip if the connection works.** The options below are additional troubleshooting choices from the earlier Windows investigation. Try one at a time, reconnect, and repeat the browser check. For the investigated REALITY timeout, check [the client fingerprint](troubleshooting.md#reality-chrome-times-out-but-safari-works) before changing more unrelated settings.
+**Use this only if the connection fails.** The options below are additional troubleshooting choices from the earlier Windows investigation. Try one at a time, reconnect, and repeat the browser check. For the investigated REALITY timeout, check [the client fingerprint](troubleshooting.md#reality-chrome-times-out-but-safari-works) before changing more unrelated settings.
 
 | Open | Set |
 |---|---|
@@ -92,8 +92,6 @@ The sections below are optional. Use them only for a failed connection or when s
 | **Settings → Routing → ⋯** | **IPv6 routing → IPv4 only** |
 
 DNS turns website names into IP addresses. **Fake DNS** is an extra feature that substitutes artificial addresses; leave it off for this setup. **Other** avoids adding country-based rules that can send some requests outside your VPN. **IPv4 only** simplifies the address types used on your device. The server can still choose an IPv6 exit; changing that is [an optional server setting](force-ipv4.md).
-
-![Hiddify: Fake DNS off, Region Other, IPv4 only](../images/hiddify-settings.svg)
 
 ## Press Connect, then prove the route
 
@@ -122,7 +120,7 @@ If the command works but the browser fails, check [which proxy the browser uses]
 
 ## Advanced recovery when the normal settings are not enough
 
-**Windows-only fallback. Skip if the connection works.** First check [Hiddify’s outbound domain strategy](#3-important-set-outbound-domain-strategy-to-ipv4-only). The preference changes below were made together during an earlier Windows investigation; they were not isolated as the cause and are not needed to apply the Android fix.
+**Windows-only fallback. Skip if the connection works.** First check the connection link and [server compatibility](handshakes-and-versions.md#match-the-client-option-to-the-server). The preference changes below were made together during an earlier Windows investigation; they were not isolated as the cause and are not a confirmed fix for mobile connections.
 
 Hiddify uses a network engine, also called a **core**, to make connections. Some of that engine’s settings are saved in a file rather than shown as switches in Hiddify 5.5.5. The **Clash API** lets other software control or monitor the engine; an **independent DNS cache** stores name-lookup results separately for different resolvers. Both were disabled during the earlier Windows recovery. In particular, its General page has a **Clash API port** field but no corresponding enable/disable toggle, and independent DNS cache is not a visible switch on its DNS page. Do not waste time looking for those controls.
 
@@ -180,3 +178,5 @@ Write down panel version, server Xray version, client app version, client core v
 - [Hiddify 5.5.5 configuration preferences](https://github.com/hiddify/hiddify-app/blob/v5.5.5/lib/features/settings/data/config_option_repository.dart)
 - [Checked Hiddify core's Xray backend](https://github.com/hiddify/hiddify-sing-box/blob/1614c5edb52dd44a4cc079201ba1e790fdfad8a0/protocol/hiddify/xray/outbound.go)
 - [Upstream REALITY compatibility report](https://github.com/SagerNet/sing-box/issues/4520)
+
+</details>

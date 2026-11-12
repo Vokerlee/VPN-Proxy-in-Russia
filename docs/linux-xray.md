@@ -12,6 +12,12 @@ Run this walkthrough on the **Linux client machine**, not on a rented server (VP
 
 For a standalone Xray client, use the account's original **panel-profile.txt** or request a **hybrid** profile. A classical Hiddify link needs the Hiddify engine, whose profile helper option is `--engine hiddify`. The tested 26.7.28 server accepts both handshake forms; mobile filtering can still distinguish them. [Version and handshake guide](handshakes-and-versions.md)
 
+## Before you start
+
+You need a Linux machine where you can run `sudo`, a command giving administrator access, and your own device account’s original panel link. **3x-ui** is the browser dashboard that supplies that link. This page uses **RAW/TCP + REALITY + Vision**, the settings from the one-server guide. If your link uses XHTTP, use [the profile generator](automation.md#generate-a-client-configuration) instead of copying the RAW example below.
+
+All commands on this page run on the **Linux client machine**. They install a program and service there. If it already has an Xray service, inspect and back up its configuration before replacing anything. `127.0.0.1` means this machine only; the local proxy won’t be reachable from the internet.
+
 ## Install the official core
 
 Use the [official Xray installer](https://github.com/XTLS/Xray-install), inspect it, and install the core:
@@ -56,6 +62,8 @@ Paste the configuration below. Replace the placeholders with the values from you
 | `serverName` | `sni=` value |
 | `publicKey` | `pbk=` value; never the server’s private key |
 | `shortId` | `sid=` value |
+| `fingerprint` | `fp=` value, such as `safari` |
+| `spiderX` | Decoded `spx=` value, normally `/` (`%2F` in the link) |
 
 This example is for RAW/TCP + REALITY + Vision, the connection type created in the main guide. Keep the local inbound port **10801** unless it is already occupied. It is separate from the remote server port.
 
@@ -195,3 +203,5 @@ The enabled Xray service persists after reboot. Shell exports persist only if yo
 To return a shell to direct access, unset the proxy variables. To restore APT or a service, remove only the specific proxy configuration/override you added and reload that service. Restore the saved Xray configuration if you need to undo a client-file change. Keep backups private.
 
 If another device needs this proxy, continue with [sharing through SSH or a restricted network](share-proxy.md).
+
+**You’re done when:** the explicit curl request shows your VPN server’s exit address. Leave the service running if programs will keep using it. [Return to the guide index](../README.md).

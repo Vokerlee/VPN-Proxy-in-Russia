@@ -6,6 +6,14 @@ A browser asks for a page. Somewhere between a localhost listener and a VPS abro
 
 This chapter opens that box. You can follow the ordinary setup without reading it, but understanding the layers makes failures much easier to localize—and explains why a perfectly valid connection link can stop working after a core update.
 
+## Before you read
+
+This is the optional technical chapter. You don’t need it to set up the VPN. If you want the next button to press, use [the one-server guide](single-server.md) or [two-server guide](two-hop-vpn.md).
+
+A **client** is the app on your device; a **server** is the rented computer it connects to. **3x-ui** is the server’s dashboard, and **Xray** is the program that actually forwards the traffic. A **profile** is the private connection link carrying your account’s settings. The diagrams below describe the connections, not a copy of a settings screen.
+
+Start with the two-minute picture, then pick the topic you’re curious about. There’s no need to read every protocol detail in order.
+
 ## The two-minute picture
 
 Xray is a programmable proxy engine. A configuration gives it **inbounds** that accept traffic, a dispatcher/router that chooses a path, and **outbounds** that carry traffic onward. The same executable can be a local client or a remote server because those are configuration roles.
@@ -222,7 +230,7 @@ A concrete example: the [REALITY change adopted in the 26.9.8/26.9.9 period](htt
 
 **sing-box** is another proxy engine; **Hiddify**, the VPN app in the practical guide, uses a modified version of it. The [sing-box compatibility report](https://github.com/SagerNet/sing-box/issues/4520) tracks affected implementations and experimental fixes. For the recorded setup, Hiddify 5.5.5’s own engine connected successfully. Compare actual engine versions and results when applying that report to another installation.
 
-The reproduced comparison used the same profile, provider, destination, and server: Xray **25.1.30** failed; **26.10.31** succeeded against server **26.9.9**. That is evidence for a core-dependent failure, not evidence that the UUID needed regeneration. A separate comparison then showed Hiddify's plain profile working while its full generated configuration failed; the [recorded Windows preference changes](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) were followed by success without isolating one causal option. The author’s later Android fix was the visible outbound domain strategy described above.
+The reproduced comparison used the same profile, provider, destination, and server: Xray **25.1.30** failed; **26.10.31** succeeded against server **26.9.9**. That is evidence for a core-dependent failure, not evidence that the UUID needed regeneration. A separate comparison then showed Hiddify's plain profile working while its full generated configuration failed; the [recorded Windows preference changes](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) were followed by success without isolating one causal option. The earlier Android DNS improvement didn’t last; the later mobile success used the compatible classical handshake described above.
 
 Similarly, finding an Xray module in a GUI binary proves a build dependency, not that its traffic is carried by an Xray backend. Inspect the actual execution path or test it. The checked Hiddify fork's [Xray outbound constructor](https://github.com/hiddify/hiddify-sing-box/blob/1614c5edb52dd44a4cc079201ba1e790fdfad8a0/protocol/hiddify/xray/outbound.go) returned an unimplemented error.
 
@@ -248,3 +256,5 @@ For each test, write an explicit hypothesis and the observation that would falsi
 | IPv6 is leaking locally | Compare direct and proxied exit addresses and paths | An IPv6 exit is inherently a leak |
 
 Use local loopback, external-network, and real application tests for the layers each can observe. Keep a working baseline, change one variable when practical, and keep secrets out of logs and Git. The [automation helpers](automation.md) make the repeatable parts less tedious without deciding network policy for you.
+
+**Back to setup:** [one server](single-server.md) · [two servers](two-hop-vpn.md) · [connect a device](clients.md).

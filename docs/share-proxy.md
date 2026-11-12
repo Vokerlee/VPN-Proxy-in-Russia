@@ -17,8 +17,10 @@ First complete the [Linux client walkthrough](linux-xray.md). The proxy host sho
 **SSH** provides an encrypted connection between computers. **Loopback** (`127.0.0.1`) is an address reachable only on the machine itself. Leave Xray listening on that address on the proxy host. On the device that wants access, run:
 
 ```bash
-ssh -N -L 18081:127.0.0.1:10801 YOUR_ADMIN@YOUR_PROXY_HOST
+ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:18081:127.0.0.1:10801 YOUR_ADMIN@YOUR_PROXY_HOST
 ```
+
+Replace **YOUR_ADMIN** with the login name on the proxy host and **YOUR_PROXY_HOST** with that machine’s reachable address. Run this from the borrowing device’s terminal or PowerShell. The command works on Windows too if OpenSSH is installed.
 
 Choose an unused local port; 18081 is just an example. Verify SSH host identity as usual. The terminal stays open because it is carrying the forward. This command does not expose the proxy host's 10801 port publicly.
 
@@ -48,6 +50,8 @@ Before changing the listener:
 3. Preserve administration/SSH access. Inspect existing rule order rather than resetting a firewall remotely.
 4. Configure proxy authentication if the clients support it; an allowlist is not a substitute for authentication on an untrusted network.
 
+The commands in this section run on the **proxy host**, the Linux machine providing the shared connection. **UFW** is one firewall-management tool. If your machine uses another firewall, use that tool’s equivalent source restrictions instead of installing a second one.
+
 For example, with an already-managed **UFW** firewall policy and no earlier broad allow rule for this port:
 
 ```bash
@@ -75,3 +79,5 @@ An HTTP proxy can carry HTTPS CONNECT requests, so the website’s TLS encryptio
 This proxy is not a general UDP VPN. The borrowing program must use the proxy, and Windows System Proxy still only selects it for applications that honor that setting. For an entire device's routed traffic, use an appropriate VPN/TUN client and verify its routing policy.
 
 If the exit test shows the proxy host's direct IP rather than the VPS, stop and inspect which listener/configuration the request reached. If it shows the VPS's IPv6, that may be normal egress; [ForceIPv4](force-ipv4.md) is a server-side choice.
+
+**You’re done when:** a request from the borrowing device shows the VPN server’s exit address. For SSH sharing, close the forwarding terminal to stop sharing. To connect a phone without depending on that terminal, [give it its own Hiddify profile](clients.md).

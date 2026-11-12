@@ -1,26 +1,22 @@
-[← Single-server overview](single-server.md) · Step 3 of 4
+[← One-server walkthrough](single-server.md) · Step 3 of 4
 
-# Create your first connection account
+# Make a connection link for your phone and computer
 
-Open **3x-ui**, the browser dashboard installed on your server. Here you will create an account for one device and copy the private connection link into your VPN app.
+By the end of this page, you’ll have two private links: one for your phone and one for your computer. Later you’ll add each link to **Hiddify**, the app that connects your devices.
 
-An **inbound** is the server entry point that accepts a device's connection. **VLESS + REALITY** is the connection type used in this walkthrough; the table below supplies its required settings. An **outbound** is the path the server uses afterward to reach a website.
+You’ll work in **3x-ui**, the browser dashboard on your server. If you haven’t installed it yet, [do that first](server-setup.md). Have its browser address, panel login and chosen VPN port ready. The example here uses **8443**; use **443** if that’s the free port you chose.
 
-The dashboard runs **Xray**, the network engine that handles the connections. These labels refer to **3x-ui 3.8.5**. The panel's HTTP/HTTPS port is separate from the inbound's VPN port.
+The panel calls a connection entry point an **inbound**. We’ll make one inbound and put two device accounts on it. Both devices use the same server port, but each gets its own credentials.
 
-**Do this page if you need a connection account.** Already have an enabled account and its exported VLESS link? Skip this page and [open Step 4: connect your device](clients.md). Otherwise, follow sections 1–5 in order. The terminal checks and reference links are optional.
+The instructions match **3x-ui 3.8.5**. Its **Xray** version—the program carrying the VPN traffic—is a separate setting. For this guide’s tested phone setup, check the dashboard shows **26.7.28** before continuing. [How to select it](server-setup.md#required-choose-the-core-version-for-your-profile)
 
-For a two-hop setup, use this page to find the form fields and follow the role-specific addresses and ports in the relay guide. [Moscow and NL panel steps](two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
-
-Check **Dashboard → Xray version** before continuing. The working mobile preset uses **26.7.28** with a classical Hiddify profile. A **26.9.9** entry requires a hybrid handshake. The panel version and server core version are separate. [Choose a matching combination](handshakes-and-versions.md)
+**Using two servers?** Follow [the two-server panel steps](two-hop-vpn.md#how-the-two-3x-ui-panels-connect). That page gives different settings for the device connection and the connection between servers. This page explains the single-server form.
 
 ## 1. Open the correct form
 
 1. Open the dashboard using the browser address from [Step 2](server-setup.md#required-open-the-dashboard-safely-in-your-browser). The ordinary setup uses the server's public IP and panel port; keep a forwarding window open only if you chose the optional private setup. Sign in with the panel credentials.
 2. In the main left sidebar, click **Inbounds**.
 3. Click **Add Inbound**. On a narrow screen, open the sidebar with the menu button first.
-
-![3x-ui buttons: Inbounds, then Add Inbound](../images/3x-ui-add-inbound.svg)
 
 ## 2. Set the listener
 
@@ -51,13 +47,9 @@ Do not replace a working listener just to match the examples. Preserve its actua
 | SpiderX, when offered | `/` | Keep the exported value |
 | Sniffing | Off for the initial setup | Inspects initial traffic to identify its destination; unnecessary for this simple setup |
 
-**Start with Safari in this Hiddify walkthrough, including non-US servers.** In the US investigation on 2026-11-07, changing only the client fingerprint gave **Safari 12/12 successful requests; Chrome 0/12**. Avoid the Chrome default for that failing setup. This is a tested choice for Hiddify 5.5.5 on the investigated network, not a rule that Chrome fails on every US server or with every client core.
+These names are settings to copy, not topics you need to learn before continuing. Keep **Target** and **SNI** paired as shown. **Safari** here describes the app’s first connection message; it doesn’t install or open the Safari browser.
 
-**Safari also fixed the tested Hiddify timeout on a non-US endpoint.** If the server’s TCP port is reachable but Chrome fails, try Safari using the steps below, regardless of country. The optional setup helper accepts an explicit fingerprint override; a country-based default cannot replace a connection test.
-
-**Target/SNI and fingerprint are separate choices.** This walkthrough now uses `www.apple.com:443`, SNI `www.apple.com`, and Safari as its starting preset. On the tested non-US endpoint, that combination passed 6/6 Windows Hiddify engine requests and 2/2 actual GUI VPN requests after the exported profile was refreshed. Earlier controlled Safari/Chrome comparisons kept Google SNI unchanged; choosing a different target is not evidence that Google caused those failures or that Apple prevents filtering.
-
-For an existing account: **Inbounds → edit the REALITY inbound → Fingerprint / uTLS → Safari → Save**, then export its link or QR again and reimport it in Hiddify. Check that the new link contains **`fp=safari`**. Keep its UUID, keys, short ID, SNI, and port unchanged. This field supplies the client export; an already imported profile does not update just because you saved the panel form. See the [fingerprint troubleshooting steps](troubleshooting.md#reality-chrome-times-out-but-safari-works).
+For an existing inbound, keep its keys and short IDs. Generating new ones would stop its existing device links from working. For a new inbound, generate them once and let the exported links carry the right values.
 
 <details>
 <summary>Optional: check whether the example target website is reachable. Use this if connections fail.</summary>
@@ -72,10 +64,6 @@ You should receive HTTP response headers rather than a timeout or connection err
 
 </details>
 
-For an existing inbound, do **not** regenerate keys or short IDs: that invalidates existing profiles. A client's REALITY public key is not the website's certificate key.
-
-![REALITY form: RAW/TCP, REALITY, Get New Key, Vision and Create](../images/3x-ui-reality-settings.svg)
-
 ## 4. Set the client account
 
 Some forms reveal Flow only after selecting REALITY.
@@ -83,7 +71,7 @@ Some forms reveal Flow only after selecting REALITY.
 | Client field | Set it to |
 |---|---|
 | Enable | On |
-| Email / Name | A label for this device, for example `laptop` |
+| Email / Name | `desktop` for the first account |
 | ID / UUID | Generate the unique account identifier, or keep the existing account’s value |
 | Flow | `xtls-rprx-vision` |
 | Encryption | `none`, where shown |
@@ -91,9 +79,9 @@ Some forms reveal Flow only after selecting REALITY.
 
 `encryption=none` is the VLESS payload setting; the connection is still protected by REALITY. It does not mean the VPN is sent as plaintext.
 
-Click **Create** / **Save**, then apply or restart Xray if the panel prompts for it. This can interrupt existing VPN sessions briefly.
+Create a second client named **phone**, with a different generated UUID and the same **Vision** flow. Use the form’s add-client action if it allows several rows. Otherwise save the inbound, reopen its client list and add the second account there. A UUID is the generated account identifier; don’t reuse the desktop value for the phone.
 
-![3x-ui client row: expand the inbound and open Info or Share](../images/3x-ui-client-info.svg)
+Click **Create** / **Save**, then apply or restart Xray if prompted. This can briefly interrupt existing VPN connections. You should now see one enabled inbound with **desktop** and **phone** accounts, and Xray should show as running.
 
 ## 5. Export the connection
 
@@ -103,20 +91,22 @@ The **connection profile** is a private link containing the account’s connecti
 2. Find the intended client row.
 3. Open its **Info / connection details** action, or the QR/share action. Depending on the layout, actions may be in **⋯**.
 4. Copy the **VLESS URL** for that account.
-5. For the compatible classical preset, add `&keyshare=classical` before the link's `#` name. If the link already has a `keyshare` parameter, edit that value instead of adding a second one. Keep the original panel link privately.
-6. Import the adjusted link into Hiddify. A panel QR contains the panel's original export, so verify the saved profile's key-share value when using it.
+5. Paste the copied link into a text editor and save a private copy of the original. For the **26.7.28** preset, find the `#` before its display name and insert **`&keyshare=classical`** immediately before it. This asks Hiddify to use the tested connection setup. If `keyshare=` already exists, change its value instead of adding it again.
+6. Copy the adjusted whole line for Hiddify. Repeat with the other device’s account and keep the two links separately named.
+
+For example, the end of the link changes from `…&spx=%2F#Personal-VPN-phone` to `…&spx=%2F&keyshare=classical#Personal-VPN-phone`. Keep everything else unchanged. Don’t add this option to a **26.9.9** entry server; [that version needs hybrid mode](handshakes-and-versions.md#match-the-client-option-to-the-server).
+
+The panel’s QR code may contain the original link without this adjustment. Use the adjusted text link for this first connection.
 
 A placeholder link looks like this; import the panel's real export rather than copying this example:
 
 ```text
-vless://YOUR_UUID@YOUR_SERVER_IP:8443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.apple.com&fp=safari&pbk=YOUR_PUBLIC_KEY&sid=YOUR_SHORT_ID&type=tcp&spx=%2F#Personal-VPN
+vless://YOUR_UUID@YOUR_SERVER_IP:8443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.apple.com&fp=safari&pbk=YOUR_PUBLIC_KEY&sid=YOUR_SHORT_ID&type=tcp&spx=%2F&keyshare=classical#Personal-VPN-phone
 ```
 
-Check server IP, VPN port, UUID, Flow, REALITY public key, short ID, SNI, fingerprint, and transport. A correct IP with the wrong key or short ID can establish TCP and still fail REALITY authentication.
+Copy the whole link. Its account ID and key values are easy to damage by retyping; you only need to add the classical option shown above.
 
 For a desktop and phone, use two separately named client accounts, `desktop` and `phone`, on this same inbound. Export each account's own link; each device keeps its own credentials and can be revoked separately. Both accounts can use the same listener. When replacing a test account, verify the new accounts before removing the test account from the inbound and central client list.
-
-![Client details actions: Copy VLESS URL or Show QR code](../images/3x-ui-client-share.svg)
 
 ## Optional XHTTP instead of RAW
 

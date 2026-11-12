@@ -1,10 +1,10 @@
 # Working in this repository
 
-This repository is both a human VPN walkthrough and a small set of opt-in setup/diagnostic helpers. Start with `README.md`; read the guide relevant to the requested task before running its script. Keep user-facing documentation readable as a practical article with button illustrations, required values, expected results, and recovery steps. Put protocol/implementation depth in the separate expert guide.
+This repository is both a human VPN walkthrough and a small set of opt-in setup/diagnostic helpers. Start with `README.md`; read the guide relevant to the requested task before running its script. Keep user-facing documentation readable as a practical article with real screenshots where available, required values, expected results, and recovery steps. Put protocol/implementation depth in the separate expert guide.
 
 ## Human-first documentation rules
 
-The README gives equal space and a complete starting sequence to the single-server and two-server paths. Start with the reader’s goal, what they will need and a clear choice of routes. Explain each path’s cost, prerequisites and first connection in everyday words. Keep the tested core/key-share table in a collapsed reference section below the starting paths; retain version checks in the setup instructions where they are needed. Explain where the two panels connect and how to test each leg. Keep the single-server walkthrough in docs/single-server.md and keep its existing automation available. Use small readable text diagrams on the README; put detailed UI illustrations in the relevant guide. Keep automation optional.
+The README gives equal space and a complete starting sequence to the single-server and two-server paths. Start by explaining what a VPN does, what a server and client are, how traffic travels through one or two servers, and where a reader at each starting point should go. Link the server-rental page before asking the reader to have a VPS. Use natural, friendly language, as when helping a friend through their first setup. Explain each path’s cost, prerequisites and first connection in everyday words. Keep the tested core/key-share table in a collapsed reference section below the starting paths; retain version checks in the setup instructions where they are needed. Explain where the two panels connect and how to test each leg. Keep the single-server walkthrough in docs/single-server.md and keep its existing automation available. Use small readable text diagrams on the README; use real screenshots for UI instructions in the relevant guide. Keep automation optional.
 
 Define names before relying on them: VPS means a rented remote server; root is an administrator account; 3x-ui is the browser dashboard; Xray is the network engine; Hiddify is the connection app; a profile is the private connection link. Introduce ports, SSH and proxy modes where the reader needs them. Do not send a beginner to an expert glossary to complete a required step. Each guide must also make sense when opened directly: define an app or technical term at its first substantive use on that page. Use full product names, including Invisible Man - XRay Client. Keep migration-only app references out of the ordinary beginner steps. Explain a setting through its effect and the reader’s next action; avoid arguments about what a test does not prove unless the limitation changes that action.
 
@@ -13,7 +13,7 @@ Support Windows and Linux as administration/client platforms without calling the
 ## Repository map
 
 ```text
-README.md                       Main two-hop walkthrough and guide index
+README.md                       VPN basics, starting choices and guide index
 AGENTS.md                       This repository's agent workflow
 .gitignore                      Excludes private profiles, exports, backups and test artifacts
 docs/
@@ -176,7 +176,7 @@ Never claim fresh-VPS provisioning was live-tested when only the offline suite w
 
 Keep deployment names, account labels and personal filesystem paths anonymous in tracked investigation reports; retain exact values only in private state files. Use placeholders or reserved documentation addresses such as `203.0.113.10` and `2001:db8::10`. Keep UUIDs, complete live VLESS links, QR codes, private keys, panel paths, passwords, tokens and subscription URLs out of tracked files and commit messages. Prefer a hidden prompt or a private input file to a literal URI in shell history.
 
-All current SVGs are explicitly labeled navigation diagrams. Rebuild them with `python3 scripts/render_illustrations.py`. Do not represent them as captured screenshots. Actual new screenshots need authorized access or contributor captures; follow `images/README.md` and redact credentials opaquely before adding them. Do not invent current UI buttons that the checked version does not expose.
+The generated SVG UI pictures have been removed from the reading paths. Keep their existing source assets only for history; do not embed them again or generate substitute mock screenshots. Use written button paths until genuine screenshots are available. Follow images/README.md for capture locations and opaque redaction. Do not invent current UI buttons that the checked version does not expose. Every setup page must say what the reader needs, whether commands run locally or on a server, how to check the result and where to go next. Put historical tests and advanced recovery behind details sections rather than interrupting the first connection.
 
 ## Validation and commits
 

@@ -2,7 +2,9 @@
 
 # When an update changes the connection
 
-A VPN profile can keep the same address and password while the client changes the bytes it sends. That is what we investigated after Hiddify worked on Wi-Fi and failed on mobile data.
+Use this page if a connection works on Wi-Fi but fails on mobile data, or if an app update stopped a previously working connection. A **profile** is the private link your VPN app uses to connect. The address and account can stay the same while a new app version changes how it starts the connection.
+
+For the short version, [check the matching app and server settings](#match-the-client-option-to-the-server). The sections below explain why those settings matter. If you’re just setting up your first connection, [follow the device steps](clients.md); they include the required choice.
 
 **Xray** is the network engine on the server. **3x-ui** is its browser dashboard. **Hiddify** is the client app; Hiddify 5.5.5 reports a Hiddify sing-box traffic engine. Installing a different panel version does not by itself select the Xray version.
 
@@ -16,7 +18,7 @@ Keep SNI and browser fingerprint separate. Safari or Firefox can connect to a Ru
 
 ## What we captured
 
-We ran separate local test processes with the same account, RAW transport, Chrome fingerprint and `www.google.com` SNI. The installed Invisible Man - XRay Client stayed active during the comparison.
+We compared two client engines using the same account, **RAW** transport (a direct TCP connection), Chrome fingerprint and `www.google.com` SNI. One was the older **Invisible Man - XRay Client**, a Windows VPN app using Xray. The other was Hiddify 5.5.5. Separate test processes collected their first messages; the existing VPN app stayed running.
 
 | Captured ClientHello TLS record | Invisible Man's Xray 25.1.30 | Hiddify 5.5.5 |
 |---|---|---|
@@ -64,3 +66,5 @@ Xray 26.7.28 is an older compatibility choice. Later releases contain security f
 **XHTTP** carries traffic through HTTP requests and supports different connection patterns. The tested inter-server setup uses `stream-one` on Moscow, `auto` on the exit and an empty account flow on that leg. It still establishes a TLS/REALITY handshake. [XHTTP design](https://github.com/XTLS/Xray-core/discussions/4113)
 
 Both setup helpers offer XHTTP. Single-server XHTTP and device-to-Moscow XHTTP are optional experiments; the mobile success recorded here used RAW at device entry. Re-export the account after changing its transport, path or flow, then test the matching client profile.
+
+**Next:** [make the matching device link](server-inbound.md#5-export-the-connection), [import it into Hiddify](clients.md), or [continue troubleshooting](troubleshooting.md).

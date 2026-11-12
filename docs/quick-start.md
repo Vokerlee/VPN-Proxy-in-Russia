@@ -1,133 +1,97 @@
-[← Guide index](../README.md) · [Manual server walkthrough](server-setup.md) · [What the helpers do](automation.md)
+[← One-server walkthrough](single-server.md) · [Two-server scripts](two-hop-vpn.md#3-preview-and-apply-the-relay-helper)
 
-# Optional: let a helper prepare a new server
+# Let a script set up a fresh server
 
-This is an optional alternative to the [manual setup walkthrough](server-setup.md). You can complete the whole main guide without running these helpers.
+If you’d rather paste a few commands than fill in the server dashboard yourself, use this page. The script installs the VPN software and makes separate connection links for your phone and computer. You’ll still rent the server yourself and add the links to Hiddify afterward.
 
-A **VPS** is a rented remote server; **root** is its administrator account. **SSH** is the secure terminal connection used to log in. The helper uses **OpenSSH**, the program providing that connection on your computer. If you do not have one yet, follow [choosing and creating a server](choose-server.md) first. Once the provider has supplied its IP and root login, a helper can automate the installation and account creation.
+This is for **one fresh server**. Already have a working 3x-ui dashboard? [Create accounts there](server-inbound.md) instead; this installer stops when it finds an existing installation. For two servers, use [the two-server script instructions](two-hop-vpn.md#3-preview-and-apply-the-relay-helper).
 
-The helper prepares a new Ubuntu or Debian server that uses systemd, the normal service manager on those distributions. It does not require Ubuntu 24.04 specifically. You can launch it from Windows, Linux, or macOS.
+**What you need:** a fresh Ubuntu or Debian server, its public IPv4 address, and working SSH access as **root**, its administrator. SSH is the terminal connection the script uses. The server needs systemd, the service manager normally supplied with those systems. [No server yet? Rent one first](choose-server.md).
 
-It installs **3x-ui**, the server's browser dashboard, and generates a connection profile—a private link that tells a client app how to connect. The connection uses the VLESS + REALITY + Vision settings explained in the manual guide, with an IPv4 exit address—the address websites see. The desktop/phone app used below is **Hiddify**. It does not need a domain name or access to your provider account.
-
-An existing 3x-ui installation is a different situation. The helper recognizes it and stops before resetting it. If you already have a panel, use [the existing-server walkthrough](server-inbound.md) and [Hiddify setup](clients.md); do not erase a working VPS to make an installer happy.
-
-The current fresh-server default pins **Xray 26.7.28** independently of **3x-ui 3.8.5** and writes a **classical Hiddify profile**. Keep the panel export in `panel-profile.txt`; import `hiddify-profile.txt`, whose query includes `keyshare=classical`. [Why the versions matter](handshakes-and-versions.md)
+**What you’ll get:** 3x-ui, the server’s browser dashboard; Xray, the program carrying the VPN traffic; and private links for Hiddify, the app on your devices. This guide’s preset uses Xray **26.7.28** with **classical** device links. [Version notes](handshakes-and-versions.md)
 
 ## Before the first command
 
-Download this repository using Git or GitHub's **Code → Download ZIP**, extract it, and open a terminal in the folder containing `README.md` and `scripts/`.
-
-On Windows, use **PowerShell** in that folder. Check that the built-in OpenSSH client is available:
-
-```powershell
-ssh -V
-```
-
-If Windows says the command is missing, install **OpenSSH Client** through Windows' Optional features, then reopen the terminal. The Windows launcher does not require local Python.
-
-On Linux/macOS, have OpenSSH and Python 3.8+ available. The automatic server setup expects root SSH access on port 22; a custom SSH port is supported by a flag. The server needs internet/package access. Provider security-group changes may still require its website because a root password does not grant that separate account access.
+1. On this repository’s GitHub page, choose **Code → Download ZIP** and extract it, or use your existing Git checkout.
+2. Open the extracted folder containing **README.md** and **scripts**. On Windows, right-click inside it and open a terminal with PowerShell. On Linux or Mac, open a terminal there. All commands on this page start on **your computer**, not in the server’s SSH terminal.
+3. Run `ssh -V`. If it’s missing, install the OpenSSH client for your operating system. On Windows it’s an Optional Feature called **OpenSSH Client**.
+4. Linux/Mac users also need **Python 3.8+**. Check with `python3 --version`. The Windows launcher doesn’t need Python.
 
 ## See the plan, then let SSH ask for the password
 
-**Choose your computer’s operating system below.** Run the Windows commands or the Linux/macOS commands, not both.
+Choose the commands for your computer. Replace **203.0.113.10** with your server’s real IPv4 address. It’s an example address, so copying it unchanged won’t connect to your server.
 
-On Windows, preview the plan:
+### Windows PowerShell
 
-```powershell
-.\scripts\Setup-Vpn.ps1 -VpnPort 8443 -Target www.apple.com -Fingerprint safari
-```
-
-Enter the VPS IPv4 address when asked. This first command does not connect or change anything.
-
-Then run the real setup:
+Preview first:
 
 ```powershell
-.\scripts\Setup-Vpn.ps1 -VpnPort 8443 -Target www.apple.com -Fingerprint safari -Apply
+.\scripts\Setup-Vpn.ps1 -ServerIp 203.0.113.10 -VpnPort 8443 -Target www.apple.com -Fingerprint safari
 ```
 
-If PowerShell blocks a script you have inspected and trust, you can allow just this process without changing the machine-wide execution policy:
+This only shows a plan. Check the address. To run the setup, repeat it with **-Apply**:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Setup-Vpn.ps1 -VpnPort 8443 -Target www.apple.com -Fingerprint safari -Apply
+.\scripts\Setup-Vpn.ps1 -ServerIp 203.0.113.10 -VpnPort 8443 -Target www.apple.com -Fingerprint safari -Apply
 ```
 
-Respect managed-device policy; the manual walkthrough remains available if script execution is prohibited.
+<details>
+<summary>PowerShell won’t let the script run?</summary>
 
-On Linux/macOS, the equivalent commands are:
+Read the script before allowing it. On a computer you manage, this runs it with a policy change limited to that new PowerShell process:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\Setup-Vpn.ps1 -ServerIp 203.0.113.10 -VpnPort 8443 -Target www.apple.com -Fingerprint safari -Apply
+```
+
+Use your actual address here too. For a work or school computer, follow its administrator’s policy. The [manual setup](server-setup.md) is another route.
+
+</details>
+
+### Linux or Mac terminal
+
+Preview:
 
 ```bash
-python3 scripts/bootstrap_server.py --vpn-port 8443 --target www.apple.com --fingerprint safari --plan
-python3 scripts/bootstrap_server.py --vpn-port 8443 --target www.apple.com --fingerprint safari --apply
+python3 scripts/bootstrap_server.py --host 203.0.113.10 --vpn-port 8443 --target www.apple.com --fingerprint safari --plan
 ```
 
-These commands explicitly choose the tested **8443 + Safari + www.apple.com** preset. If 8443 is occupied, use 443 only if it is free; otherwise stop and preserve both existing listeners. The helper's bare defaults remain 443/Google and a regional fingerprint policy; the commands above override them.
+Check the address, then apply:
 
-The first SSH connection may ask you to confirm the server's host-key fingerprint. Compare it with the provider's console when available. After that, **SSH itself** asks for the root password. The password is hidden while you type; it never becomes a script argument, a configuration file, or a Git commit. SSH keys work too if you have already configured them.
+```bash
+python3 scripts/bootstrap_server.py --host 203.0.113.10 --vpn-port 8443 --target www.apple.com --fingerprint safari --apply
+```
 
-Keep the terminal open. A fresh installation can take several minutes. The helper prints stages such as package preparation, panel installation, and client creation; it keeps installer output with generated credentials in a private log on the VPS.
+### While it runs
 
-## What the helper prepares for you
+SSH may ask you to confirm the server’s identity on the first connection. Compare the host fingerprint with the provider’s console when available. It then asks for the root password. Nothing appears while you type; that’s normal. Keep passwords out of commands. An already configured SSH key also works.
 
-The default setup uses the version this guide describes, **3x-ui 3.8.5**, rather than silently following whatever a future latest release changes. It installs the panel through its official installer, selects the pinned core with SHA-256 verification, then configures the new installation through its supported CLI and API.
+Leave the terminal open until setup finishes. The script checks for a fresh installation, installs the software, creates **desktop** and **phone** accounts, and saves the results. It doesn’t stop your existing VPN apps or change your computer’s network settings. If it stops with an error, use the table below rather than reinstalling the server.
 
-You get:
+These commands use **8443** for the VPN and **27297** for the dashboard. A port is a numbered connection entry point; those two numbers do different jobs. If the chosen VPN port is occupied, use 443 only if free. Don’t overwrite another service.
 
-- One VLESS + RAW/TCP + REALITY inbound and separate `desktop` and `phone` accounts with Vision flow.
-- Xray **26.7.28**, a **classical** Hiddify link, and a separately saved original panel export.
-- Public VPN TCP port **8443** with the commands above. An occupied explicitly selected port stops setup; a busy default 443 can select a free 8443.
-- Generated UUID, REALITY keys, short ID, and panel credentials. The panel URL path is `/`.
-- The **Safari** fingerprint and **www.apple.com** target/SNI selected explicitly above. The optional auto fingerprint policy is described in the [automation guide](automation.md#choose-the-client-fingerprint-by-server-country); country is not a substitute for a real client test.
-- **ForceIPv4** on the server’s outgoing path, so hostname-based website requests use IPv4.
-- A public HTTP panel on **YOUR_SERVER_IP:27297**, opened directly in a browser.
-- The VPN and panel TCP ports allowed in an existing UFW firewall, if active. UFW is Ubuntu’s firewall-management tool; the helper does not install or enable it. Existing SSH rules and custom/provider firewalls are not reset.
-- A private `server.json` and `hiddify-profile.txt` saved under the repository's ignored `.secrets/` folder.
-
-The helper checks that the server listener starts and probes its public TCP port from your computer. A reachable socket is still not an authenticated VPN test; importing the profile and running the final request below completes that check.
-
-For a custom SSH port, use `-SshPort` / `--ssh-port`. Public VPN inbounds are restricted to **443 or 8443**; select one with `-VpnPort` / `--vpn-port`. Use `-PanelPort` / `--panel-port` if the administration port is occupied. Read the [automation details](automation.md#start-with-only-a-vps-ip-and-root-password) before changing defaults.
-
-During **Apply**, the helper looks up the VPS's public IP country using [Country](https://country.is/); it sends the public IP, never your credentials. **Plan mode makes no lookup or SSH connection.** To skip that lookup or correct its result, add `-ServerCountry US` on Windows or `--server-country US` with Python; use another two-letter code for another country. To choose a tested preset yourself, add `-Fingerprint safari` / `--fingerprint safari` (or `chrome`, `firefox`, etc.). An explicit fingerprint overrides the country policy. If automatic lookup fails, the helper stops before installation and tells you which option to supply.
+For a custom SSH port, add `-SshPort YOUR_PORT` on Windows or `--ssh-port YOUR_PORT` with Python. [Other options](automation.md#start-with-only-a-vps-ip-and-root-password)
 
 ## Open 3x-ui directly in your browser
 
-At completion, the helper prints the full panel URL. For the default port and root path it is:
+When setup finishes, it prints the panel URL and the private output folder. Open that folder in your file manager; it sits under **.secrets** in this repository. On Linux, use **Ctrl+H** to show hidden folders if needed.
 
-```text
-http://YOUR_SERVER_IP:27297/
-```
+1. Open **server.json** locally in a text editor and find **panel_username** and **panel_password**.
+2. Open the printed panel URL in your browser. With the default port, it looks like `http://YOUR_SERVER_IP:27297/`.
+3. Sign in using those panel credentials. The SSH root password is a separate login.
+4. Open **Inbounds**. You should see **Personal VPN**, enabled, with **desktop** and **phone** accounts. The script already created them; don’t add them again.
 
-Replace `YOUR_SERVER_IP` with your VPS IPv4 address. Open this address on your computer or phone. No SSH forwarding window is required, and closing the setup terminal does not close panel access.
-
-If your provider filters incoming traffic, allow **TCP 27297**, or the actual panel port you selected. The VPN port is a different rule. The helper adds the panel allow rule only when UFW is already active; it does not control the provider firewall.
-
-![Open the panel: full server URL, credentials, then Login](../images/3x-ui-panel-login.svg)
-
-Open the generated `server.json` locally and find `panel_username` and `panel_password`. Enter them in the panel's **Username** and **Password** boxes and click **Login**. The root password is for SSH, not for the panel.
-
-In the sidebar, click **Inbounds**. You should see **Personal VPN**, enabled, on the VPN port recorded in `server.json`. The account already exists; do not add a duplicate inbound.
-
-![First visit to 3x-ui: Login, Inbounds, Personal VPN, then the desktop account share action](../images/3x-ui-first-visit.svg)
-
-**Optional check:** **Outbounds → direct → Edit → Strategy** shows the IPv4 exit setting. It was applied by the helper; the [ForceIPv4 guide](force-ipv4.md) explains the setting and effective socket option.
-
-For optional HTTPS or an intentionally private SSH-only panel, follow the [panel access alternatives](server-setup.md#required-open-the-dashboard-safely-in-your-browser). Older helper exports used a loopback-only listener: to make such a panel public, run `/usr/local/x-ui/x-ui setting -listenIP 0.0.0.0` on the VPS, restart `x-ui`, and allow the actual panel port.
-
-![Separate browser-panel and VPN traffic paths](../images/ports-paths.svg)
+If the page doesn’t open, allow the actual panel TCP port in the hosting company’s firewall dashboard. The script can update an already active UFW firewall on the server, but it can’t change your provider account’s firewall. Keep SSH allowed too. [Manual panel access and HTTPS options](server-setup.md#required-open-the-dashboard-safely-in-your-browser)
 
 ## Bring the profile into Hiddify
 
-The server and account are ready. Open the generated `hiddify-profile.txt` in a text editor and copy the whole `vless://...` line. This is your private connection profile.
+Open **client-phone.txt** for your phone or **client-desktop.txt** for your computer. Copy the whole `vless://…` line. That’s the private connection link for that device.
 
-**[Now follow Step 4: install Hiddify, import this link, and connect →](clients.md)**
+**[Install Hiddify, add the link and test a website →](clients.md)**
 
-**In Hiddify, set Settings → DNS → Outbound domain strategy → IPv4 only before reconnecting.** This helped during the first Android test. The timeout later returned, so use it as a troubleshooting check. The helper’s server-side ForceIPv4 setting does not set this option in your phone’s app.
+The script also saves the original panel export in **panel-profile.txt** and a first-device Hiddify link in **hiddify-profile.txt**. Use the clearly named per-device files above for your two devices.
 
-The linked page gives the exact buttons, browser check, and optional additional recovery steps. You do not need to create another account in 3x-ui or run a preference-repair script first.
-
-![Hiddify: add the generated profile from the clipboard](../images/hiddify-import.svg)
-
-Copy the generated credentials/profile to your private password manager before deleting the working folder. `.secrets/` is deliberately not committed to Git. Do not paste those files into a public issue or screenshot.
+Save the output files privately before deleting the repository folder. Anyone with a connection link can use that account. The files are excluded from Git; don’t post them in an issue or screenshot.
 
 ## When the helper stops
 

@@ -1,37 +1,42 @@
-[← Guide index](../README.md) · [Single-server setup](quick-start.md) · [Automation](automation.md) · [Connection diagrams](schemes/README.md)
+[← Start here](../README.md) · [One-server route](single-server.md)
 
-# Two-hop VPN: IPv4 entry, IPv6 between servers, IPv4 exit
+# Connect through Russia to a server abroad
 
-Use this setup when you want your devices to connect to a nearby entry server and leave the internet through a different country. A **VPS** is a rented server. **Xray** carries the encrypted connections; **3x-ui** is its browser dashboard. Both legs use **VLESS + REALITY**. Devices use RAW with Vision; the connection between servers uses XHTTP with an empty flow.
+Here we’ll set up two servers. Your phone connects to the one in Russia. That server passes your traffic to the one abroad, and websites send their replies back along the same route.
 
 ```text
-Device -- IPv4 --> Moscow -- IPv6 --> foreign server -- IPv4 --> website
-           VLESS             VLESS
+Your phone → Moscow → Server abroad → Website
 ```
 
-The [single-server path](single-server.md) is the other starting choice in this guide. The relay helper adds a dedicated IPv6 inbound to an existing foreign panel and preserves its old IPv4 inbound and accounts.
+The Russian server is the **entry**: the first server your device reaches. The foreign server is the **exit**: the one websites see. Hiddify is the **client** app on your phone or computer. You only add the Moscow device link to Hiddify; you don’t need to connect two apps yourself.
 
-## Pick the entry version before linking the panels
-
-The tested mobile path uses **Xray 26.7.28 on Moscow**, **Hiddify 5.5.5 with `keyshare=classical`** on devices, and **Xray 26.9.9 on the foreign exits**. The inter-server transport is **XHTTP + REALITY over IPv6**. Each panel's version number is separate from its core. [Working combinations and handshake sizes](handshakes-and-versions.md)
-
-A Moscow entry can provide a usable domestic first hop when a direct foreign route fails. IPv6 gives the servers another address family to try; our Moscow server reached an exit that was unreachable over IPv4. Both advantages depend on the provider and route. Russian IPs and IPv6 traffic can still be filtered. [Maps and tradeoffs](schemes/README.md)
+This can help when you can reach a Russian server but can’t reliably reach the foreign one directly. It adds a server rental and another connection to look after. Both servers and the connections between them can still be blocked.
 
 ## Before you start
 
-Get two Linux VPSs and save the SSH login for each. SSH opens a terminal on the server. Use the provider's username, IP address and port when you connect. The commands labeled **on Moscow** run in Moscow’s SSH terminal. Commands labeled **on NL** run in a separate SSH terminal on NL. [Choosing a VPS](choose-server.md) · [Connecting over SSH](server-setup.md#2-connect-over-ssh)
+You need a computer for setup, one server in Russia and one abroad. Our example calls them **Moscow** and **NL**. NL means the Netherlands; later examples use FR for France and FI for Finland. Those are example locations, not names you have to use.
 
-| Where you are | What you need |
-|---|---|
-| Your computer | A terminal for SSH, a browser for 3x-ui and Hiddify for the final test |
-| Moscow | Public IPv4 for devices and working IPv6 for the relay connection |
-| NL | An assigned IPv6 address for the relay and working IPv4 for websites |
+**No servers yet?** [Rent them here](choose-server.md). Choose plans with a public IPv4 address and IPv6 on both servers. Save each server’s address, login name, password or SSH key, and SSH port separately. SSH is the terminal connection you’ll use to manage a server.
 
-Keep two browser tabs open when the panels are ready. Label them **Moscow** and **NL**. Save each panel’s full URL and panel credentials separately from its SSH credentials.
+We’ll use **3x-ui**, a browser dashboard, on both servers. It manages **Xray**, the program carrying the VPN traffic. If this is your first setup, follow this order:
+
+1. Get IPv6 working on both servers using the checks below.
+2. [Install and open a dashboard](server-setup.md) on each server. Use Xray **26.7.28** on Moscow and **26.9.9** on NL, then return here. Already have dashboards? Keep them and check their versions.
+3. [Link the panels](#how-the-two-3x-ui-panels-connect), then test your device.
+
+Prefer scripts? Finish the IPv6 setup first, then use [the folded script instructions](#3-preview-and-apply-the-relay-helper) instead of the manual panel steps. You don’t need to do both.
+
+Keep two browser tabs open and label them Moscow and NL so you don’t edit the wrong server. Keep each panel’s browser login separate from its SSH login.
+
+## Pick the entry version before linking the panels
+
+For the tested phone setup, Moscow uses **Xray 26.7.28** and the device link includes **`keyshare=classical`**. NL uses **26.9.9**. The app and server must agree on how to start the encrypted connection. The detailed steps below keep those settings together; [the version explanation](handshakes-and-versions.md) is there if you want the reason.
 
 ## 1. Configure IPv6 yourself using your VPS provider's instructions
 
-**IPv6 configuration is the user's task. The automation never activates IPv6, changes addresses, edits Netplan or installs network routes.** It checks the configuration and stops if the required IPv6 address or default route is missing.
+**IPv6** is another kind of internet address. IPv4 looks like `203.0.113.10`; IPv6 looks like `2001:db8:2::1`. In this route, devices reach Moscow using IPv4 and Moscow reaches NL using IPv6.
+
+Configure IPv6 yourself using each provider’s instructions. The scripts only check it; they don’t activate it or change your server’s network settings. One server’s settings may be wrong for the other.
 
 Different VPS providers require different configuration. Do not assume a configuration that works on one VPS works on another:
 
@@ -47,7 +52,9 @@ Different VPS providers require different configuration. Do not assume a configu
 
 A /124 contains **16 addresses**. A subnet allocation is not proof that the guest OS already has an address or route.
 
-Run these commands in each server’s SSH terminal. The last command checks for Netplan on that server.
+Open PowerShell or a terminal on your computer and connect using `ssh YOUR_LOGIN_USER@YOUR_SERVER_IP`. Replace both placeholders with that server’s login details. Add `-p YOUR_SSH_PORT` after `ssh` if the provider uses a custom port. [First SSH login, explained](server-setup.md#2-connect-over-ssh)
+
+Run these commands after logging in to **each server**. They show its addresses, IPv6 routes and whether it has Netplan configuration files. Netplan is one tool Ubuntu uses to configure networking; a missing directory may simply mean your server uses another tool.
 
 ```bash
 ip -br address
@@ -102,19 +109,16 @@ Look for an IPv6 address on the `ip=` line. If the command times out, check the 
 
 ## 2. Choose the two legs
 
-The starting example uses:
+There are two encrypted connections to configure. The names in this table are settings you’ll enter below. You can copy them without learning the protocols first.
 
-| Leg | Endpoint | Transport and flow | Target/SNI | Client handshake |
-|---|---|---|---|---|
-| Device → Moscow | Moscow IPv4, TCP 443 | RAW, Vision | yandex.ru | Safari, classical |
-| Moscow → foreign | Foreign IPv6, TCP 443 | XHTTP, empty flow | www.google.com | Chrome, hybrid |
-| Foreign → website | IPv4 | Direct outbound | Requested destination | Destination connection |
+| Connection | Address and port | Transport | Security and flow | Target / SNI | Fingerprint |
+|---|---|---|---|---|---|
+| Your device → Moscow | Moscow IPv4, **443** | **RAW** (also called TCP) | REALITY, **Vision** | `yandex.ru:443` / `yandex.ru` | `safari` |
+| Moscow → NL | NL IPv6, **443** | **XHTTP** | REALITY, **empty flow** | `www.google.com:443` / `www.google.com` | `chrome` |
 
-Targets must pass certificate, TLS 1.3 and HTTP/2 checks from the server that uses them. A browser fingerprint is separate from the target's website name. Use the actual network tests before choosing another preset.
+A **port** is a numbered connection entry point. We use only **443 or 8443** for public VPN connections. Each server has its own ports, so both can use 443. If that port already belongs to another service, keep that service and use 8443 if free. If both are occupied, resolve that before continuing.
 
-**Public VPN inbounds may use only 443 or 8443.** Existing listeners are preserved. SSH and dashboard ports are separate.
-
-The foreign relay inbound accepts authenticated traffic from the configured Moscow IPv6 source. It uses IPv4 for hostname-based destination connections and rejects explicit IPv6 destinations on that relay inbound. Moscow routes the entry inbound to the foreign VLESS outbound; it does not fall back to a direct Moscow exit when the relay fails.
+The **target/SNI** settings describe a website used during REALITY connection setup. They aren’t the websites you’re allowed to visit. A **fingerprint** shapes the app’s first connection message; Safari here doesn’t mean you need the Safari browser. [What those settings do](handshakes-and-versions.md#the-opening-message)
 
 ## How the two 3x-ui panels connect
 
@@ -124,35 +128,97 @@ For the manual setup, open or install 3x-ui on each server. The installer gives 
 
 ### On NL, create the relay account
 
-1. Open **Inbounds → Add Inbound**. Set **Remark** to `Relay nl`, **Listen IP** to the assigned NL IPv6 address, and **Port** to **443**. Use VLESS, **XHTTP**, path **`/relay-nl`**, server mode **auto**, REALITY, target `www.google.com:443`, SNI `www.google.com` and fingerprint `chrome`. In **Listen IP**, enter the address by itself. The exported link will put brackets around it.
-2. Generate REALITY keys and a short ID. Add a client named `relay-nl` with **Flow** empty for XHTTP. The account is for Moscow to use. [Inbound form and client fields](server-inbound.md#3-set-transport-and-security)
-3. Set **Outbounds → direct → Edit → Strategy → ForceIPv4**. In **Routing**, scope the relay rules to the new NL inbound. Match Moscow’s IPv6 address with `/128` in **Source IP** and select `direct` as **Outbound Tag**. Add a rule below it for the same inbound with **Outbound Tag** set to `blocked`, so traffic from other sources has no exit. To enforce IPv4-only destinations, add a rule above both that matches this inbound and destination IP `::/0` and selects `blocked`. Keep the panel’s API rule. [IPv4 exit settings](force-ipv4.md)
-4. Allow TCP 443 over IPv6 from Moscow in any provider or guest firewall that filters incoming traffic. Enable the relay inbound, save, and restart Xray if prompted.
-5. Expand **Relay nl** in **Inbounds** and open **Info / Share** for `relay-nl`. Copy the private VLESS link. Check that the address after `@` is the NL IPv6 address in brackets, followed by `:443`. If the panel exports IPv4 instead, open the panel using its IPv6 URL and export again. Check the link before importing.
+This account is for Moscow to use. It isn’t the phone account.
 
-On Moscow, replace the example address below with the actual NL IPv6 address:
+**1. Open NL’s dashboard → Inbounds → Add Inbound.** An inbound is the place this server accepts a VPN connection. Enter:
+
+| Field | Value |
+|---|---|
+| Remark | `Relay nl` |
+| Listen IP | NL’s assigned IPv6 address, without brackets or the `/prefix` |
+| Port | `443`, if free |
+| Protocol | `vless` |
+| Transmission / Network | `XHTTP` |
+| Path | `/relay-nl` |
+| Mode | `auto` |
+| Security | `REALITY` |
+| Target / Dest | `www.google.com:443` |
+| Server Names / SNI | `www.google.com` |
+| Fingerprint, if offered | `chrome` |
+
+Generate the REALITY keys and a short ID for this new inbound. Keep their generated values; the exported link will include what Moscow needs. Add a client named **relay-nl** and leave **Flow empty**. XHTTP doesn’t use the Vision flow in this setup. Save the inbound. [Where the fields are](server-inbound.md#3-set-transport-and-security)
+
+**2. Choose how NL reaches websites.** Open **Outbounds → direct → Edit → Strategy**, choose **ForceIPv4**, and save. An outbound is the path traffic takes when it leaves the server. This one connects to websites. [The IPv4 setting explained](force-ipv4.md)
+
+**3. Restrict this relay to Moscow.** In **Routing**, use the **+** button to add these rules. Select only the new relay under **Inbound Tags**. The tag identifies the inbound in routing; keep the tag assigned by your panel.
+
+| Order | Other match fields | Outbound Tag |
+|---|---|---|
+| First relay rule | Destination IP: `::/0` | `blocked` |
+| Second relay rule | Source IP: Moscow’s global IPv6 address followed by `/128` | `direct` |
+| Third relay rule | No other match fields | `blocked` |
+
+The first rule rejects explicitly requested IPv6 destinations, so this relay exits through IPv4. The second lets Moscow through. The last blocks other sources from getting an exit through this account. `/128` means exactly one IPv6 address. Keep the panel’s API rule and unrelated rules, and put this group above broader rules that could catch the same traffic. Use the existing blocked/blackhole outbound; if your panel uses another tag for it, select that tag.
+
+**4. Allow the connection.** If either firewall filters incoming traffic, allow **TCP 443 over IPv6 from Moscow’s IPv6 address** in NL’s provider dashboard and guest firewall. Enable the inbound and apply the settings. Restart Xray if prompted, then check it is running.
+
+**5. Copy the relay link.** In **Inbounds**, expand **Relay nl**, find **relay-nl**, and open **Info / Share**. Copy its VLESS link and keep it private. The address after `@` should be NL’s IPv6 address in brackets, followed by `:443`. If the panel exports IPv4, try opening the dashboard using its IPv6 browser URL, `http://[NL_IPV6]:PANEL_PORT/PANEL_PATH/`, then export again. Use your actual port, path and HTTP/HTTPS scheme. Check that the export now contains IPv6 before continuing.
+
+**Check from Moscow’s SSH terminal:**
 
 ```bash
 nc -6 -vz -w 5 2001:db8:2::1 443
 ```
 
-A successful check shows that Moscow can open the TCP port. If `nc` is unavailable, install the distribution’s Netcat package or use the relay helper’s authenticated test. If the port times out, check the IPv6 route and both firewalls before editing VLESS settings.
+Replace that example with NL’s IPv6 address and chosen relay port. A successful result means Moscow can open the port. If it times out, check the IPv6 routes and firewalls first. If `nc` is missing, install your distribution’s Netcat package or use the helper’s authenticated relay check.
 
 ### On Moscow, connect the device inbound to NL
 
-1. Open **Outbounds → + Outbounds → JSON**. Paste the NL relay link into the link field and click **Import**. Set **Tag** to `relay-nl`. Check the IPv6 address, port, SNI and Chrome fingerprint. The account flow is empty. Set XHTTP mode to **stream-one** and path to **`/relay-nl`**. In the existing outbound JSON, set top-level `sendThrough` to Moscow's global IPv6 address and `streamSettings.sockopt.domainStrategy` to `ForceIPv6`, then click **Create**. The link import is inside the **+ Outbounds** form. [Outbound form in 3x-ui 3.8.5](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/xray/outbounds/OutboundFormModal.tsx)
-2. Open **Inbounds → Add Inbound**. Name this entry `VLESS RU`. Use Moscow’s IPv4 endpoint on **443**, VLESS, TCP or RAW, REALITY, target `yandex.ru:443`, SNI `yandex.ru` and fingerprint `safari`. Generate separate REALITY keys and a short ID for this inbound. Add one client account per device, such as `desktop` and `phone`, with Vision flow. Save the inbound with **Enable** off while you add its route.
-3. Open **Routing** and use the **+** button to add a rule. Under **Inbound Tags**, select the new Moscow inbound. Under **Outbound Tag**, select `relay-nl`. Put this rule above general rules that could match the same traffic. Keep the API rule. Save and apply the settings, enable the Moscow inbound, and restart Xray if prompted. [Routing form in 3x-ui 3.8.5](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/xray/routing/RuleFormModal.tsx)
-4. Allow TCP 443 over IPv4 in Moscow’s provider and guest firewalls where applicable. In **Inbounds**, open **Info / Share** for the Moscow device account. This link should use Moscow’s public IPv4 address and port 443. Give each device its own link. For the compatible 26.7.28 entry core, append `&keyshare=classical` before the link's `#` name. The helper writes this Hiddify variant and saves the original panel export separately.
+**1. Import NL’s link.** Open **Outbounds → + Outbounds → JSON**. Paste the relay link into the link field and click **Import**. This creates the settings Moscow uses to connect to NL. Before saving, check:
 
-[See the connection diagrams](schemes/README.md) · [Which panel screens to capture](../images/README.md#screenshots-to-send-in-order)
+| Field | Value |
+|---|---|
+| Tag | `relay-nl` |
+| Server address | NL’s IPv6 address |
+| Port | NL’s relay port, `443` in this example |
+| Transport | `xhttp` |
+| Path | `/relay-nl` |
+| Mode | `stream-one` |
+| Flow | Empty |
+| SNI / fingerprint | `www.google.com` / `chrome` |
+
+In that outbound’s existing JSON, set top-level **`sendThrough`** to Moscow’s global IPv6 address, and **`streamSettings.sockopt.domainStrategy`** to **`ForceIPv6`**. JSON is the text form of the settings. Merge those fields into the existing objects rather than pasting a second outbound or deleting its imported credentials. `sendThrough` makes the connection use the same Moscow source address allowed by NL’s rule. Save with **Create**.
+
+**2. Make the device entry.** In **Inbounds → Add Inbound**, use these values:
+
+| Field | Value |
+|---|---|
+| Remark | `VLESS RU` |
+| Listen IP | Moscow’s assigned IPv4 address |
+| Port | `443`, if free |
+| Protocol / transport | `vless` / `RAW` or `TCP` |
+| Security | `REALITY` |
+| Target / SNI | `yandex.ru:443` / `yandex.ru` |
+| Fingerprint | `safari` |
+
+Generate separate REALITY keys and a short ID for this new inbound. Add clients **desktop** and **phone**, each with its own generated UUID and **Flow → xtls-rprx-vision**. Keep **Enable off** while adding the routing rule. Save. [Device fields explained](server-inbound.md#4-set-the-client-account)
+
+**3. Tell Moscow where to send the traffic.** Open **Routing → +**. Under **Inbound Tags**, select the new **VLESS RU** inbound. Under **Outbound Tag**, select **relay-nl**. Leave the other match fields empty. Put this rule above general rules that could match the same traffic; keep the panel’s API rule. Save and apply.
+
+**4. Open the device connection.** Allow **TCP 443 over IPv4** in Moscow’s provider and guest firewalls if they filter incoming traffic. Enable **VLESS RU**, apply, and check Xray is running.
+
+**5. Copy your device links.** Expand the Moscow inbound and open **Info / Share** for **phone**, then **desktop**. Each export should use Moscow’s public IPv4 and port 443. Save each original link privately. For this **26.7.28** entry, add **`&keyshare=classical`** immediately before `#` in each link; if `keyshare=` already exists, change its value instead of duplicating it. [Text-edit example](server-inbound.md#5-export-the-connection)
+
+Those adjusted Moscow links go into Hiddify. The NL relay link stays on Moscow. **Manual setup is done:** skip the optional script section and [test your device](#4-verify-the-complete-device-path).
+
+[Connection maps](schemes/README.md) · [Real screenshots to capture](../images/README.md#screenshots-to-send-in-order)
 
 ## 3. Preview and apply the relay helper
 
 <details>
 <summary>Open the commands for the same two-server setup</summary>
 
-This optional helper needs Python 3.8+ and native OpenSSH on your administration computer. The existing Windows single-server launcher still works without local Python. The servers need Python 3, supported Ubuntu/Debian and systemd.
+Download the repository and open a terminal in it using [these preparation steps](quick-start.md#before-the-first-command). This optional helper needs Python 3.8+ and native OpenSSH on your computer. The existing Windows single-server launcher still works without local Python. The servers need Python 3, supported Ubuntu/Debian and systemd.
 
 Use placeholders below for the two actual public IPv4 addresses and the foreign server's already-configured IPv6 host address:
 
@@ -187,13 +253,11 @@ The helper:
 
 A fresh panel's generated credentials are in the private relay.json result. Open its printed public HTTP panel URL directly in a browser, as described in the [panel guide](server-setup.md#required-open-the-dashboard-safely-in-your-browser).
 
-The helper's IPv6 preflight does not configure provider networking. If it fails there, complete section 1 manually before retrying.
+The helper’s IPv6 check does not configure provider networking. If it fails there, complete section 1 manually before retrying.
 
 ### Explicit management access through an existing proxy
 
-Default SSH access is direct, with configured ProxyCommand and ProxyJump settings bypassed. Do not silently fall back after a failed direct login.
-
-If the owner explicitly authorizes an existing local HTTP proxy, supply:
+The helper normally connects directly to each server over SSH. If you deliberately want to administer one through an existing HTTP proxy on your computer, pass its address explicitly:
 
 ```text
 --exit-ssh-proxy 127.0.0.1:10801
@@ -201,7 +265,7 @@ If the owner explicitly authorizes an existing local HTTP proxy, supply:
 
 There is a separate `--hub-ssh-proxy` option. These are explicit loopback proxy endpoints, not root-password arguments. The helper keeps its own SSH connections separate from old multiplexed sessions.
 
-**This proxy is for administration only.** After deployment, the running VPN uses Moscow's native IPv6 connection to the foreign server. Phones do not depend on your administration PC, WSL or Invisible Man remaining open.
+**This proxy is only for the setup connection.** After deployment, Moscow talks to the foreign server over its own IPv6 connection. Your phone doesn’t need your computer or its proxy to stay on.
 
 </details>
 
@@ -254,6 +318,10 @@ Reapplying the same route with unchanged settings reuses it. A route key already
 
 ## What we verified
 
+<details>
+<summary>Read the recorded tests and version results</summary>
+
+
 From the Moscow server, direct TCP to the foreign IPv4 SSH, VPN and panel ports timed out. The foreign IPv6 ports were reachable, and both the original foreign VPN over IPv6 and the new relay authenticated. The new path returned the foreign IPv4 exit. From a desktop, the complete chain passed six isolated Windows Hiddify HTTPS requests, two requests using Hiddify's actual VPN Connect button, and a separate UDP DNS request. The test watchdog then disconnected Hiddify and restored the previous Windows proxy settings. A second country's live route was not part of this test.
 
 All four NL accounts passed HTTPS checks after moving Moscow’s entry to port 443. Hiddify’s Connect button passed two more checks on port 443. FI was added on port 8443, and all four FI device profiles returned the expected FI exit. FR now shares Moscow port 443 with NL. The FR account rule runs before the general NL rule for that inbound. All four FR profiles returned the expected FR exit in isolated Windows Hiddify checks. The NL and FI desktop profiles also returned their expected exits after FR was added.
@@ -262,8 +330,22 @@ A later live test switched the inter-server IPv6 links for NL, FR and FI to XHTT
 
 The owner subsequently reported that the NL phone profile worked over mobile data when Moscow ran Xray 26.7.28 and Hiddify 5.5.5 used `keyshare=classical`. All three saved Windows desktop profiles were then updated to classical mode and each passed two HTTPS checks. Hiddify’s Connect button passed three further NL HTTPS checks. This is a version-specific result: classical key shares require a compatible server, and Xray 26.9.9 rejects them. Check the server version before changing this field. [Hiddify investigation and compatibility caveat](https://github.com/hiddify/hiddify-app/issues/2463#issuecomment-6750196534)
 
+</details>
+
+## Add another phone or computer
+
+For another device using an existing country, make a new **device account on Moscow**. You don’t need another foreign relay account for every device.
+
+Open Moscow’s **Inbounds**, find the device entry, and add a client with its own name and generated UUID. Keep Vision flow for the RAW entry. If that country uses a shared port and a user-specific routing rule, add the new account label to that country’s rule too. An account left out of the FR rule on shared port 443 would follow the general NL rule.
+
+Export the new Moscow account, add the classical option for the compatible entry version, and [import it into Hiddify](clients.md). Test the exit country. Leave other users’ accounts and keys alone.
+
 ## Recovery and evidence
 
-Private remote backups are under /root/vpn-relay-backups. The ownership registry is /etc/vpn-guide-relay/routes.json. The local relay.json records completed stages and backup locations. An incomplete run is not permission to wipe a panel. Inspect its disabled inbound and backup before resuming.
+If you used the scripts, private server backups are under **/root/vpn-relay-backups**, and the local **relay.json** records completed stages and backup locations. The route registry is **/etc/vpn-guide-relay/routes.json**. If a run stopped, inspect its saved stage and disabled inbound before retrying; don’t erase the panel or registry to force it through.
+
+For a manual change, keep a panel backup before editing an existing route. If the new route fails, disable its new device inbound and restore the settings you changed from that backup. Preserve other countries’ rules and accounts. [Checks for the first failing connection](troubleshooting.md)
 
 IPv6 and a two-hop chain do not guarantee that a destination IP or prefix will remain reachable. Distinguish direct, proxy-assisted management, inter-server and final device tests. Record their actual exit addresses and keep live account links and keys out of the repository.
+
+**Next:** [add your Moscow device link to Hiddify](clients.md).

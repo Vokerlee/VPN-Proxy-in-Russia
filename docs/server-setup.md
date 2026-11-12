@@ -2,13 +2,17 @@
 
 # Install and prepare the VPN server
 
-You have rented a Linux server and saved its login details. If you have not, start with [getting a server](choose-server.md). You can perform the steps below from Windows or Linux; the commands run on the remote server after you log in.
+Here we’ll put a browser dashboard on your rented server, so you can manage the VPN without editing configuration files for every device.
+
+Have the server’s **IP address**, **login name** and **password or SSH key** from your hosting company ready. The IP address tells your computer which server to contact. If you don’t have a server yet, [rent one first](choose-server.md).
+
+Start on your own Windows, Linux or Mac computer. After you log in, the commands run on the rented server. A **terminal** is the command window you type them into; on Windows, use PowerShell.
 
 We will install **3x-ui**, a browser-based dashboard for managing connection accounts. Later, **Xray**, the network engine it manages, will carry the traffic. You do not need to learn either program's internals to install the panel.
 
 UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11-06**. For troubleshooting, record both the panel and Xray versions; they have independent release numbers. Existing working installations do not need a reinstall.
 
-**Do this page if your server does not yet have a working 3x-ui dashboard.** If you can already log in to 3x-ui, skip installation and [open Step 3: create your connection account](server-inbound.md).
+Already able to sign in to 3x-ui? Keep that installation. Check [the Xray version](#required-choose-the-core-version-for-your-profile) and [VPN port](#4-choose-the-vpn-port), then go to [creating device accounts](server-inbound.md).
 
 **Required here:** connect over SSH, install and open the dashboard, and choose the VPN port (sections 2–4). The other sections are optional background, security improvements, or extra checks. Longer alternatives are closed below so you can follow the main path without reading them.
 
@@ -31,7 +35,7 @@ A **VPS** is your rented remote server. **Hiddify** is the app you will install 
 
 Choose one row for your needs. For an ordinary Linux desktop, follow the same Hiddify path as on Windows; you do not need the standalone Xray chapter. The shared server installation below is the same for all three choices. If you already have a server, keep it and check its resources rather than ordering another one.
 
-Use a supported Ubuntu release available from your provider, one CPU core, about 1 GiB RAM, a public IPv4 address, and enough transfer allowance. Ubuntu 22.04 and 24.04 are examples, not a requirement to reinstall a different working version. These resource values are practical starting points, not a capacity guarantee. IPv6 on the VPS is optional. HostVDS and FirstVDS are examples used by this project; check current locations, traffic limits, payment methods, and network reachability before purchasing. No particular provider guarantees an unblocked route.
+Use a supported Ubuntu release available from your provider, one CPU core, about 1 GiB RAM, a public IPv4 address, and enough transfer allowance. Ubuntu 22.04 and 24.04 are examples, not a requirement to reinstall a different working version. These resource values are practical starting points, not a capacity guarantee. IPv6 on the VPS is optional for one server. The two-server route requires it on both servers. HostVDS and FirstVDS are examples used by this project; check current locations, traffic limits, payment methods, and network reachability before purchasing. No particular provider guarantees an unblocked route.
 
 </details>
 
@@ -47,7 +51,13 @@ ssh root@YOUR_SERVER_IP
 
 Replace `YOUR_SERVER_IP` with the address from your provider. If the provider gave you a user such as `ubuntu`, use that name instead of `root`; after login, run `sudo -i` for the administrative installation commands below. If the provider supplied an SSH key or custom SSH port, follow its access instructions rather than assuming a root password exists.
 
+If your SSH port is different from 22, the command is `ssh -p YOUR_SSH_PORT YOUR_LOGIN_USER@YOUR_SERVER_IP`. Replace all three placeholders with your provider’s values. With a key file, follow the provider’s instructions for selecting it.
+
 On the first connection, SSH shows a **host fingerprint**, an identifier for the server’s SSH key. Compare it with the provider’s console when available, then accept the matching key. Enter the password at the prompt; nothing appears while you type. Keep the password out of commands and screenshots.
+
+Once you see the server’s command prompt, you’re logged in. **root** means the server’s administrator; it is a username, not a password. Run `whoami` if you want to confirm which account you’re using.
+
+If login fails or stalls, check the hosting company’s web console and login details before continuing. None of the installation commands below can run until you are connected.
 
 The following installation commands run **on the VPS**, initially as root:
 
@@ -64,8 +74,6 @@ These commands refresh the package list and install curl, the download tool used
 Run `apt upgrade -y` if you want to update existing packages now. If an update requires a reboot, reboot and reconnect before continuing. This package upgrade is separate from installing the VPN panel.
 
 </details>
-
-![Installer walkthrough: run the installer and save its complete output](../images/3x-ui-installation.svg)
 
 ## 3. Install 3x-ui
 
@@ -147,13 +155,21 @@ The panel port is an administration port. Do not put it in the VPN client's serv
 
 If you lose the panel URL or credentials, run `x-ui` over SSH and use the menu's settings/reset options. Do not assume the installer always chooses the same defaults.
 
-![Panel login walkthrough: full URL, credentials, and Login](../images/3x-ui-panel-login.svg)
-
 ### Required: choose the core version for your profile
 
-After the panel starts, record its **Xray version** on the dashboard. For the tested classical mobile setup, select **Xray 26.7.28** in the core version control. The fresh-server helper downloads and verifies that exact version independently of 3x-ui. If you use an existing server, back up the panel and original core before changing it, and check both desktop and phone afterward.
+The dashboard and the program carrying your traffic have different version numbers. **3x-ui** is the dashboard. **Xray** is that traffic program, also called the **core**.
 
-Use the [version table](handshakes-and-versions.md#match-the-client-option-to-the-server) to choose between classical and hybrid profiles. An ordinary software update can change this compatibility.
+Check the dashboard’s **Xray version** and open its core version control. Choose the version for this server’s job:
+
+| This server’s job | Version used in this guide |
+|---|---|
+| One server that your devices connect to | **26.7.28** |
+| Russian server that your devices connect to | **26.7.28** |
+| Foreign server used behind the Russian server | **26.9.9** |
+
+Apply the selection and wait for Xray to show as running again. The older device-facing version is used here because it accepts the **classical** connection option that worked in our phone test. It also means accepting an older software version; [the compatibility and security notes](handshakes-and-versions.md#match-the-client-option-to-the-server) explain that choice.
+
+If you can’t find the version control, check your panel version before guessing at menu actions. If this server already has working users, save a panel backup and record the original core version before changing it. Test those users again afterward. The fresh-server scripts select and verify the version automatically.
 
 ## 4. Choose the VPN port
 
@@ -239,4 +255,6 @@ The expected result is `active`. For any other result, use [the server checks](t
 
 **Step 2 is complete when:** the panel opens, you know the selected public VPN port, and SSH still works.
 
-**[Next step: create your connection account →](server-inbound.md)**
+**For one server:** [make your device connection links →](server-inbound.md)
+
+**For two servers:** prepare the other dashboard too, then [return to linking the panels →](two-hop-vpn.md#how-the-two-3x-ui-panels-connect).
