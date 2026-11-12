@@ -21,6 +21,8 @@ flowchart TB
 
 Each arrow can cross other networks too. The VPN uses internet providers just like any other connection; it doesn’t go around them. The encrypted VPN connection runs from your device to the VPN server, through your provider.
 
+This walkthrough connects to the server over **IPv4**, so your device doesn’t need IPv6. If you later want to connect directly to the server’s **IPv6 address**, your device and its current internet connection must both support IPv6. Hiddify can’t add native IPv6 connectivity that your network doesn’t provide. The [two-server route](two-hop-vpn.md) keeps IPv6 between the servers and lets devices connect over IPv4.
+
 ## What you need
 
 - A Windows, Linux or Mac computer for the setup. It doesn’t have to run the same operating system as the server.

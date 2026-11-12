@@ -23,6 +23,8 @@ flowchart TB
 
 Each arrow can cross other networks too. The VPN uses internet providers just like any other connection; it doesn’t go around them. Your device opens one encrypted connection to the Russian server. That server opens a separate encrypted connection to the foreign server.
 
+**Your devices don’t need IPv6.** They connect to Moscow over IPv4. Only the two servers need working IPv6 for their connection to each other. With a direct connection to a single server’s IPv6 address, your device’s current Wi-Fi or mobile network would need IPv6 too; you can’t arrange that just by changing the VPN app.
+
 The Russian server is the **entry**: the first server your device reaches. The foreign server is the **exit**: the one websites see. Hiddify is the **client** app on your phone or computer. You only add the Moscow device link to Hiddify; you don’t need to connect two apps yourself.
 
 This can help when you can reach a Russian server but can’t reliably reach the foreign one directly. It adds a server rental and another connection to look after. Both servers and the connections between them can still be blocked.

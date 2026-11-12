@@ -63,7 +63,11 @@ The idea is to make the foreign VPN connection less obvious on your home or mobi
 
 We also use **IPv6 between the servers**. An IP block on the foreign server’s IPv4 address doesn’t automatically block its separate IPv6 address. In our tests, Moscow could reach the foreign server over IPv6 while IPv4 access failed—that’s the practical benefit of having both. We can’t say IPv6 addresses are usually unblocked across Russia; it depends on the provider and route. [Why IPv6 can help, and what the evidence says](docs/schemes/README.md#what-the-second-server-adds)
 
-You pay for an extra server and configure IPv6 using each hosting company’s instructions. Your phone can keep connecting to the Russian server over IPv4.
+**Your phone doesn’t need IPv6 for this.** To connect directly to a single foreign server’s IPv6 address, your phone or computer **and the network you’re using** must have working IPv6. The device may already support it, but you can’t just switch it on in Hiddify if your mobile operator, home provider or router doesn’t provide it. That also makes the connection less convenient when you switch between networks.
+
+With two servers, IPv6 stays between the rented machines. Your phone or computer connects to the Russian server over ordinary IPv4, on Wi-Fi or mobile data. You configure IPv6 on the two servers using their hosting companies’ instructions.
+
+The normal one-server setup also works over IPv4; it doesn’t require IPv6. The difference matters when you want to use the foreign server’s IPv6 address because its IPv4 address is unreachable.
 
 ## Where do I start?
 

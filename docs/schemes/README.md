@@ -101,6 +101,8 @@ This has one panel, one account export and one server to maintain. IPv6 is optio
 
 ## What the second server adds
 
+You can use the foreign server’s IPv6 address **without needing IPv6 on your phone or home network**. The phone reaches Moscow over IPv4, and Moscow opens the IPv6 connection. With a direct one-server IPv6 profile, both your device and the network it’s currently using would need working IPv6. Device support alone isn’t enough, and switching networks can change whether that connection works. A one-server profile using IPv4 doesn’t have this requirement.
+
 The nearby entry and foreign exit give you two independently testable connections. Your phone reaches Moscow; Moscow reaches the exit over its configured IPv6 route. Add another country by creating another foreign relay account and a matching Moscow outbound.
 
 In our tests, the IPv6 route was usable while the IPv4 route to the same foreign host failed. That is evidence for testing both address families on your own providers. A Russian entry can still be filtered, and we have no measured reduction in blocking probability for IPv6 or for the two-server design.
