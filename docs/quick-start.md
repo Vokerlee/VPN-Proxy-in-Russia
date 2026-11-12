@@ -4,7 +4,7 @@
 
 If you’d rather paste a few commands than fill in the server dashboard yourself, use this page. The script installs the VPN software and makes separate connection links for your phone and computer. You’ll still rent the server yourself and add the links to Hiddify afterward.
 
-This is for **one fresh server**. Already have a working 3x-ui dashboard? [Create accounts there](server-inbound.md) instead; this installer stops when it finds an existing installation. For two servers, use [the two-server script instructions](two-hop-vpn.md#3-preview-and-apply-the-relay-helper).
+This is for a **one-server VPN on one fresh foreign server**, such as your HostVDS rental. Already have a working 3x-ui dashboard? [Create accounts there](server-inbound.md) instead; this installer stops when it finds an existing installation. For two servers, use [the two-server script instructions](two-hop-vpn.md#3-preview-and-apply-the-relay-helper).
 
 **What you need:** a fresh Ubuntu or Debian server, its public IPv4 address, and working SSH access as **root**, its administrator. SSH is the terminal connection the script uses. The server needs systemd, the service manager normally supplied with those systems. [No server yet? Rent one first](choose-server.md).
 

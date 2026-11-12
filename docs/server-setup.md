@@ -12,28 +12,28 @@ We will install **3x-ui**, a browser-based dashboard for managing connection acc
 
 UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11-06**. For troubleshooting, record both the panel and Xray versions; they have independent release numbers. Existing working installations do not need a reinstall.
 
-Already able to sign in to 3x-ui? Keep that installation. Check [the Xray version](#required-choose-the-core-version-for-your-profile) and [VPN port](#4-choose-the-vpn-port), then go to [creating device accounts](server-inbound.md).
+Already able to sign in to 3x-ui on this server? Keep that installation and skip the installer. Check [the Xray version](#required-choose-the-core-version-for-your-profile) and [VPN port](#4-choose-the-vpn-port), then use the next step for your server’s role below.
 
 **Required here:** connect over SSH, install and open the dashboard, and choose the VPN port (sections 2–4). The other sections are optional background, security improvements, or extra checks. Longer alternatives are closed below so you can follow the main path without reading them.
 
-For the [two-server path](two-hop-vpn.md), prepare the dashboard on both VPSs, select the role's core version and return to the two-server panel-linking steps. The foreign relay account is created there.
+## 1. Choose which server you are preparing
 
-## 1. The ordinary setup: one server, one app
+Follow this page once for a one-server VPN. For a two-server VPN, follow it **twice**, once in Moscow’s SSH terminal and once in the foreign server’s SSH terminal. Install a separate dashboard on each server and save each panel’s URL and login separately.
 
-Use your existing rented server (**VPS**) and install **Hiddify**, the VPN app, on each device you want to connect. Windows and Linux desktops follow the same path. You do not need another server.
+| Your route and server | Example provider | Xray version | VPN port if free | After this page |
+|---|---|---|---|---|
+| One-server route: foreign server | HostVDS | **26.7.28** | **8443** | [Make device accounts](server-inbound.md) |
+| Two-server route: Moscow | FirstVDS | **26.7.28** | **443** | Prepare the foreign dashboard too, then return to the two-server guide |
+| Two-server route: foreign server, NL example | HostVDS | **26.9.9** | **443** | [Link the two panels](two-hop-vpn.md#how-the-two-3x-ui-panels-connect) once both are ready |
+
+Before the two-server installation, you should already have rented **both** servers and passed [their IPv6 checks](two-hop-vpn.md#1-configure-ipv6-yourself-using-your-vps-providers-instructions). Renting only Moscow doesn’t complete the setup.
+
+Keep the browser dashboard’s port, usually **27297** here, separate from the VPN port above. The two servers may both use 443 because they have different addresses.
 
 <details>
 <summary>Optional: other deployment choices and resource notes. Skip for an ordinary personal VPN.</summary>
 
-A **VPS** is your rented remote server. **Hiddify** is the app you will install on your devices to use it. A **proxy** forwards network requests for another program.
-
-| You need | Deploy |
-|---|---|
-| A normal VPN on Windows, Linux, macOS, or a phone | One VPS, then [Hiddify](clients.md) on each device |
-| An optional proxy for Linux terminal programs or a server without a desktop | One VPS, then the [standalone Xray client](linux-xray.md) |
-| One proxy endpoint for several devices | The VPS plus a separate [restricted proxy host](share-proxy.md) |
-
-Choose one row for your needs. For an ordinary Linux desktop, follow the same Hiddify path as on Windows; you do not need the standalone Xray chapter. The shared server installation below is the same for all three choices. If you already have a server, keep it and check its resources rather than ordering another one.
+Use Hiddify on each phone or computer once the server setup is finished. A normal Linux desktop follows the same app steps as Windows. The [standalone Linux proxy](linux-xray.md) and [proxy-sharing chapter](share-proxy.md) are optional alternatives for specific tasks; neither replaces a missing Moscow or foreign server in the two-server route.
 
 Use a supported Ubuntu release available from your provider, one CPU core, about 1 GiB RAM, a public IPv4 address, and enough transfer allowance. Ubuntu 22.04 and 24.04 are examples, not a requirement to reinstall a different working version. These resource values are practical starting points, not a capacity guarantee. IPv6 on the VPS is optional for one server. The two-server route requires it on both servers. HostVDS and FirstVDS are examples used by this project; check current locations, traffic limits, payment methods, and network reachability before purchasing. No particular provider guarantees an unblocked route.
 
@@ -173,16 +173,18 @@ If you can’t find the version control, check your panel version before guessin
 
 ## 4. Choose the VPN port
 
-This walkthrough uses **8443** for VPN traffic. A **port** is a numbered network entry point; it lets the server distinguish the VPN from SSH and the browser dashboard.
+Use the VPN port from [your role’s table](#1-choose-which-server-you-are-preparing): **8443** for the one-server example, **443** on each server for the first two-server route. A **port** is a numbered network entry point; it distinguishes VPN traffic from SSH and the browser dashboard.
 
-**On the server**, check that 8443 is free:
+**In that server’s SSH terminal**, check the port you intend to use. For the one-server example:
 
 ```bash
 ss -lntp 'sport = :8443'
 ```
 
-- **Only column headings appear:** use **8443** in the next chapter.
-- **A listener appears:** preserve it and check **443**, the only allowed alternative, with `ss -lntp 'sport = :443'`. If both ports are occupied, stop and resolve the conflict without stopping an existing service or selecting another port.
+For the two-server example, run `ss -lntp 'sport = :443'` on **each** server instead.
+
+- **Only column headings appear:** that port is free. Record it for this server and use it in the next guide.
+- **A listener appears:** preserve it and check the other allowed port, 443 or 8443. If both are occupied, stop and resolve the conflict. If you use a different port from the example, use that actual port in its inbound, firewall rule and connection checks too.
 
 Changing a port can help when one particular port is filtered. It cannot bypass filtering of the server's whole IP address.
 
@@ -253,7 +255,7 @@ systemctl is-active x-ui
 
 The expected result is `active`. For any other result, use [the server checks](troubleshooting.md#server-checks). You do not need to collect version numbers or read logs before moving to the next page.
 
-**Step 2 is complete when:** the panel opens, you know the selected public VPN port, and SSH still works.
+**This server is ready when:** its panel opens, its core has the version for its role, you have recorded its free VPN port, and SSH still works. For the two-server route, check that list for **both servers** before linking them.
 
 **For one server:** [make your device connection links →](server-inbound.md)
 

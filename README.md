@@ -110,7 +110,8 @@ The normal one-server setup also works over IPv4; it doesn’t require IPv6. The
 
 - **I have nothing set up.** Open [the one-server walkthrough](docs/single-server.md). Its first step is [renting a server](docs/choose-server.md).
 - **I want the two-server route.** Open [the two-server walkthrough](docs/two-hop-vpn.md). It starts with what to rent and which details to save.
-- **I already have a server.** Go to [installing its control panel](docs/server-setup.md). If the panel already opens, go to [creating device accounts](docs/server-inbound.md).
+- **I already have a foreign server and want the one-server route.** [Install its control panel](docs/server-setup.md), or [make device accounts](docs/server-inbound.md) if the panel already opens.
+- **I have one server and want the two-server route.** [Rent whichever server is missing](docs/choose-server.md#what-are-you-renting): Moscow or the foreign server. Once you have both, [follow the two-server setup](docs/two-hop-vpn.md).
 - **Someone gave me a VPN link.** You only need [the Hiddify setup page](docs/clients.md).
 - **My VPN stopped working.** Start with [the troubleshooting table](docs/troubleshooting.md#first-choose-the-symptom-that-matches-yours).
 
@@ -120,7 +121,7 @@ The two routes are outlined below. Follow one of them. The script shortcuts stay
 
 You pay for one server abroad. Your phone or computer connects to it, and it opens websites for you. Start here if you haven’t tried running your own VPN before.
 
-1. **Choose where your VPN will be.** Rent a server in the country you want to connect through. [Choose a server](docs/choose-server.md)
+1. **Rent one foreign server.** Follow the HostVDS example or use another provider abroad. Skip the Moscow rental for this route. [Rent the foreign server](docs/choose-server.md#rent-the-foreign-server-hostvds-example)
 2. **Open its control panel.** Install the dashboard you’ll use to manage your VPN. The guide includes the commands and settings. [Prepare the server](docs/server-setup.md)
 3. **Make a connection link for each device.** Create separate phone and computer accounts in the dashboard, then copy their links. [Create your links](docs/server-inbound.md)
 4. **Connect.** Add the link to Hiddify, press Connect and check that websites open. Try both Wi-Fi and mobile data on your phone. [Connect your device](docs/clients.md)
@@ -150,7 +151,7 @@ Use your fresh VPS address. After checking the plan, replace `--plan` with `--ap
 
 You pay for two servers. Your device connects to the one in Russia, which passes the connection to the one abroad. Websites see the foreign server’s address. Our example uses Moscow; you can also connect that server to several countries later.
 
-1. **Get both servers ready.** This route needs IPv6, an additional kind of internet address, working on both servers. Each hosting company has its own setup instructions; the guide explains what to check. [Prepare the addresses](docs/two-hop-vpn.md#1-configure-ipv6-yourself-using-your-vps-providers-instructions)
+1. **Rent two servers: Moscow from FirstVDS AND a foreign server from HostVDS.** These are separate orders; the Moscow rental alone isn’t enough. [Rent both servers](docs/choose-server.md#what-are-you-renting), then [configure IPv6 on both](docs/two-hop-vpn.md#1-configure-ipv6-yourself-using-your-vps-providers-instructions). Other suitable providers work too.
 2. **Open a control panel for each server.** Keep the two dashboards in separate browser tabs. [Start the two-server walkthrough](docs/two-hop-vpn.md)
 3. **Link the servers.** Copy a connection link from the foreign server into the Russian server’s dashboard and tell it to send traffic there. [Follow the panel steps](docs/two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
 4. **Connect your devices to the Russian server.** Add their links to Hiddify and check that websites see the country you chose. Test mobile data too. [Connect your device](docs/clients.md)

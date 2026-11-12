@@ -8,6 +8,8 @@ A server can answer ping or let you log in while its VPN connection fails. Those
 
 **Hiddify** is the app on your device. **3x-ui** is the server’s browser dashboard, and **Xray** is the network engine it manages. A network engine is also called a **core**. Your rented server is the **VPS**, and its **exit address** is the address websites see when you use it.
 
+For a **one-server VPN**, “server” below is your foreign server. For a **two-server VPN**, check device → Moscow first, then Moscow → foreign server. The expected website exit is the foreign server in either case. If you’ve only rented Moscow and haven’t linked a foreign server yet, [finish the two-server setup](two-hop-vpn.md) before diagnosing Hiddify.
+
 ## First, choose the symptom that matches yours
 
 | What you see | Start here |

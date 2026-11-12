@@ -12,13 +12,13 @@ The **setup helper** installs server software only when explicitly applied. The 
 
 ## Set up the two-hop relay
 
-Use [the two-hop walkthrough](two-hop-vpn.md) and `python3 scripts/bootstrap_relay.py --help`. It supports a reusable Moscow hub, separate country routes on 443/8443, explicit management proxies, private backups and canonical client exports. Single-server and two-server setup are equal starting choices. IPv6 activation and OS configuration are the user's provider-specific task; the relay helper only checks existing addresses and routes.
+First rent **both** the Moscow server (FirstVDS in the example) and foreign server (HostVDS), then configure IPv6 on each. Use [the two-hop walkthrough](two-hop-vpn.md) and `python3 scripts/bootstrap_relay.py --help`. It supports a reusable Moscow hub, separate country routes on 443/8443, explicit management proxies, private backups and canonical client exports. Single-server and two-server setup are equal starting choices. IPv6 activation and OS configuration are the user's provider-specific task; the relay helper only checks existing addresses and routes.
 
 The relay route starts at a Moscow IPv4 inbound, crosses to the foreign VPS on IPv6, then exits over IPv4. Use the foreign relay account only in Moscow's outbound; export separate Moscow device accounts for Hiddify. Pass `--entry-port 443` for NL and `--entry-port 8443` for FI. The shared NL and FR layout uses account-based rules on port 443 through `--shared-entry` and distinct FR account labels. [See the port map](schemes/README.md#add-a-country) Keep an existing single-server route as a separate mode.
 
 ## Start with only a VPS IP and root password
 
-This section is for the single-server path.
+This section installs a **one-server VPN on the foreign server**, such as your HostVDS rental. For a Moscow-plus-foreign setup, use `bootstrap_relay.py` and supply **both** servers; don’t run the standalone installer on Moscow and expect it to create the foreign connection.
 
 Follow the [script walkthrough](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
 
@@ -163,6 +163,9 @@ The helper supports **VLESS + REALITY + encryption=none** with RAW (Vision or em
 
 ## Generate a client configuration
 
+All profile paths in this section are examples. Replace **.secrets/panel-profile.txt** with the actual original panel export you saved. A setup script may have put it in a dated output folder, not directly under `.secrets`. The original panel export uses hybrid mode; the adjusted Hiddify file can use classical mode. Choose the matching engine below.
+
+
 ```bash
 python3 scripts/vpn_profile.py config --engine xray --link-file .secrets/panel-profile.txt --output .secrets/client.json --port 10801
 ```
@@ -172,6 +175,8 @@ The command above reads the link from **.secrets/panel-profile.txt**. If you lea
 Existing output is refused. If you deliberately want to replace it, `--overwrite` first saves a uniquely named backup. No service is restarted. To install the result as a Linux service configuration, follow [the Linux walkthrough](linux-xray.md#put-your-account-settings-in-a-client-file).
 
 ### Classical profiles need the Hiddify engine
+
+For the commands below, replace **.secrets/hiddify-profile.txt** with your actual adjusted device file: `client-desktop.txt` from the single-server output, or `desktop.txt` from the relay output, including its folder path. Use the matching phone file if that is the account you are testing.
 
 The profile helper reads RAW, basic XHTTP and the key-share option. A classical profile needs **`--engine hiddify`**, because generating an ordinary Xray configuration cannot enforce Hiddify's classical-only setting. The helper rejects that mismatch instead of dropping the option.
 
@@ -208,7 +213,7 @@ py scripts/vpn_profile.py test --xray 'C:\Tools\Xray\xray.exe'
 
 The helper prints the actual Xray version, finds a temporary unused local port, writes a private temporary configuration, starts that child process, and sends HTTPS through its HTTP proxy using curl. It explicitly overrides `NO_PROXY`, which could otherwise bypass the proxy and create a false success. Finally it terminates **its own child only** and removes the temporary files.
 
-The default endpoint returns `ip=`. Compare that with the expected VPS exit. To require one exact known exit address, use `--expect-ip EXPECTED_EXIT_IP`. If your VPS can choose IPv6, do not compare its IPv6 result with the IPv4 inbound address and call that a failure; [configure egress](force-ipv4.md) first if you require IPv4.
+The default endpoint returns `ip=`. Compare it with the server that opens the website connection: the only foreign server for a one-server VPN, or the **foreign exit**, not Moscow, for a two-server VPN. To require one exact known exit address, use `--expect-ip EXPECTED_EXIT_IP`. If your VPS can choose IPv6, do not compare its IPv6 result with the IPv4 inbound address and call that a failure; [configure egress](force-ipv4.md) first if you require IPv4.
 
 Use `--show-core-log` for a redacted excerpt when a test fails. Redaction is a convenience, not permission to publish an unchecked log. You can set `--url` to another HTTPS endpoint if the default site is unavailable. An exit-IP expectation requires the default trace-style response.
 

@@ -14,6 +14,8 @@ For a standalone Xray client, use the account's original **panel-profile.txt** o
 
 ## Before you start
 
+For one-server mode, use a **device account on the foreign server**. For two-server mode, use a **device account on Moscow**, with a compatible hybrid export for standalone Xray. The foreign relay account belongs in Moscow’s outbound. You don’t need another rented server for this Linux client; it runs on the Linux machine whose programs need the VPN.
+
 You need a Linux machine where you can run `sudo`, a command giving administrator access, and your own device account’s original panel link. **3x-ui** is the browser dashboard that supplies that link. This page uses **RAW/TCP + REALITY + Vision**, the settings from the one-server guide. If your link uses XHTTP, use [the profile generator](automation.md#generate-a-client-configuration) instead of copying the RAW example below.
 
 All commands on this page run on the **Linux client machine**. They install a program and service there. If it already has an Xray service, inspect and back up its configuration before replacing anything. `127.0.0.1` means this machine only; the local proxy won’t be reachable from the internet.

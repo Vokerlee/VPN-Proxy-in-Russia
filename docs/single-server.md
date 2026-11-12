@@ -50,7 +50,7 @@ Each link opens the instructions for that step. Finish the page, check the resul
 
 ### 1. Get a server
 
-Choose a hosting company and country, rent a small server, and save the address and login details it gives you.
+Follow the **HostVDS foreign-server section** on the rental page, or choose another provider abroad. Rent one small foreign server and save its address and login details. Skip the FirstVDS Moscow section; that belongs to the two-server route.
 
 **[Rent a server →](choose-server.md)**
 
@@ -83,7 +83,7 @@ That’s the whole route. Once your websites open and the address check matches 
 <details>
 <summary>Open the commands for the same single-server setup</summary>
 
-Use a fresh Ubuntu/Debian VPS with systemd and its public IPv4 address. An existing 3x-ui installation needs the manual path. Save the root login from your provider.
+Use your **fresh foreign server**, such as the HostVDS rental, with Ubuntu/Debian, systemd and a public IPv4 address. Run these commands on **your setup computer**, after [downloading the repository and opening a terminal in its folder](quick-start.md#before-the-first-command). An existing 3x-ui installation needs the manual path. Save the root login from your provider.
 
 **Windows PowerShell**, from the repository folder:
 

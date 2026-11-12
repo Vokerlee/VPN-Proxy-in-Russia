@@ -14,7 +14,7 @@ The **VPS** is the rented server. **3x-ui** is its browser dashboard, and **Xray
 
 The basic question is: can we reach the server, can the account connect, and can it open a website? Check those separately. **TCP** makes the underlying connection; **TLS** starts its encryption with a message called ClientHello. **SNI** is a website name in that message, and a **fingerprint** changes its browser-like shape. You’ll only need those details for the later comparisons.
 
-Addresses below are placeholders. Replace `203.0.113.10` with the server’s address and `198.51.100.20` with the client’s direct public address. Keep real credentials, connection links and captures private.
+Addresses below are placeholders. Replace `203.0.113.10` with the **entry server you’re testing**: your foreign server for one-server mode, or Moscow for two-server mode. Replace `198.51.100.20` with the client’s direct public address. When testing the second VPN connection, run the reachability checks from Moscow against the foreign IPv6 address instead. Keep real credentials, connection links and captures private.
 
 ## 1. Label each path before testing
 
@@ -53,10 +53,10 @@ On the VPS, run the [read-only server checks](automation.md#check-the-vps-withou
 
 SSH can complete TCP, exchange version banners and then stall during key exchange. Run `ssh -vv -o ConnectTimeout=10 root@203.0.113.10` to identify the last stage. Some post-connect stalls can outlast the initial connection timeout; use a separate process deadline when automating the diagnostic. Preserve normal host-key verification. A failure before the password prompt does not test the password.
 
-Now test the panel’s original hybrid account export with a separate client process. Run this from the repository folder on your computer; [download the files first](quick-start.md#before-the-first-command) if needed. Replace the file path, executable path and expected exit address:
+Now test the panel’s original hybrid account export with a separate client process. Run this from the repository folder on your computer; [download the files first](quick-start.md#before-the-first-command) if needed. Replace the file path and executable path with your actual files. Replace **EXPECTED_EXIT_IP** with the **foreign server’s outgoing address**. For a two-server connection that is not Moscow’s entry address:
 
 ```bash
-python3 scripts/vpn_profile.py test --link-file PRIVATE_PROFILE_FILE --xray /path/to/xray --expect-ip 203.0.113.10 --timeout 10
+python3 scripts/vpn_profile.py test --link-file PRIVATE_PROFILE_FILE --xray /path/to/xray --expect-ip EXPECTED_EXIT_IP --timeout 10
 ```
 
 For a **classical** Hiddify link, use `--engine hiddify --hiddify /path/to/HiddifyCli` instead of `--xray /path/to/xray`. [Engine choices and Windows commands](automation.md#classical-profiles-need-the-hiddify-engine)

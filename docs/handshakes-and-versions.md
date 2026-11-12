@@ -44,6 +44,8 @@ A larger ClientHello can span more TCP packets, and its contents give filtering 
 
 ## Match the client option to the server
 
+For a device profile, check the server **the device connects to**. That is your only foreign server for the one-server route, or Moscow for the two-server route. In the two-server route, the foreign exit has a separate version and receives its connection from Moscow, not your phone.
+
 | Server role and version | Client key share | Result in this project |
 |---|---|---|
 | Device entry, Xray 26.7.28 | Classical | Working mobile NL test and desktop profiles |

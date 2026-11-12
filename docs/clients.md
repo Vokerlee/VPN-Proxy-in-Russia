@@ -6,7 +6,14 @@ This is the last part: add your connection to **Hiddify**, the VPN app, and chec
 
 Have your device’s private connection link ready. It starts with `vless://` and contains the server address and account settings. The dashboard’s `http://…` browser address is a different link; Hiddify can’t use that as a VPN connection.
 
-Need to make a link first? Follow [the device account page](server-inbound.md). For the two-server setup, use a **device link from Moscow**, not the link used to connect the servers.
+Use the link for your chosen setup:
+
+| Setup | Link to add to Hiddify |
+|---|---|
+| One server | Your device account on the foreign server (HostVDS in our example) |
+| Two servers | Your device account on Moscow (FirstVDS in our example) |
+
+For two servers, the foreign relay link goes into Moscow’s outbound, not Hiddify. If you don’t have a device link yet, [create it on the single foreign server](server-inbound.md) or [finish the two-server setup on Moscow](two-hop-vpn.md#on-moscow-connect-the-device-inbound-to-nl).
 
 The buttons below were checked in **Hiddify 5.5.5**. If you install another version, some labels may differ.
 
@@ -34,7 +41,7 @@ You can scan a QR code instead if it was made from that same link. Keep links an
 
 For the tested phone setup in this guide, the server runs **Xray 26.7.28** and the link includes **`keyshare=classical`**. This selects how the app starts the encrypted connection. The scripts already add it; the [manual account instructions](server-inbound.md#5-export-the-connection) show how to add it yourself.
 
-If your server runs **26.9.9**, don’t add that option: it requires the newer hybrid mode instead. If someone supplied your connection, keep their settings or ask them to confirm the server version. [Why the versions matter](handshakes-and-versions.md)
+Here, “server version” means the server **Hiddify connects to**: the only server for one-server mode, or Moscow for two-server mode. The foreign relay’s version is a separate choice. If Hiddify’s entry server runs **26.9.9**, don’t add that option: it requires the newer hybrid mode instead. If someone supplied your connection, keep their settings or ask them to confirm the server version. [Why the versions matter](handshakes-and-versions.md)
 
 <details>
 <summary>Check the imported setting in Hiddify 5.5.5</summary>

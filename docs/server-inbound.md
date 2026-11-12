@@ -10,7 +10,7 @@ The panel calls a connection entry point an **inbound**. We’ll make one inboun
 
 The instructions match **3x-ui 3.8.5**. Its **Xray** version—the program carrying the VPN traffic—is a separate setting. For this guide’s tested phone setup, check the dashboard shows **26.7.28** before continuing. [How to select it](server-setup.md#required-choose-the-core-version-for-your-profile)
 
-**Using two servers?** Follow [the two-server panel steps](two-hop-vpn.md#how-the-two-3x-ui-panels-connect). That page gives different settings for the device connection and the connection between servers. This page explains the single-server form.
+**Using two servers? Create phone and desktop accounts on Moscow only. The foreign server gets a separate relay account for Moscow. Follow [the two-server panel steps](two-hop-vpn.md#how-the-two-3x-ui-panels-connect). That page gives different settings for the device connection and the connection between servers. This page explains the single-server form.
 
 ## 1. Open the correct form
 

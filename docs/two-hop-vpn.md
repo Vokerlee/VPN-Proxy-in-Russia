@@ -35,12 +35,12 @@ This can help when you can reach a Russian server but can’t reliably reach the
 
 You need a computer for setup, one server in Russia and one abroad. Our example calls them **Moscow** and **NL**. NL means the Netherlands; later examples use FR for France and FI for Finland. Those are example locations, not names you have to use.
 
-**No servers yet?** [Rent them here](choose-server.md). Choose plans with a public IPv4 address and IPv6 on both servers. Save each server’s address, login name, password or SSH key, and SSH port separately. SSH is the terminal connection you’ll use to manage a server.
+**No servers yet?** First [rent the Moscow server from FirstVDS](choose-server.md#rent-the-russian-server-firstvds-example), then [rent the foreign server from HostVDS](choose-server.md#rent-the-foreign-server-hostvds-example). You need **both**, with separate orders and bills. If you already have one, rent only the missing server. Other suitable providers also work; keep the same Russian/foreign roles. Choose plans with a public IPv4 address and IPv6 on both servers. Save each server’s address, login name, password or SSH key, and SSH port separately. SSH is the terminal connection you’ll use to manage a server.
 
 We’ll use **3x-ui**, a browser dashboard, on both servers. It manages **Xray**, the program carrying the VPN traffic. If this is your first setup, follow this order:
 
-1. Get IPv6 working on both servers using the checks below.
-2. [Install and open a dashboard](server-setup.md) on each server. Use Xray **26.7.28** on Moscow and **26.9.9** on NL, then return here. Already have dashboards? Keep them and check their versions.
+1. After **both rentals are complete**, get IPv6 working on each server using the checks below.
+2. [Install and open a dashboard](server-setup.md) on **Moscow**, then repeat that page on **NL**. Use Xray **26.7.28** on Moscow and **26.9.9** on NL. Save two panel URLs and two panel logins, then return here. Already have dashboards? Keep them and check their versions.
 3. [Link the panels](#how-the-two-3x-ui-panels-connect), then test your device.
 
 Prefer scripts? Finish the IPv6 setup first, then use [the folded script instructions](#3-preview-and-apply-the-relay-helper) instead of the manual panel steps. You don’t need to do both.
@@ -124,7 +124,9 @@ On both servers:
 curl -6 --noproxy '*' --connect-timeout 5 --max-time 15 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
-Look for an IPv6 address on the `ip=` line. If the command times out, check the provider’s address, gateway and IPv6 firewall for that server. After you create the NL relay listener, check Moscow’s connection to that listener in the next section.
+Run the check separately in **Moscow’s SSH terminal** and **NL’s SSH terminal**. Both must return an IPv6 address on the `ip=` line. If the command times out, check the provider’s address, gateway and IPv6 firewall for that server. After you create the NL relay listener, check Moscow’s connection to that listener in the next section.
+
+**Both IPv6 checks passed?** If you’re configuring manually, [install the Moscow dashboard](server-setup.md), repeat on NL, then [continue with the two legs below](#2-choose-the-two-legs). If both dashboards already work, continue below. If you chose automation, skip the manual panel work and [run the relay helper](#3-preview-and-apply-the-relay-helper) instead.
 
 ## 2. Choose the two legs
 
@@ -143,7 +145,7 @@ The **target/SNI** settings describe a website used during REALITY connection se
 
 An **inbound** accepts a connection. An **outbound** sends the traffic on to its next stop. The relay account on NL gives Moscow the credentials it needs to connect. Your desktop and phone have their own accounts on Moscow.
 
-For the manual setup, open or install 3x-ui on each server. The installer gives you the panel address and login. Keep the dashboard port separate from the VPN port. If you use the helper in section 3, it can install a missing panel and create the accounts and rules below. [Install and open 3x-ui](server-setup.md#3-install-3x-ui)
+**Continue here only when both dashboards are ready:** Moscow/FirstVDS on core **26.7.28**, and foreign NL/HostVDS on core **26.9.9**. Keep the dashboard port separate from the VPN port. If a dashboard is missing, [install it on that server](server-setup.md), then return here. If you chose the script route instead, [skip to the relay helper](#3-preview-and-apply-the-relay-helper); it can install missing panels and create the accounts and rules for you.
 
 ### On NL, create the relay account
 
@@ -294,7 +296,7 @@ On your phone or computer, copy the full **Moscow device** link. Open Hiddify an
 
 Open a website and then open the IP check page. The `ip=` line should show **NL’s IPv4 address**. If it shows your usual address or another VPN’s exit, check the selected profile, Hiddify’s service mode and the system proxy. If the page times out, test the device-to-Moscow port and the Moscow-to-NL relay separately. [IP check page](https://www.cloudflare.com/cdn-cgi/trace) · [Troubleshooting](troubleshooting.md)
 
-For an optional command-line check of the classical profile, use an installed Hiddify CLI executable and the private Moscow device export. The relay helper saves that export under `.secrets/`.
+For an optional command-line check of the classical profile, use an installed Hiddify CLI executable and the private Moscow device export. The relay helper saves that export under `.secrets/`. If you configured manually, save your adjusted Moscow desktop link in a private text file and pass that file to `--link-file` instead.
 
 Run this on your administration computer, replacing the example paths and expected IPv4 address:
 
@@ -311,7 +313,11 @@ Keep each owner's credentials separate. A desktop and phone can share the same i
 
 ## 5. Add a second foreign country to the same Moscow hub
 
-Use route key `fi` and Moscow’s other allowed port, 8443.
+This adds a **third rented server**: a new foreign server in Finland (**FI**). Keep the existing Moscow and NL servers. Rent the FI server, configure its IPv6, then use route key `fi` and Moscow’s other allowed port, 8443.
+
+The command below reuses Moscow and configures the new FI server; run it on your setup computer from the repository folder. It assumes the first country uses **Moscow port 443** and **8443 is free**. If the first country already uses 8443, set `--entry-port 443` instead, only if that port is free. Preserve existing listeners. The foreign server has its own ports; its relay port doesn’t have to equal Moscow’s entry port.
+
+This is a script alternative to repeating the manual foreign-inbound and Moscow-outbound steps.
 
 ```bash
 python3 scripts/bootstrap_relay.py \
@@ -331,7 +337,7 @@ python3 scripts/bootstrap_relay.py \
 
 Apply only after that foreign server's IPv6 is configured. The helper reuses Moscow's panel, attaches existing owner accounts without rotating their UUIDs, and adds a separate inbound-to-outbound rule for the new country. It preserves the first country's route.
 
-With one public IPv4 address and this separate-listener design, 8443 and 443 provide **two country entry points**. More countries can share an existing inbound with [Xray user routing](https://xtls.github.io/en/config/routing#ruleobject). Give each device/country combination a distinct account, such as `desktop` for NL and `FR-desktop` for FR, and route its account label to the corresponding foreign outbound. Put the account-specific rules above the inbound's general rule. The helper supports that layout through `--shared-entry`. For example, use `--route fr --entry-port 443 --shared-entry --clients FR-desktop,FR-phone` with FR's server addresses. It checks the existing RAW entry and SNI, then inserts the account rule before the general NL rule. The new account labels must be distinct. Public entries still use only 443 and 8443.
+With one public IPv4 address and this separate-listener design, 8443 and 443 provide **two country entry points**. More countries can share an existing inbound with [Xray user routing](https://xtls.github.io/en/config/routing#ruleobject). Give each device/country combination a distinct account, such as `desktop` for NL and `FR-desktop` for FR, and route its account label to the corresponding foreign outbound. Put the account-specific rules above the inbound's general rule. For FR, first rent another foreign server in France and configure its IPv6. Keep the existing Moscow, NL and FI servers. The helper supports the shared-port layout through `--shared-entry`. For example, use `--route fr --entry-port 443 --shared-entry --clients FR-desktop,FR-phone` with FR's server addresses. It checks the existing RAW entry and SNI, then inserts the account rule before the general NL rule. The new account labels must be distinct. Public entries still use only 443 and 8443.
 
 Reapplying the same route with unchanged settings reuses it. A route key already bound to different settings is refused; do not delete its registry or reinstall the hub to force a change.
 

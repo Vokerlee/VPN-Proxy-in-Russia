@@ -119,6 +119,8 @@ The left-hand route above needs one panel and one device link per phone or compu
 
 ## What the second server adds
 
+To build the right-hand route above, rent **Moscow from FirstVDS and the foreign server from HostVDS** in our example. They are two separate servers and two bills. After renting Moscow, you still need to [rent the foreign server](../choose-server.md#rent-the-foreign-server-hostvds-example) unless you already have it.
+
 You can use the foreign server’s IPv6 address **without needing IPv6 on your phone or home network**. The phone reaches Moscow over IPv4, and Moscow opens the IPv6 connection. With a direct one-server IPv6 profile, both your device and the network it’s currently using would need working IPv6. Device support alone isn’t enough, and switching networks can change whether that connection works. A one-server profile using IPv4 doesn’t have this requirement.
 
 The nearby entry and foreign exit give you two independently testable connections. Your phone reaches Moscow; Moscow reaches the exit over its configured IPv6 route. Add another country by creating another foreign relay account and a matching Moscow outbound.
