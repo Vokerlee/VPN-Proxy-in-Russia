@@ -8,58 +8,96 @@ With one server, your device talks to the server abroad. With two, it talks to a
 
 ## Follow one request
 
+**One server means one VPN connection. Two servers mean two VPN connections in a row.** Here’s where each one ends:
+
 ```text
-Your phone / PC
-      |
-      | IPv4
-      v
-Your internet provider
-      |
-      v
-Your server in Russia
-      |
-      | IPv6, through hosting providers and the internet
-      v
-Your server abroad
-      |
-      | IPv4, through its hosting provider and the internet
-      v
-Website
+            One server                           Two servers
+         1 VPN connection                     2 VPN connections
+
+         Your phone / PC                       Your phone / PC
+                |                                     |
+                | VPN over IPv4                       | VPN 1 over IPv4
+                v                                     v
+      Your internet provider                Your internet provider
+                |                                     |
+                v                                     v
+        Internet networks                     Internet networks
+                |                                     |
+                v                                     v
++--------------------------------+    +--------------------------------+
+|       Your server abroad       |    |     Your server in Russia      |
+|    VPN connection ends here    |    |    VPN 1 ends; VPN 2 starts    |
++--------------------------------+    +--------------------------------+
+                |                                     |
+                v                                     | VPN 2 over IPv6
+   Hosting provider / internet                        v
+                |                        Hosting providers / internet
+                v                                     |
+             Website                                  v
+                                      +--------------------------------+
+                                      |       Your server abroad       |
+                                      |        VPN 2 ends here         |
+                                      +--------------------------------+
+                                                      |
+                                                      | IPv4
+                                                      v
+                                         Hosting provider / internet
+                                                      |
+                                                      v
+                                                   Website
 ```
 
-Each arrow can cross other networks too. The VPN uses internet providers just like any other connection; it doesn’t go around them. In this example, the Russian server is Moscow and the foreign server is NL. The device connection uses IPv4; Moscow’s connection to NL uses IPv6.
+The boxes mark the servers you rent. Internet providers and other networks carry the connections in both layouts. The arrows show the request going out; replies come back through the same stages.
 
-Moscow receives the connection from your device and opens another one to NL. VLESS is the VPN connection protocol used here; XHTTP is the way we carry traffic between the servers. Replies come back along the same path. In the tested setup, the device uses Yandex and Safari. Moscow uses a Google target name, a Chrome-shaped first message and XHTTP for its connection to NL. These settings describe connection setup, not which websites you can visit. The phone profile uses classical mode with the compatible entry core. [Handshake versions](../handshakes-and-versions.md)
+With **one server**, Hiddify opens an encrypted VPN connection to the server abroad. That server opens the website connection.
+
+With **two servers**, Hiddify opens **VPN 1** to the Russian server. That server opens **VPN 2** to the foreign server and passes the traffic into it. The foreign server opens the website connection. You still press **Connect once** in Hiddify; the Russian server handles the second VPN.
+
+In our example, the Russian server is Moscow and the foreign server is NL. VPN 1 uses **IPv4, VLESS + RAW + REALITY + Vision**. VPN 2 uses **IPv6, VLESS + XHTTP + REALITY**, with an empty flow. These are the settings used in [the two-server steps](../two-hop-vpn.md#2-choose-the-two-legs).
+
+The first connection uses a Yandex target name and Safari fingerprint. The second uses a Google target name and Chrome fingerprint. Those describe connection setup, not which websites you can visit. The phone’s classical setting must match the entry server’s version. [Handshake versions](../handshakes-and-versions.md)
 
 ## Where each link goes
 
 An **inbound** accepts traffic into a server. An **outbound** sends it on. You’ll see these names in 3x-ui, the browser dashboard for managing the VPN. A **routing rule** connects an inbound or account to the outbound it should use.
 
-
 ```text
-NL relay account                  Moscow device account
-      |                                  |
-      | copy its link                    | copy its link
-      v                                  v
-Moscow outbound                   Hiddify on your device
-      |
-      v
-Select that outbound in Moscow's routing rule
+      Server-to-server link                      Device link
+
++--------------------------------+    +--------------------------------+
+|        NL relay account        |    |     Moscow device account      |
++--------------------------------+    +--------------------------------+
+                |                                     |
+                | Copy link                           | Copy link
+                v                                     v
++--------------------------------+    +--------------------------------+
+|        Moscow outbound         |    |   Hiddify on your phone / PC   |
++--------------------------------+    +--------------------------------+
+                |
+                v
+  Select it in the routing rule
 ```
 
-In Moscow’s **Routing** page, send traffic from the Moscow NL inbound to the outbound named `relay-nl`. [The panel steps](../two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
+The **relay link** gives Moscow the credentials for VPN 2. The **device link** gives Hiddify the credentials for VPN 1. Keep each device’s account separate, such as `desktop` and `phone`.
+
+In Moscow’s **Routing** page, send traffic from the Moscow device inbound to the outbound named `relay-nl`. [The panel steps](../two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
 
 ## Add a country
 
 ```text
-Moscow: choose the route by account
++--------------------------------+
+|    Moscow: VPN 1 ends here     |
+|     Account chooses VPN 2      |
++--------------------------------+
       |
-      +-- Port 443, NL account ----> NL server
+      +-- Port 443, NL account ----> [ NL server ]
       |
-      +-- Port 443, FR account ----> FR server
+      +-- Port 443, FR account ----> [ FR server ]
       |
-      +-- Port 8443, FI account ---> FI server
+      +-- Port 8443, FI account ---> [ FI server ]
 ```
+
+Each country profile uses Moscow plus **one** foreign server, so it still has **two VPN connections**. Choose the NL, FR or FI profile in Hiddify to pick that route.
 
 This shows account routing only. Hosting providers and internet networks carry each server-to-server connection, as in the full route above.
 
@@ -67,34 +105,17 @@ This is the layout once all three exits are configured. On shared port 443, Xray
 
 ## Find the link that stopped working
 
-```text
-Device → Moscow          Can the device connect to the entry port?
-Moscow → foreign IPv6    Can Moscow authenticate to the foreign relay?
-Foreign → website        Does HTTPS return the expected IPv4 exit?
-```
+| Check | What you want to find out |
+|---|---|
+| Device → Moscow, VPN 1 | Can the device reach the entry port and connect using its account? |
+| Moscow → foreign IPv6, VPN 2 | Can Moscow connect using the relay account? |
+| Foreign server → website | Does a website load and show the expected foreign exit address? |
 
 Test the connections in order. If the TCP port times out, check the address, route and firewall before changing fingerprints. [Reachability checks](../network-path-debugging.md)
 
-
 ## One server is also a complete setup
 
-```text
-Your phone / PC
-      |
-      | IPv4
-      v
-Your internet provider
-      |
-      | through internet networks
-      v
-Your VPN server abroad
-      |
-      | through its hosting provider and the internet
-      v
-Website
-```
-
-This has one panel, one account export and one server to maintain. IPv6 is optional for this path. [Single-server walkthrough](../single-server.md)
+The left-hand route above needs one panel and one device link per phone or computer. It uses one VPN connection. The normal IPv4 setup doesn’t require IPv6 on your devices or network. [Single-server walkthrough](../single-server.md)
 
 ## What the second server adds
 
