@@ -8,13 +8,15 @@ You’ll work in **3x-ui**, the browser dashboard on your server. If you haven�
 
 The panel calls a connection entry point an **inbound**. We’ll make one inbound and put two device accounts on it. Both devices use the same server port, but each gets its own credentials.
 
-The instructions match **3x-ui 3.8.5**. Its **Xray** version—the program carrying the VPN traffic—is a separate setting. For this guide’s tested phone setup, check the dashboard shows **26.7.28** before continuing. [How to select it](server-setup.md#required-choose-the-core-version-for-your-profile)
+The instructions match **3x-ui 3.8.5**. On the previous page, you installed the program that carries the VPN connection, called **Xray**. For this one-server phone setup, its status should show **26.7.28** and **Running**. If you haven’t done that step yet, [install the matching version first](server-setup.md#install-the-vpn-program-version-used-in-this-guide)
 
 **Using two servers? Create phone and desktop accounts on Moscow only. The foreign server gets a separate relay account for Moscow. Follow [the two-server panel steps](two-hop-vpn.md#how-the-two-3x-ui-panels-connect). That page gives different settings for the device connection and the connection between servers. This page explains the single-server form.
 
+**Follow steps 1–5 to create the connection.** The sections labelled **Optional** are for another transport or for diagnosing a failed startup; skip them for your first setup.
+
 ## 1. Open the correct form
 
-1. Open the dashboard using the browser address from [Step 2](server-setup.md#required-open-the-dashboard-safely-in-your-browser). The ordinary setup uses the server's public IP and panel port; keep a forwarding window open only if you chose the optional private setup. Sign in with the panel credentials.
+1. Open the dashboard using the browser address from [Step 2](server-setup.md#open-the-dashboard-in-your-browser). The ordinary setup uses the server's public IP and panel port; keep a forwarding window open only if you chose the optional private setup. Sign in with the panel credentials.
 2. In the main left sidebar, click **Inbounds**.
 3. Click **Add Inbound**. On a narrow screen, open the sidebar with the menu button first.
 
@@ -37,11 +39,11 @@ Do not replace a working listener just to match the examples. Preserve its actua
 | Field | Set it to | Why |
 |---|---|---|
 | Transmission / Network | `TCP` or `RAW` | Newer Xray names TCP transport RAW; `tcp` remains an alias in relevant releases |
-| Security | **REALITY** | Different from ordinary certificate-based TLS |
+| Security | **REALITY** | Protects the connection between your device and this server |
 | Proxy Protocol | Off | Enable only when an upstream proxy actually sends PROXY headers |
-| Target / Dest | A reachable TLS endpoint, for example `www.apple.com:443` | This endpoint must work from the VPS |
+| Target / Dest | `www.apple.com:443` | A website used during REALITY connection setup; it must be reachable from this server |
 | Server Names / SNI | `www.apple.com` for that example | SNI is the website name sent during connection setup; use one covered by the target’s certificate |
-| Fingerprint / uTLS, when offered | Start with `safari` for this Hiddify walkthrough | Initial defaults for the exported client; test your actual network and engine |
+| Fingerprint / uTLS, when offered | `safari` | Shapes the app’s opening connection message; this value worked in our tests |
 | Short IDs | Generate a short ID | A short random label used to recognize this connection; keep the exported value |
 | Private / Public Key | Click **Get New Key** for a new inbound | Keep the private key on the server |
 | SpiderX, when offered | `/` | Keep the exported value |
@@ -71,15 +73,17 @@ Some forms reveal Flow only after selecting REALITY.
 | Client field | Set it to |
 |---|---|
 | Enable | On |
-| Email / Name | `desktop` for the first account |
-| ID / UUID | Generate the unique account identifier, or keep the existing account’s value |
+| Email / Name | `desktop` for the first account, or a name you choose; this is a label, not an email address |
+| ID / UUID | Keep the generated value for a new account; keep the original value when editing an existing account |
 | Flow | `xtls-rprx-vision` |
 | Encryption | `none`, where shown |
 | Expiry / Traffic limit / IP limit | No limit for initial testing, unless you intentionally require one |
 
 `encryption=none` is the VLESS payload setting; the connection is still protected by REALITY. It does not mean the VPN is sent as plaintext.
 
-Create a second client named **phone**, with a different generated UUID and the same **Vision** flow. Use the form’s add-client action if it allows several rows. Otherwise save the inbound, reopen its client list and add the second account there. A UUID is the generated account identifier; don’t reuse the desktop value for the phone.
+**desktop** and **phone** are example names, not required keywords. You can choose your own labels to recognize the accounts. Each account gets its own connection link.
+
+Create a second client named **phone** (or your chosen second name), with a different generated UUID and the same **Vision** flow. Use the form’s add-client action if it allows several rows. Otherwise save the inbound, reopen its client list and add the second account there. A UUID is the generated account identifier; don’t reuse the desktop value for the phone.
 
 Click **Create** / **Save**, then apply or restart Xray if prompted. This can briefly interrupt existing VPN connections. You should now see one enabled inbound with **desktop** and **phone** accounts, and Xray should show as running.
 

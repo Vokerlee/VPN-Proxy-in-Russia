@@ -68,6 +68,8 @@ SSH may ask you to confirm the server’s identity on the first connection. Comp
 
 Leave the terminal open until setup finishes. The script checks for a fresh installation, installs the software, creates **desktop** and **phone** accounts, and saves the results. It doesn’t stop your existing VPN apps or change your computer’s network settings. If it stops with an error, use the table below rather than reinstalling the server.
 
+The commands above create accounts named **desktop** and **phone** by default. To choose your own labels, add **`-Clients alex,anna,laptop`** on Windows or **`--clients alex,anna,laptop`** with Python. That example creates three separate VPN accounts. [How names and output files work](automation.md#choose-the-vpn-account-names)
+
 These commands use **8443** for the VPN and **27297** for the dashboard. A port is a numbered connection entry point; those two numbers do different jobs. If the chosen VPN port is occupied, use 443 only if free. Don’t overwrite another service.
 
 For a custom SSH port, add `-SshPort YOUR_PORT` on Windows or `--ssh-port YOUR_PORT` with Python. [Other options](automation.md#start-with-only-a-vps-ip-and-root-password)
@@ -81,11 +83,11 @@ When setup finishes, it prints the panel URL and the private output folder. Open
 3. Sign in using those panel credentials. The SSH root password is a separate login.
 4. Open **Inbounds**. You should see **Personal VPN**, enabled, with **desktop** and **phone** accounts. The script already created them; don’t add them again.
 
-If the page doesn’t open, allow the actual panel TCP port in the hosting company’s firewall dashboard. The script can update an already active UFW firewall on the server, but it can’t change your provider account’s firewall. Keep SSH allowed too. [Manual panel access and HTTPS options](server-setup.md#required-open-the-dashboard-safely-in-your-browser)
+If the page doesn’t open, allow the actual panel TCP port in the hosting company’s firewall dashboard. The script can update an already active UFW firewall on the server, but it can’t change your provider account’s firewall. Keep SSH allowed too. [Manual panel access and HTTPS options](server-setup.md#open-the-dashboard-in-your-browser)
 
 ## Bring the profile into Hiddify
 
-Open **client-phone.txt** for your phone or **client-desktop.txt** for your computer. Copy the whole `vless://…` line. That’s the private connection link for that device.
+With the default account names, open **client-phone.txt** for your phone or **client-desktop.txt** for your computer. If you chose other names, open the matching **client-NAME.txt**, such as **client-alex.txt**. Copy the whole `vless://…` line. That’s the private connection link for that device.
 
 **[Install Hiddify, add the link and test a website →](clients.md)**
 
@@ -108,7 +110,7 @@ A stopped helper tells you which stage needs attention. It does not roll back pa
 | Browser cannot open the panel | Use the printed public IP, actual panel port and saved path; check the public listener and provider/custom firewall |
 | Hiddify errors after import | Follow the [handshake and generated-config checks](troubleshooting.md), including the documented recovery helper |
 
-**Optional, after the connection works:** read [server administration improvements](server-setup.md#5-optional-improve-server-administration-later) if you want a separate administrator account and tighter SSH access. The helper leaves these choices to you.
+**After the connection works:** follow [the fail2ban steps](server-setup.md#5-protect-ssh-logins-with-fail2ban) on the server to protect SSH logins. The setup helper doesn’t install fail2ban.
 
 <details>
 <summary>For reviewers: what has and has not been tested</summary>

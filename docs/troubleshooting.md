@@ -196,6 +196,35 @@ curl -6 -I --connect-timeout 5 --max-time 15 https://www.google.com/
 
 A failed IPv6 test is not a problem if you deliberately use IPv4 only. Inspect host firewall rules with the tool already used by your installation, such as `nft list ruleset` or `ufw status verbose`. Do not flush firewall rules, reset keys, reinstall the server, or restart unrelated applications as a first diagnostic step.
 
+## fail2ban is installed but SSH protection isn’t active
+
+Use this only if `fail2ban-client status sshd` failed during [the server setup](server-setup.md#5-protect-ssh-logins-with-fail2ban). Installing fail2ban starts the program; an enabled **jail** tells it which login service to protect. Here that service is SSH.
+
+In **that server’s SSH terminal**, as root, check the error:
+
+```bash
+systemctl status fail2ban --no-pager
+journalctl -u fail2ban --since '10 minutes ago' --no-pager
+```
+
+If SSH protection isn’t enabled, or the log says it can’t find an SSH log file on a server using systemd’s journal, create **/etc/fail2ban/jail.d/vpn-guide-sshd.local** in a text editor with:
+
+```ini
+[sshd]
+enabled = true
+backend = systemd
+port = 22
+```
+
+Use the **actual SSH port** from your login details instead of 22 if it differs. This is the administration port, not the VPN port. Save the file, then run:
+
+```bash
+systemctl restart fail2ban
+fail2ban-client status sshd
+```
+
+Continue when it shows the **sshd** jail. If it still fails, keep the new log error; don’t assume protection is active. Return to [the end of server setup](server-setup.md#5-protect-ssh-logins-with-fail2ban) after fixing it.
+
 ## Read fresh logs, not the last installation's error
 
 On the checked Windows installation, Hiddify's files were under:

@@ -141,7 +141,9 @@ On Windows PowerShell:
 .\scripts\Setup-Vpn.ps1 -ServerIp 203.0.113.10 -VpnPort 8443 -Target www.apple.com -CoreVersion 26.7.28 -KeyShare classical -Fingerprint safari -Clients desktop,phone
 ```
 
-Use your fresh VPS address. After checking the plan, replace `--plan` with `--apply`, or add `-Apply`. Import the printed output folder's **client-desktop.txt** or **client-phone.txt** into Hiddify, then test a website. [Full script walkthrough](docs/single-server.md#set-this-up-with-scripts)
+**`--clients desktop,phone` / `-Clients desktop,phone` creates two VPN accounts with those names.** Choose your own names, such as `alex,anna,laptop`, separated by commas without spaces. Each gets its own link. [Names and output files](docs/automation.md#choose-the-vpn-account-names)
+
+Use your fresh VPS address. After checking the plan, replace `--plan` with `--apply`, or add `-Apply`. With the example account names, copy the link from **client-desktop.txt** or **client-phone.txt** in the printed output folder into Hiddify. If you chose other names, use **client-NAME.txt** for the intended account. Then test a website. [Full script walkthrough](docs/single-server.md#set-this-up-with-scripts)
 
 </details>
 
@@ -170,7 +172,9 @@ python3 scripts/bootstrap_relay.py \
   --clients desktop,phone --plan
 ```
 
-Use your own server addresses. On Windows, use `py` and put the arguments on one line. After checking the plan, replace `--plan` with `--apply`. Import **desktop.txt** or **phone.txt** from the printed private output folder, then check the foreign exit IP. [Full script walkthrough](docs/two-hop-vpn.md#3-preview-and-apply-the-relay-helper)
+**`--clients desktop,phone` lists the Moscow device account names to create.** You can use your own comma-separated names, such as `alex,anna,laptop`; each name gets a private link. [Names and output files](docs/automation.md#choose-the-vpn-account-names)
+
+Use your own server addresses. On Windows, use `py` and put the arguments on one line. After checking the plan, replace `--plan` with `--apply`. With the example names, copy the link from **desktop.txt** or **phone.txt** in the printed private output folder into Hiddify. For a custom name, use **NAME.txt**. Then check the foreign exit IP. [Full script walkthrough](docs/two-hop-vpn.md#3-preview-and-apply-the-relay-helper)
 
 </details>
 

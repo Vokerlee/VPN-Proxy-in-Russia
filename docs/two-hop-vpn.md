@@ -40,16 +40,12 @@ You need a computer for setup, one server in Russia and one abroad. Our example 
 We’ll use **3x-ui**, a browser dashboard, on both servers. It manages **Xray**, the program carrying the VPN traffic. If this is your first setup, follow this order:
 
 1. After **both rentals are complete**, get IPv6 working on each server using the checks below.
-2. [Install and open a dashboard](server-setup.md) on **Moscow**, then repeat that page on **NL**. Use Xray **26.7.28** on Moscow and **26.9.9** on NL. Save two panel URLs and two panel logins, then return here. Already have dashboards? Keep them and check their versions.
+2. [Install and open a dashboard](server-setup.md) on **Moscow**, then repeat that page on **NL**. The installation page explains which VPN program version to install on each server and how to do it. Save two panel URLs and two panel logins, then return here. Already have dashboards? Keep them and check their versions.
 3. [Link the panels](#how-the-two-3x-ui-panels-connect), then test your device.
 
 Prefer scripts? Finish the IPv6 setup first, then use [the folded script instructions](#3-preview-and-apply-the-relay-helper) instead of the manual panel steps. You don’t need to do both.
 
 Keep two browser tabs open and label them Moscow and NL so you don’t edit the wrong server. Keep each panel’s browser login separate from its SSH login.
-
-## Pick the entry version before linking the panels
-
-For the tested phone setup, Moscow uses **Xray 26.7.28** and the device link includes **`keyshare=classical`**. NL uses **26.9.9**. The app and server must agree on how to start the encrypted connection. The detailed steps below keep those settings together; [the version explanation](handshakes-and-versions.md) is there if you want the reason.
 
 ## 1. Configure IPv6 yourself using your VPS provider's instructions
 
@@ -259,6 +255,8 @@ python3 scripts/bootstrap_relay.py \
   --plan
 ```
 
+**`--clients desktop,phone` is the list of VPN account names to create on Moscow.** Those are example labels; choose names such as `alex,anna,laptop` for three accounts. Separate them with commas, without spaces. Each gets its own credentials and a link saved as **NAME.txt**, for example **alex.txt**. [Naming rules](automation.md#choose-the-vpn-account-names)
+
 Plan mode makes no network requests or changes. Repeat the same command with **--apply** to deploy. On Windows PowerShell, use `py` or `python` and put the arguments on one line.
 
 The helper:
@@ -272,7 +270,7 @@ The helper:
 7. Adds the Moscow inbound and routes it to that foreign outbound. New inbounds remain disabled until their routing is ready; setup failures disable the new inbound when possible.
 8. Retrieves and saves the panel-generated links. Device files add the requested Hiddify key-share option; `panel-profiles.json` preserves the original exports. Both stay in the ignored `.secrets/` directory.
 
-A fresh panel's generated credentials are in the private relay.json result. Open its printed public HTTP panel URL directly in a browser, as described in the [panel guide](server-setup.md#required-open-the-dashboard-safely-in-your-browser).
+A fresh panel's generated credentials are in the private relay.json result. Open its printed public HTTP panel URL directly in a browser, as described in the [panel guide](server-setup.md#open-the-dashboard-in-your-browser).
 
 The helper’s IPv6 check does not configure provider networking. If it fails there, complete section 1 manually before retrying.
 
@@ -309,9 +307,11 @@ python3 scripts/vpn_profile.py test \
 
 Then test the actual Hiddify connection, the intended websites and DNS. An inter-server success alone does not verify the device-to-Moscow leg or the app's VPN routing. Test UDP separately before claiming full TCP/UDP functionality.
 
-Keep each owner's credentials separate. A desktop and phone can share the same inbound but should have their own client accounts.
+**Your two-server setup is finished when your device opens websites and shows the foreign exit address. You can stop here.** The next section is optional: use it only if you want another exit country and are ready to rent another foreign server.
 
-## 5. Add a second foreign country to the same Moscow hub
+Keep each owner’s credentials separate. A desktop and phone can share the same inbound but should have their own client accounts.
+
+## 5. Optional: add another exit country
 
 This adds a **third rented server**: a new foreign server in Finland (**FI**). Keep the existing Moscow and NL servers. Rent the FI server, configure its IPv6, then use route key `fi` and Moscow’s other allowed port, 8443.
 

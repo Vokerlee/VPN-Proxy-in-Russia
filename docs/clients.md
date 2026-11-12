@@ -29,7 +29,7 @@ Open Hiddify. You should see its home screen, ready for a connection to be added
 
 ## 2. Import your connection link
 
-1. Copy your whole `vless://…` link. Use the **phone** account on your phone and **desktop** on your computer.
+1. Copy your device’s whole `vless://…` link. The guide’s example account names are **phone** and **desktop**; if you chose other names, use the link for the account you created for this device.
 2. In Hiddify, press **+ → Clipboard**. Some versions call it **Add from clipboard**.
 3. Select the new connection. Its name can include both the server and device, such as **Personal VPN-phone**.
 
@@ -38,6 +38,8 @@ If you used our one-server scripts, copy the link from **client-phone.txt** or *
 You can scan a QR code instead if it was made from that same link. Keep links and QR codes private: they let someone use the account.
 
 ## Check the profile's handshake mode
+
+If you imported an adjusted link from the setup steps or script output, this is already set. Continue to [step 3](#3-choose-how-your-apps-use-the-vpn). Read the check below if you imported a different link or the connection fails.
 
 For the tested phone setup in this guide, the server runs **Xray 26.7.28** and the link includes **`keyshare=classical`**. This selects how the app starts the encrypted connection. The scripts already add it; the [manual account instructions](server-inbound.md#5-export-the-connection) show how to add it yourself.
 

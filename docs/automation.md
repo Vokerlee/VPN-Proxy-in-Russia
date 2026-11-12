@@ -51,6 +51,24 @@ The relay helper defaults to **`--hub-core-version 26.7.28 --entry-key-share cla
 
 For a third country sharing the RAW entry, use **`--route fr --entry-port 443 --shared-entry --clients FR-desktop,FR-phone`** with that country's server addresses. The helper inserts an account-specific rule above the inbound's general country route, reuses its existing listener and backs up its prior state.
 
+### Choose the VPN account names
+
+**`--clients desktop,phone` means “create accounts named desktop and phone.”** You choose the names. They are labels, not special device types, email addresses or existing Linux users. The command creates one VPN account per name, each with its own credentials and private connection link.
+
+For example:
+
+```text
+--clients laptop            creates 1 account: laptop
+--clients alex,anna          creates 2 accounts: alex and anna
+--clients work,home,tablet   creates 3 accounts: work, home and tablet
+```
+
+On Windows PowerShell, the same option is **`-Clients`**, for example `-Clients alex,anna`. Separate names with commas, without spaces. Use unique names of 1–64 characters: start with an English letter or digit, then use letters, digits, dots, underscores or hyphens.
+
+For a fresh **one-server setup**, `--clients alex,anna` produces **client-alex.txt** and **client-anna.txt** in the private output folder. For a **two-server route**, it produces **alex.txt** and **anna.txt**, containing the Moscow device links. The later `desktop`/`phone` filenames in the guide are examples for the default names; use the files matching the names you chose.
+
+One account per device makes it easier to replace or revoke a single link later. For a new setup, choose the names before applying. To add accounts later, use [the foreign dashboard for one-server mode](server-inbound.md#4-set-the-client-account) or [Moscow’s dashboard for two-server mode](two-hop-vpn.md#add-another-phone-or-computer). The fresh-server installer is for initial setup, not adding users to an existing installation.
+
 ### Recommended preset and legacy regional defaults
 
 For this Hiddify walkthrough, explicitly select the tested preset:

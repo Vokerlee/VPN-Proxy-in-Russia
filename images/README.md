@@ -7,7 +7,7 @@ The guide needs pictures of the actual buttons and forms. The generated SVG UI p
 | Guide page | Screens to capture |
 |---|---|
 | [Rent a server](../docs/choose-server.md) | Provider’s create-server form, operating-system choice, then address/access details with secrets covered |
-| [Install the panel](../docs/server-setup.md) | Panel login, dashboard and opened Xray version selector |
+| [Install the panel](../docs/server-setup.md) | Panel login; the clickable version beside Xray status; Xray Updates with the chosen release’s circle; the Confirm dialog |
 | [Make device links](../docs/server-inbound.md) | Add Inbound form, REALITY settings, desktop/phone client rows and account export action |
 | [Connect a device](../docs/clients.md) | Hiddify’s add-from-clipboard action, service mode and home screen before/after Connect |
 | [Link two servers](../docs/two-hop-vpn.md) | Foreign XHTTP inbound, Moscow link import, saved outbound and routing rule/order |
@@ -23,7 +23,7 @@ Use **3x-ui 3.8.5** and **Hiddify 5.5.5**, or include the version you actually r
 
 | Order | Open this screen | What should be visible | Suggested filename |
 |---|---|---|---|
-| 1 | **3x-ui Dashboard** | Panel version, **Xray core version** and running status. For the classical entry, show **26.7.28**. | `entry-core-version.png` |
+| 1 | **3x-ui Dashboard** | Panel version, **Xray version button** and running status. Also capture **Xray Updates**, the release selection circle and **Confirm** dialog. For the device server, show **26.7.28**. | `entry-core-version.png` |
 | 2 | **Inbounds → device entry → Edit** | Remark, listen address, **443 or 8443**, **VLESS**, **RAW/TCP**, **REALITY**, target, server names and fingerprint. A second crop can show the device's **Vision** flow. | `entry-raw-reality.png` |
 | 3 | **Inbounds → expand device clients → phone → Info / Share** | Which account is being exported and the **Copy** action. Cover the whole private URL and QR. | `device-profile-copy.png` |
 | 4 | **Hiddify → Profiles → ⋯ → Edit → Config Editor → Text** | A crop around **tls → reality → key_share: classical**. Also capture **+ → Clipboard** and the home screen with the selected profile and **Connect** button if possible. | `hiddify-classical-profile.png` |

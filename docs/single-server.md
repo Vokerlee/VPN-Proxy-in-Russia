@@ -101,9 +101,11 @@ python3 scripts/bootstrap_server.py --host 203.0.113.10 \
   --key-share classical --fingerprint safari --clients desktop,phone --plan
 ```
 
+**`--clients desktop,phone` / `-Clients desktop,phone` is a list of names you choose for the new VPN accounts.** `desktop` and `phone` are examples. Use `alex,anna,laptop` if you want three accounts with those names. Each name gets separate credentials and a link; separate names with commas and no spaces. [Name rules and filenames](automation.md#choose-the-vpn-account-names)
+
 Check the plan, then replace **`--plan`** with **`--apply`**. Replace the documentation address with your own VPS address in either example.
 
-SSH asks for the root password privately. The helper installs the panel, verifies the selected core download, creates the two device accounts and prints the panel address and private output directory. Open **client-desktop.txt** or **client-phone.txt** there, copy its whole link, and import it into Hiddify with **+ → Clipboard**.
+SSH asks for the root password privately. The helper installs the panel, verifies the selected core download, creates the accounts you listed and prints the panel address and private output directory. With the example names, open **client-desktop.txt** or **client-phone.txt** there. With your own names, open **client-YOUR_NAME.txt**. Then copy its whole link, and import it into Hiddify with **+ → Clipboard**.
 
 Press **Connect**, open an IP-check page and confirm the server's exit address. Try a real website on Wi-Fi and mobile data. If a provider firewall blocks the printed VPN or panel port, allow that specific port in the provider dashboard.
 

@@ -4,11 +4,11 @@
 
 You do not need to buy a physical machine or leave a laptop running at home. You rent a small virtual server in a data center. Providers call this a **VPS**, **VDS**, or **cloud server**. For this guide, it is a remote Linux computer that stays online and carries your VPN traffic.
 
-The server’s **IP address** is its numeric address on the internet. **root** is its administrator account. **SSH** is the secure terminal connection you will use to manage it; an SSH key can be used instead of a login password.
-
 Your own computer remains as it is. You can rent and administer an Ubuntu server from Windows, Linux, or macOS.
 
 ## What are you renting?
+
+**Required:** choose one of the two routes, then follow only the rental sections for that route.
 
 Choose your row before placing an order:
 
@@ -94,7 +94,7 @@ If you already have a server with other software or files, do not reinstall its 
 
 ## Save the details you will use next
 
-Open **Details / Access / Credentials** in the hosting company’s dashboard. The provider may also email these details.
+After renting, you need a way to log in to the server and install the VPN. Open **Details / Access / Credentials** in the hosting company’s dashboard. The provider may also email these details. Save them now; the next page explains how to use them.
 
 For one server, save one private note labelled **Foreign — HostVDS**. For two servers, save two notes: **Moscow — FirstVDS** and **Foreign — HostVDS**. Fill in the following details for each server. Keep the two logins separate even if you happened to choose the same password.
 

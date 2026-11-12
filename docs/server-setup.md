@@ -8,27 +8,25 @@ Have the server’s **IP address**, **login name** and **password or SSH key** f
 
 Start on your own Windows, Linux or Mac computer. After you log in, the commands run on the rented server. A **terminal** is the command window you type them into; on Windows, use PowerShell.
 
-We will install **3x-ui**, a browser-based dashboard for managing connection accounts. Later, **Xray**, the network engine it manages, will carry the traffic. You do not need to learn either program's internals to install the panel.
+We’ll install **3x-ui**, the dashboard you’ll open in your browser to manage the VPN. First get that dashboard working; we’ll set up the program behind it afterward.
 
-UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11-06**. For troubleshooting, record both the panel and Xray versions; they have independent release numbers. Existing working installations do not need a reinstall.
+These button instructions use **3x-ui 3.8.5**. The installer command below selects that dashboard version.
 
-Already able to sign in to 3x-ui on this server? Keep that installation and skip the installer. Check [the Xray version](#required-choose-the-core-version-for-your-profile) and [VPN port](#4-choose-the-vpn-port), then use the next step for your server’s role below.
+Already able to sign in to 3x-ui on this server? Keep that installation and skip the installer. Follow [the VPN program installation step](#install-the-vpn-program-version-used-in-this-guide) and [VPN port](#4-choose-the-vpn-port), then use the next step for your server’s role below.
 
-**Required here:** connect over SSH, install and open the dashboard, and choose the VPN port (sections 2–4). The other sections are optional background, security improvements, or extra checks. Longer alternatives are closed below so you can follow the main path without reading them.
+**Follow steps 1–5 in order.** They prepare this server for the VPN. We’ll explain each tool or setting when you reach it. Sections marked **Optional** are alternatives or background; you can leave them closed.
 
 ## 1. Choose which server you are preparing
 
 Follow this page once for a one-server VPN. For a two-server VPN, follow it **twice**, once in Moscow’s SSH terminal and once in the foreign server’s SSH terminal. Install a separate dashboard on each server and save each panel’s URL and login separately.
 
-| Your route and server | Example provider | Xray version | VPN port if free | After this page |
-|---|---|---|---|---|
-| One-server route: foreign server | HostVDS | **26.7.28** | **8443** | [Make device accounts](server-inbound.md) |
-| Two-server route: Moscow | FirstVDS | **26.7.28** | **443** | Prepare the foreign dashboard too, then return to the two-server guide |
-| Two-server route: foreign server, NL example | HostVDS | **26.9.9** | **443** | [Link the two panels](two-hop-vpn.md#how-the-two-3x-ui-panels-connect) once both are ready |
+| Your route and server | Example provider | After this page |
+|---|---|---|
+| One-server route: foreign server | HostVDS | [Make device accounts](server-inbound.md) |
+| Two-server route: Moscow | FirstVDS | Prepare the foreign dashboard too, then return to the two-server guide |
+| Two-server route: foreign server, NL example | HostVDS | [Link the two panels](two-hop-vpn.md#how-the-two-3x-ui-panels-connect) once both are ready |
 
 Before the two-server installation, you should already have rented **both** servers and passed [their IPv6 checks](two-hop-vpn.md#1-configure-ipv6-yourself-using-your-vps-providers-instructions). Renting only Moscow doesn’t complete the setup.
-
-Keep the browser dashboard’s port, usually **27297** here, separate from the VPN port above. The two servers may both use 443 because they have different addresses.
 
 <details>
 <summary>Optional: other deployment choices and resource notes. Skip for an ordinary personal VPN.</summary>
@@ -86,7 +84,7 @@ bash /tmp/3x-ui-install.sh v3.8.5
 
 The installer runs with administrator access, so use the official source linked above. **Optional review:** after downloading and before running it, `less /tmp/3x-ui-install.sh` lets you read the script; press `q` to exit. Record the installed version if you later need troubleshooting help.
 
-### Required: install the panel and save its login details
+### Save the installer’s login details
 
 At the installer prompts:
 
@@ -95,7 +93,7 @@ At the installer prompts:
 3. For panel certificates, choose **Skip SSL / HTTP only** for direct HTTP browser access. The optional HTTPS instructions below explain certificates.
 4. Save the printed **panel port, URL path, username, and password** in a password manager. The panel credentials are different from your root/SSH login.
 
-### Required: open the dashboard safely in your browser
+### Open the dashboard in your browser
 
 The ordinary setup opens the panel directly by the server's public IP. You do not need a second terminal or an SSH forwarding connection to keep using it.
 
@@ -106,7 +104,7 @@ The ordinary setup opens the panel directly by the server's public IP. You do no
 systemctl restart x-ui
 ```
 
-**2. In your provider's firewall/security group**, allow incoming **TCP on your panel port**, for example **27297**. If the VPS already uses an active UFW firewall, add `ufw allow 27297/tcp` there too. Use your actual panel port, preserve SSH access, and do not enable or reset a firewall just for this step.
+**2. In your hosting company’s dashboard**, allow incoming **TCP on your panel port**, for example **27297**, if it has a firewall/security-group setting. Keep SSH access allowed. If there is no such restriction, continue to the browser step.
 
 **3. In your computer or phone's browser**, open the complete saved URL:
 
@@ -155,25 +153,52 @@ The panel port is an administration port. Do not put it in the VPN client's serv
 
 If you lose the panel URL or credentials, run `x-ui` over SSH and use the menu's settings/reset options. Do not assume the installer always chooses the same defaults.
 
-### Required: choose the core version for your profile
+### Install the VPN program version used in this guide
 
-The dashboard and the program carrying your traffic have different version numbers. **3x-ui** is the dashboard. **Xray** is that traffic program, also called the **core**.
+You should now be signed in to the dashboard. There are two programs on the server: **3x-ui** gives you this control panel, and **Xray** carries the actual VPN connection. The installer has already put both on the server. Here we’ll use the dashboard to install the Xray version that matches the rest of this walkthrough.
 
-Check the dashboard’s **Xray version** and open its core version control. Choose the version for this server’s job:
+Before a website can load, the app and server exchange opening messages to start their encrypted connection. In our tests, Hiddify worked on Wi-Fi but failed on mobile data with a newer server version. Version **26.7.28** accepts the shorter opening message that worked on the tested mobile connection. We’ll select that option when making your device links on the next page. For the foreign server behind Moscow, use **26.9.9**: that is the version we tested for the separate connection between the servers.
 
-| This server’s job | Version used in this guide |
+You don’t have to choose between unfamiliar settings. Find your server in this table:
+
+| Server you’re working on | Version to install |
 |---|---|
-| One server that your devices connect to | **26.7.28** |
-| Russian server that your devices connect to | **26.7.28** |
-| Foreign server used behind the Russian server | **26.9.9** |
+| The only server in a one-server VPN | **26.7.28** |
+| Moscow in a two-server VPN | **26.7.28** |
+| The foreign server behind Moscow | **26.9.9** |
 
-Apply the selection and wait for Xray to show as running again. The older device-facing version is used here because it accepts the **classical** connection option that worked in our phone test. It also means accepting an older software version; [the compatibility and security notes](handshakes-and-versions.md#match-the-client-option-to-the-server) explain that choice.
+**Already serving other users?** Save a panel backup and the original version number before switching; the change can briefly interrupt their connections. Check their connections again afterward.
 
-If you can’t find the version control, check your panel version before guessing at menu actions. If this server already has working users, save a panel backup and record the original core version before changing it. Test those users again afterward. The fresh-server scripts select and verify the version automatically.
+**In your browser, on that server’s 3x-ui dashboard:**
+
+1. Open the dashboard’s main status page. Find **Xray**, its running/stopped status, and the version number beside it. If it already matches the table and says **Running**, this step is complete; go to [choosing the VPN port](#4-choose-the-vpn-port).
+2. Click that **version number**. It is a button; hovering over it shows **Version**. This opens **Xray Updates**.
+3. Keep the **Xray** section open. Find **v26.7.28** or **v26.9.9**, using the table above. The `v` is just part of the release label.
+4. Click the **circle beside that version**. A confirmation asks whether you want to change the Xray version. Check the number and click **Confirm**.
+5. Wait while the panel downloads, installs and activates it. Keep the browser tab open and don’t refresh during installation.
+6. Back on the status page, check the version now matches the table and the status says **Running**. Then continue to [choosing the VPN port](#4-choose-the-vpn-port).
+
+That’s the installation—there’s no separate program to download onto your phone or PC for this step. The dashboard’s own version remains **3x-ui 3.8.5**.
+
+If the version list is empty, the requested release is missing, or installation reports an error, keep the exact message and [check the server](troubleshooting.md#server-checks) before continuing. Don’t choose a different number just because it’s nearby in the list.
+
+The older version is a compatibility choice, not a guarantee that every mobile network will work. [The phone test, opening-message sizes and security tradeoffs](handshakes-and-versions.md#match-the-client-option-to-the-server) are explained separately.
+
+[Checked 3x-ui 3.8.5 version button](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/index/OverviewActionBar.tsx) · [Version list and installation confirmation](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/index/VersionModal.tsx)
 
 ## 4. Choose the VPN port
 
-Use the VPN port from [your role’s table](#1-choose-which-server-you-are-preparing): **8443** for the one-server example, **443** on each server for the first two-server route. A **port** is a numbered network entry point; it distinguishes VPN traffic from SSH and the browser dashboard.
+Your server has one internet address but runs several programs. A **port** is the number that tells it which program a connection is for. You already used the dashboard’s port, such as **27297**, in your browser address. Now choose a separate port for the VPN connection.
+
+Use the number for your setup, if it’s free:
+
+| This server | VPN port in this guide |
+|---|---|
+| Only server in a one-server VPN | **8443** |
+| Moscow in the first two-server route | **443** |
+| Foreign server behind Moscow | **443** |
+
+The two servers can both use 443 because they have different addresses. The next page uses this number when creating the VPN entry.
 
 **In that server’s SSH terminal**, check the port you intend to use. For the one-server example:
 
@@ -192,46 +217,11 @@ Save the selected number. In 3x-ui you will enter it as the inbound’s **Port**
 
 **In your provider’s dashboard**, check whether this server has incoming network restrictions, usually called **Firewall**, **Security group**, or **Network rules**. If it does, allow incoming **TCP** on your selected VPN port. TCP is the connection type used by this setup. If your provider already allows incoming connections, there is no rule to add there.
 
-You do not need to install or enable UFW for this walkthrough. Keep your existing SSH access and the separate panel-port rule from section 3.
+Keep the SSH access and panel-port rule you already use. If a port is still unreachable, use [the server checks](troubleshooting.md#server-checks) rather than adding more setup steps here.
 
-<details>
-<summary>Optional: this server already has its own firewall. Skip if you have not configured one and your server image does not include one.</summary>
+## 5. Protect SSH logins with fail2ban
 
-A provider firewall and a firewall running on the server are separate. If the server already filters incoming traffic, allow the VPN port there too. Use its existing management tool; do not install a second firewall just for this guide.
-
-For an existing **UFW** installation (Ubuntu’s firewall-management tool), inspect its state:
-
-```bash
-ufw status verbose
-```
-
-If it says **inactive**, do not enable it as part of this step. If it says **active**, allow your selected port, for example:
-
-```bash
-ufw allow 8443/tcp
-```
-
-Substitute your actual VPN port if you selected another value. Keep the current SSH rules. If the server uses nftables or iptables instead, update its existing policy with that tool. Do not reset the rules on a remotely managed server.
-
-</details>
-
-## 5. Optional: improve server administration later
-
-**Skip for now if you want to finish the VPN setup first.** These changes help long-term administration; they are not required to establish the VPN connection.
-
-<details>
-<summary>Optional security improvements: administrator account, fail2ban, and SSH login restrictions</summary>
-
-Create a separate administrator:
-
-```bash
-adduser YOUR_ADMIN_NAME
-usermod -aG sudo YOUR_ADMIN_NAME
-```
-
-In a **second terminal**, verify `ssh YOUR_ADMIN_NAME@YOUR_SERVER_IP` works and that `sudo -v` succeeds. Keep the first session open while changing SSH access. Set up and test an SSH key before disabling password authentication.
-
-**Optional: block repeated failed SSH logins with fail2ban.** On Ubuntu, install and start it:
+**fail2ban** watches for repeated failed logins and temporarily bans the source addresses. Run these commands in **this server’s SSH terminal**, as root:
 
 ```bash
 apt install fail2ban -y
@@ -239,23 +229,15 @@ systemctl start fail2ban
 systemctl enable fail2ban
 ```
 
-Check SSH protection with `fail2ban-client status sshd`. If it lists the `sshd` jail, protection is active. If it reports an error, inspect `systemctl status fail2ban --no-pager` and `journalctl -u fail2ban --no-pager`; do not assume installation alone enabled protection on every Ubuntu image.
-
-If you choose to disable root SSH login, set `PermitRootLogin no` in the effective SSH server configuration, check `sshd -t`, then reload `ssh`. Ubuntu include files can override settings; verify the effective result with `sshd -T`. Test a new administrator login before closing the original session.
-
-</details>
-
-## 6. Optional: check the service from the terminal
-
-**Skip if the dashboard opens normally.** If it does not, run on the server:
+Check that SSH protection is active:
 
 ```bash
-systemctl is-active x-ui
+fail2ban-client status sshd
 ```
 
-The expected result is `active`. For any other result, use [the server checks](troubleshooting.md#server-checks). You do not need to collect version numbers or read logs before moving to the next page.
+It should show the **sshd** jail, meaning the SSH login protection is loaded. If it reports an error, [use the fail2ban check](troubleshooting.md#fail2ban-is-installed-but-ssh-protection-isnt-active). For two servers, repeat this on both Moscow and the foreign server.
 
-**This server is ready when:** its panel opens, its core has the version for its role, you have recorded its free VPN port, and SSH still works. For the two-server route, check that list for **both servers** before linking them.
+**This server is ready when:** its panel opens, the VPN program shows the version selected above and **Running**, you have recorded its free VPN port, and SSH still works. For the two-server route, check that list for **both servers** before linking them.
 
 **For one server:** [make your device connection links →](server-inbound.md)
 
