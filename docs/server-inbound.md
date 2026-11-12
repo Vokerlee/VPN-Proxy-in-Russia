@@ -16,7 +16,7 @@ The instructions match **3x-ui 3.8.5**. On the previous page, you installed the 
 
 ## 1. Open the correct form
 
-1. Open the dashboard using the browser address from [Step 2](server-setup.md#open-the-dashboard-in-your-browser). The ordinary setup uses the server's public IP and panel port; keep a forwarding window open only if you chose the optional private setup. Sign in with the panel credentials.
+1. Open the dashboard using the browser address from [Step 2](server-setup.md#open-the-dashboard-in-your-browser). Use `http://YOUR_SERVER_IP:YOUR_PANEL_PORT/YOUR_PANEL_PATH/` with your saved values. Sign in with the panel credentials.
 2. In the main left sidebar, click **Inbounds**.
 3. Click **Add Inbound**. On a narrow screen, open the sidebar with the menu button first.
 

@@ -8,7 +8,7 @@ Your rented remote server is called a **VPS**. You press Connect. The app turns 
 
 A **port** is a numbered endpoint that lets several network programs share one machine's address. A **proxy** is a program that forwards a request for another application. Hiddify is the VPN app in this guide; it opens a proxy on your own computer, then carries selected requests to the remote server.
 
-Hiddify’s network engine is also called its **core**. **DNS** turns website names into IP addresses. **SSH** is the secure terminal connection used here to manage the server; it can also carry optional private dashboard access.
+Hiddify’s network engine is also called its **core**. **DNS** turns website names into IP addresses. **SSH** is the secure terminal connection used here to manage the server; it is separate from opening the dashboard in your browser.
 
 ## Which mode should I use?
 
@@ -26,7 +26,6 @@ You need Hiddify installed and a connection link already imported. If you haven�
 | The same PC | `127.0.0.1:10801` | An example second local proxy; the optional standalone Linux Xray guide uses this port |
 | Your VPS | `YOUR_SERVER_IP:443` | The public VLESS + REALITY inbound; 8443 is another possible configured port |
 | Your VPS | `YOUR_SERVER_IP:27297` | Browser administration panel; open its full HTTP URL directly |
-| Your computer | `127.0.0.1:18080` | Optional SSH-forwarded access if you deliberately made the panel private |
 | Your PC | `127.0.0.1:16756` | Clash API: a control interface for other software to manage the app; not a browser proxy |
 | A website | `website.example:443` | HTTPS at the final destination |
 

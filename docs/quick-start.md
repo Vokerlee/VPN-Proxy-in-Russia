@@ -83,7 +83,7 @@ When setup finishes, it prints the panel URL and the private output folder. Open
 3. Sign in using those panel credentials. The SSH root password is a separate login.
 4. Open **Inbounds**. You should see **Personal VPN**, enabled, with **desktop** and **phone** accounts. The script already created them; don’t add them again.
 
-If the page doesn’t open, allow the actual panel TCP port in the hosting company’s firewall dashboard. The script can update an already active UFW firewall on the server, but it can’t change your provider account’s firewall. Keep SSH allowed too. [Manual panel access and HTTPS options](server-setup.md#open-the-dashboard-in-your-browser)
+If the page doesn’t open, allow the actual panel TCP port in the hosting company’s firewall dashboard. The script can update an already active UFW firewall on the server, but it can’t change your provider account’s firewall. Keep SSH allowed too. [Open the panel in your browser](server-setup.md#open-the-dashboard-in-your-browser)
 
 ## Bring the profile into Hiddify
 

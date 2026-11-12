@@ -173,6 +173,12 @@ In Hiddify, open **Settings → General → Connection test URL**, choose a reac
 
 If websites fail but the port is reachable, read the error from that request rather than treating a successful TCP probe as success for the whole VPN.
 
+## The dashboard doesn’t open in the browser
+
+Use the full saved address: **`http://YOUR_SERVER_IP:YOUR_PANEL_PORT/YOUR_PANEL_PATH/`**. Check the actual panel port and path from the installer output. The dashboard’s port is different from the VPN port.
+
+If that address still doesn’t open, check that the server service is running using [the server checks below](#server-checks). In the hosting company’s dashboard, allow incoming TCP on the panel port if its firewall restricts it. For a server with existing custom firewall rules, inspect that policy rather than resetting it. Return to [opening the panel](server-setup.md#open-the-dashboard-in-your-browser) after fixing the failed check.
+
 ## Server checks
 
 Log in to the rented server using SSH, as shown in [the server setup](server-setup.md#2-connect-over-ssh). Run these there as root, or prefix them with `sudo` if your administrator account needs it:

@@ -90,12 +90,12 @@ At the installer prompts:
 
 1. If asked for a database, keep **SQLite**, the built-in choice for a personal server.
 2. Choose an unused panel port, for example **27297**, when offered. A port is a numbered network entry point. This one is for managing the server, not for VPN traffic.
-3. For panel certificates, choose **Skip SSL / HTTP only** for direct HTTP browser access. The optional HTTPS instructions below explain certificates.
+3. If asked about SSL/certificates, choose **Skip SSL / HTTP only**. This guide opens the panel using `http://`.
 4. Save the printed **panel port, URL path, username, and password** in a password manager. The panel credentials are different from your root/SSH login.
 
 ### Open the dashboard in your browser
 
-The ordinary setup opens the panel directly by the server's public IP. You do not need a second terminal or an SSH forwarding connection to keep using it.
+Open the panel directly in your browser using the server’s public IP, panel port and saved path:
 
 **1. On the server**, enable the public panel listener:
 
@@ -112,42 +112,11 @@ systemctl restart x-ui
 http://YOUR_SERVER_IP:YOUR_PANEL_PORT/YOUR_PANEL_PATH/
 ```
 
-Replace the IP, port and path with the installer result. Keep the saved path and its slashes. A panel with the root path `/` uses `http://YOUR_SERVER_IP:27297/`. The address is on your VPS; `127.0.0.1` would mean the device running your browser.
+Replace the IP, port and path with the installer result. For example, with port **27297** and path **mypanel**, use `http://YOUR_SERVER_IP:27297/mypanel/`. If the installer’s path is just `/`, use `http://YOUR_SERVER_IP:27297/`.
 
 Enter the **panel username and password**, then click **Login**. These are separate from the root/SSH password.
 
-**Check:** the login page opens directly and the panel accepts your credentials. Closing SSH afterward does not close browser access. If the page is unreachable, check the actual panel listener and both firewalls. A listener bound to `127.0.0.1` accepts only local connections; repeat step 1 to make an existing private panel public.
-
-<details>
-<summary>Optional: use HTTPS for browser-to-panel encryption</summary>
-
-The checked installer offers **Let's Encrypt IP certificate** without a domain. Select that option during installation and enter the public IP. For an existing installation, run `x-ui`, open **SSL Certificate Management**, and choose **Let's Encrypt SSL Certificate for IP Address** (menu 20, then 6 in 3.8.5).
-
-Issuance and automatic renewal need incoming **TCP 80** reachable from the certificate authority. Preserve any existing service on port 80; plan coexistence rather than stopping it. Keep the panel port allowed as well. Confirm certificate installation and renewal setup succeeded, then open the printed `https://...` URL including its panel port and saved path. Check that the browser trusts the certificate.
-
-If converting a private panel, also run `/usr/local/x-ui/x-ui setting -listenIP 0.0.0.0` and restart `x-ui`; installing a certificate alone does not change its listen address.
-
-</details>
-
-<details>
-<summary>Optional: keep the panel private and access it through SSH</summary>
-
-Choose this only when you want SSH to be required for browser access. For an HTTP panel, run on the VPS:
-
-```bash
-/usr/local/x-ui/x-ui setting -listenIP 127.0.0.1
-systemctl restart x-ui
-```
-
-On your computer, open a second terminal and keep this command running:
-
-```bash
-ssh -N -o ExitOnForwardFailure=yes -L 127.0.0.1:18080:127.0.0.1:YOUR_PANEL_PORT YOUR_LOGIN_USER@YOUR_SERVER_IP
-```
-
-Replace the port, login user and server IP with your values. Add `-p YOUR_SSH_PORT` for a custom SSH port. Open `http://127.0.0.1:18080/YOUR_PANEL_PATH/` and sign in with the panel credentials. Closing this forwarding terminal ends browser access; the VPN keeps running. No public panel-port rule is needed for this option.
-
-</details>
+**Check:** the login page opens and accepts your panel credentials. You can close the SSH terminal afterward; browser access stays available. If the page doesn’t open, [use the panel connection checks](troubleshooting.md#the-dashboard-doesnt-open-in-the-browser).
 
 The panel port is an administration port. Do not put it in the VPN client's server-port field. See [the port map](ports-and-modes.md#the-ports-you-will-see).
 
