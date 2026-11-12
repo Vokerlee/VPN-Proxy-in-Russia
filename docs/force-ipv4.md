@@ -6,17 +6,19 @@ If your VPN works but websites show an address with colons instead of dots, you 
 
 IPv4 looks like `203.0.113.10`; IPv6 looks like `2001:db8::10`. The address a website sees is the server’s **exit address**. It can differ from the address your phone uses to connect to the server.
 
-```mermaid
-flowchart TB
-    device["Your device"]
-    provider["Your internet provider"]
-    server["VPN exit server"]
-    networks["Hosting provider and internet networks"]
-    website["Website"]
-    device --> provider
-    provider --> server
-    server -->|"Chooses outgoing IPv4 or IPv6 address"| networks
-    networks --> website
+```text
+Your device
+      |
+      v
+Your internet provider / internet
+      |
+      v
+VPN exit server
+      |
+      | Choose outgoing IPv4 or IPv6 here
+      | through its hosting provider and the internet
+      v
+Website
 ```
 
 Other networks can sit between these stops too. This setting changes the exit server’s outgoing connection; your internet provider still carries your connection to the VPN.

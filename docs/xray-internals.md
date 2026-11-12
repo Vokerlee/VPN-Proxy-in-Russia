@@ -20,15 +20,27 @@ Xray is a programmable proxy engine. A configuration gives it **inbounds** that 
 
 For this guide, the Windows/Linux client accepts local proxy requests and sends VLESS over RAW/TCP with REALITY to the VPS. The VPS accepts that inbound, authenticates the account, and usually chooses a freedom/direct outbound to the destination.
 
-```mermaid
-flowchart LR
-    A[Browser or application] -->|HTTP CONNECT or SOCKS| B[Local client inbound]
-    B --> C[Client routing]
-    C --> D[VLESS + Vision / REALITY / TCP]
-    D -->|Public VPS port| E[Server inbound]
-    E --> F[Server routing]
-    F --> G[freedom / direct]
-    G --> H[Destination website]
+```text
+Browser or application
+      | HTTP CONNECT or SOCKS
+      v
+Local client inbound
+      |
+      v
+Client routing
+      | VLESS + Vision / REALITY / TCP
+      | through your provider and internet networks
+      v
+Server inbound (public VPN port)
+      |
+      v
+Server routing
+      |
+      v
+freedom / direct outbound
+      | through hosting and internet networks
+      v
+Destination website
 ```
 
 The application still talks to the destination website. The tunnel changes the path that carries those bytes and which machine opens the final connection.
@@ -37,14 +49,23 @@ The application still talks to the destination website. The tunnel changes the p
 
 3x-ui is a management application: it stores accounts, templates, policies, and statistics, then generates configuration and controls an Xray process. It is not the engine forwarding each browser byte.
 
-```mermaid
-flowchart TD
-    U[Administrator in browser] --> P[3x-ui panel]
-    P --> DB[Panel database and templates]
-    DB --> CFG[Generated Xray configuration]
-    CFG --> X[Running Xray process]
-    C[VPN client] --> X
-    X --> W[Websites]
+```text
+Administrator's browser
+      |
+      v
+3x-ui panel
+      |
+      v
+Panel database and templates
+      |
+      v
+Generated Xray configuration
+      | configures
+      v
+Running Xray process <---- VPN client traffic
+      |
+      v
+Websites
 ```
 
 This separation explains three familiar surprises. The panel can load while the VPN core is broken. Xray may be a child of `x-ui` without a separate systemd service. A hand edit to the generated `bin/config.json` can disappear the next time the panel rebuilds it. Persistent changes belong in the panel's configuration source.
@@ -79,22 +100,28 @@ The server holds a REALITY private key. A client receives the corresponding publ
 
 The server name affects the TLS-looking handshake and target behavior. The short ID participates in recognition; it is not a replacement for the VLESS UUID. A complete share link carries both transport parameters and account access.
 
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant V as VPS REALITY listener
-    participant T as Configured target
-    participant W as Requested website
-    C->>V: TCP connection + ClientHello
-    Note over V,T: Target interaction supports the REALITY handshake/fallback behavior
-    alt Authorized REALITY and valid VLESS account
-        C->>V: Request destination and carry application traffic
-        V->>W: Open the selected outbound connection
-        W-->>C: Response through the VPS
-    else Not an authorized tunnel connection
-        V->>T: Forward connection according to target behavior
-        T-->>C: Target TLS/website behavior
-    end
+```text
+Client: TCP connection + ClientHello
+      |
+      v
+VPS: REALITY listener
+      |  Target interaction supports handshake / fallback
+      |
+      +-- Authorized REALITY + valid VLESS account
+      |       |
+      |       v
+      |   Requested website, through the selected outbound
+      |       |
+      |       v
+      |   Response returns to client through the VPS
+      |
+      +-- Not an authorized tunnel connection
+              |
+              v
+          Forward to configured target
+              |
+              v
+          Target response returns to client
 ```
 
 The diagram deliberately omits record-level exchange details. A successful generic TLS probe can follow the lower branch. It does not prove the upper branch works.
@@ -181,13 +208,14 @@ On **2026-11-07**, the installed Windows **Hiddify 5.5.5** engine was tested aga
 
 Successful responses contained the expected server exit address. Both fingerprints also authenticated through the SSH control path. The Google target/SNI stayed unchanged. These observations isolate a fingerprint-dependent failure on the tested direct path; they do not establish that Google sites are unusable from US servers, that all US servers block Chrome, or that a particular operator is responsible.
 
-```mermaid
-flowchart LR
-    C[Same REALITY account] --> P{ClientHello preset}
-    P -->|Chrome| L[Missing handshake bytes on direct path]
-    P -->|Safari| S[Complete handshake and HTTPS success]
-    C --> E[SSH wraps the handshake]
-    E --> A[Both presets authenticate]
+```text
+Same REALITY account
+      |
+      +-- Direct, Chrome --> Missing handshake bytes
+      |
+      +-- Direct, Safari --> Complete handshake; HTTPS works
+      |
+      +-- SSH control path --> Both presets authenticate
 ```
 
 ### A second Windows comparison outside the US

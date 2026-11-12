@@ -6,17 +6,20 @@ We’ll rent a computer abroad, set up the VPN on it, and connect your phone or 
 
 That rented computer is the **server**. Hiddify is the **client** app on your device. The server stays on in the hosting company’s data centre; your own computer can be switched off once setup is done.
 
-```mermaid
-flowchart TB
-    device["Your phone or computer"]
-    provider["Your internet provider"]
-    server["Your VPN server abroad"]
-    hosting["Hosting provider and internet networks"]
-    website["Website"]
-    device --> provider
-    provider --> server
-    server --> hosting
-    hosting --> website
+```text
+Your phone / PC
+      |
+      | IPv4
+      v
+Your internet provider
+      |
+      | through internet networks
+      v
+Your VPN server abroad
+      |
+      | through its hosting provider and the internet
+      v
+Website
 ```
 
 Each arrow can cross other networks too. The VPN uses internet providers just like any other connection; it doesn’t go around them. The encrypted VPN connection runs from your device to the VPN server, through your provider.

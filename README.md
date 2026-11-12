@@ -8,35 +8,25 @@ You don’t need previous experience with servers. You will need a computer for 
 
 Without a VPN, your device connects to websites through your internet provider. With this setup, it first opens an encrypted connection to a computer you rent. That computer connects to the websites for you and sends their replies back.
 
-```mermaid
-flowchart LR
-    subgraph direct["Without a VPN"]
-        direction TB
-        dphone["Your phone"]
-        dprovider["Your internet provider"]
-        dnetworks["Other internet networks"]
-        dwebsite["Website"]
-        dphone --> dprovider
-        dprovider --> dnetworks
-        dnetworks --> dwebsite
-    end
+```text
+Without a VPN                With your VPN
 
-    subgraph vpn["With your VPN"]
-        direction TB
-        vphone["Your phone"]
-        vprovider["Your internet provider"]
-        vnetworks["Other internet networks"]
-        vserver["Your VPN server"]
-        vhosting["Hosting provider and internet networks"]
-        vwebsite["Website"]
-        vphone --> vprovider
-        vprovider --> vnetworks
-        vnetworks --> vserver
-        vserver --> vhosting
-        vhosting --> vwebsite
-    end
-
-    direct ~~~ vpn
+Your phone                   Your phone
+    |                            |
+    v                            v
+Your internet provider       Your internet provider
+    |                            |
+    v                            v
+Other internet networks      Other internet networks
+    |                            |
+    v                            v
+Website                      Your VPN server
+                                 |
+                                 v
+                             Hosting provider / internet
+                                 |
+                                 v
+                             Website
 ```
 
 These are simplified routes, not a list of every network along the way. **Your provider carries the traffic in both cases.** With the VPN on, the app’s encrypted connection runs all the way to your VPN server, through the provider’s network. The server then opens a separate connection to the website through its hosting provider. Replies travel back through the same stages.
@@ -57,7 +47,46 @@ There’s also a **control panel**: a website where you manage the server’s VP
 
 **One server is the easier place to start.** You rent a server abroad, and your device connects to it through your internet provider.
 
+```text
+Your phone / PC
+      |
+      | IPv4
+      v
+Your internet provider
+      |
+      | through internet networks
+      v
+Your VPN server abroad
+      |
+      | through its hosting provider and the internet
+      v
+Website
+```
+
+The encrypted VPN connection runs from your device to the foreign server, through your provider and the networks in between.
+
 **Two servers move the foreign connection off your phone.** Your device connects to a server in Russia, and that server passes the traffic to your server abroad.
+
+```text
+Your phone / PC
+      |
+      | IPv4
+      v
+Your internet provider
+      |
+      v
+Your server in Russia
+      |
+      | IPv6, through hosting providers and the internet
+      v
+Your server abroad
+      |
+      | IPv4, through its hosting provider and the internet
+      v
+Website
+```
+
+There are two encrypted VPN connections: device to Russian server, then Russian server to foreign server. IPv6 is needed only between the servers.
 
 The idea is to make the foreign VPN connection less obvious on your home or mobile provider’s network: the destination it sees is your Russian server, rather than a foreign hosting address. The connection abroad starts at the Russian server instead. That connection is still visible to its hosting provider and the networks along the way; a Russian address alone doesn’t hide VPN traffic.
 
@@ -80,19 +109,6 @@ The normal one-server setup also works over IPv4; it doesn’t require IPv6. The
 The two routes are outlined below. Follow one of them. The script shortcuts stay folded away unless you want to use them.
 
 ## Path 1 — One server
-
-```mermaid
-flowchart TB
-    device["Your phone or computer"]
-    provider["Your internet provider"]
-    server["Your VPN server abroad"]
-    hosting["Hosting provider and internet networks"]
-    website["Website"]
-    device --> provider
-    provider --> server
-    server --> hosting
-    hosting --> website
-```
 
 You pay for one server abroad. Your phone or computer connects to it, and it opens websites for you. Start here if you haven’t tried running your own VPN before.
 
@@ -123,23 +139,6 @@ Use your fresh VPS address. After checking the plan, replace `--plan` with `--ap
 [Full single-server walkthrough](docs/single-server.md) · [Optional single-server automation](docs/quick-start.md)
 
 ## Path 2 — Two servers
-
-```mermaid
-flowchart TB
-    device["Your phone or computer"]
-    provider["Your internet provider"]
-    entry["Your server in Russia"]
-    networks["Hosting providers and internet networks"]
-    exit["Your server abroad"]
-    onward["Hosting provider and internet networks"]
-    website["Website"]
-    device --> provider
-    provider --> entry
-    entry --> networks
-    networks --> exit
-    exit --> onward
-    onward --> website
-```
 
 You pay for two servers. Your device connects to the one in Russia, which passes the connection to the one abroad. Websites see the foreign server’s address. Our example uses Moscow; you can also connect that server to several countries later.
 
