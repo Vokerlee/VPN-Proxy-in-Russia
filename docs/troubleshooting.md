@@ -10,6 +10,14 @@ A server can answer ping or let you log in while its VPN connection fails. Those
 
 ![Check the local listener, remote port, account handshake and website request in order](../images/troubleshooting-path.svg)
 
+## Wi-Fi works but mobile data hangs
+
+Start with the [version and handshake table](handshakes-and-versions.md). Hiddify 5.5.5's newer hybrid ClientHello can be much larger than the older client's opening message. On a compatible older server, `keyshare=classical` requests the smaller one. Xray 26.9.9 rejects that option.
+
+In this deployment, Moscow on 26.7.28 with a classical phone profile produced a successful NL mobile test. Wi-Fi success, a green app button and a ping are separate observations. Record the mobile operator, phone OS, client/core versions and the exact new log error when a mobile request fails.
+
+Test one change at a time. If a website briefly loads and then stalls, capture the connection on the entry server while retrying on mobile data. Check whether the initial ClientHello is complete and whether later packets are acknowledged. A different fingerprint, Russian SNI or IPv6 route by itself provides no general guarantee.
+
 ## Hiddify: first check Outbound domain strategy
 
 **Initially reported as an Android improvement on 2026-11-07; the timeout later returned.** In **Hiddify → Settings → DNS → Outbound domain strategy**, select **IPv4 only**, reconnect, and test a website. If the server’s TCP port opens but websites still time out, check the fingerprint below too.

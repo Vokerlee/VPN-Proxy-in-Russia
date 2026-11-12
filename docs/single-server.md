@@ -1,4 +1,4 @@
-[← Two-hop setup](../README.md)
+[← Choose a setup](../README.md) · [Two-server path](two-hop-vpn.md)
 
 # Single-server VPN
 
@@ -17,6 +17,39 @@ Here, your own **VPN** is an encrypted connection to a server you control. Your 
 We use Ubuntu as the server's operating system. You do not need one specific Ubuntu version: choose a supported release available from your provider. The version used for the examples is not a requirement for your own computer or server.
 
 ![Four setup stages: get a server, install its dashboard, create an account, connect your device](../images/setup-roadmap.svg)
+
+## Set this up with scripts
+
+<details>
+<summary>Open the commands for the same single-server setup</summary>
+
+Use a fresh Ubuntu/Debian VPS with systemd and its public IPv4 address. An existing 3x-ui installation needs the manual path. Save the root login from your provider.
+
+**Windows PowerShell**, from the repository folder:
+
+```powershell
+.\scripts\Setup-Vpn.ps1 -ServerIp 203.0.113.10 -VpnPort 8443 -Target www.apple.com -CoreVersion 26.7.28 -KeyShare classical -Fingerprint safari -Clients desktop,phone
+```
+
+This prints the plan. Check the address, then repeat the command with **`-Apply`**.
+
+**Linux/macOS terminal**, from the repository folder:
+
+```bash
+python3 scripts/bootstrap_server.py --host 203.0.113.10 \
+  --vpn-port 8443 --target www.apple.com --core-version 26.7.28 \
+  --key-share classical --fingerprint safari --clients desktop,phone --plan
+```
+
+Check the plan, then replace **`--plan`** with **`--apply`**. Replace the documentation address with your own VPS address in either example.
+
+SSH asks for the root password privately. The helper installs the panel, verifies the selected core download, creates the two device accounts and prints the panel address and private output directory. Open **client-desktop.txt** or **client-phone.txt** there, copy its whole link, and import it into Hiddify with **+ → Clipboard**.
+
+Press **Connect**, open an IP-check page and confirm the server's exit address. Try a real website on Wi-Fi and mobile data. If a provider firewall blocks the printed VPN or panel port, allow that specific port in the provider dashboard.
+
+For an XHTTP experiment, add `-Transport xhttp` or `--transport xhttp` before applying. That profile uses an empty flow and path `/vpn`. [All options and recovery](automation.md#start-with-only-a-vps-ip-and-root-password)
+
+</details>
 
 ## Follow these steps in order
 
@@ -46,7 +79,7 @@ You will connect to the server through **SSH**, a secure way to administer it fr
 
 In 3x-ui, click **Inbounds → Add Inbound** and fill in the settings shown in the guide. An *inbound* is the server entry point that accepts your device's connection.
 
-The current starting preset is **TCP 8443, target/SNI www.apple.com, Safari fingerprint, and Vision flow**. Use separate **desktop** and **phone** accounts on the same inbound when connecting both devices. The guide explains how to verify the profile and refresh an existing import.
+The starting preset is **Xray 26.7.28, RAW on port 443 or 8443, target/SNI www.apple.com, Safari fingerprint, Vision flow and a classical Hiddify key share**. Check the core version before creating the profile. [Version and handshake explanation](handshakes-and-versions.md) Use separate **desktop** and **phone** accounts on the same inbound when connecting both devices. The guide explains how to verify the profile and refresh an existing import.
 
 The guide uses a connection type called **VLESS + REALITY**. You can follow its field-by-field instructions without learning the protocol first.
 
@@ -74,12 +107,16 @@ Already received a working connection profile from someone else? You can start a
 
 ## If something does not work
 
-**Hiddify times out? First check [Outbound domain strategy → IPv4 only](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only).** If that does not help, use [the troubleshooting guide](troubleshooting.md). It helps you distinguish a blocked server port, an incompatible client, a wrong profile, and a Windows proxy setting that still points at another app.
+**Wi-Fi works but mobile data fails? Start with [the core version and key-share mode](handshakes-and-versions.md).** For DNS failures, check [Outbound domain strategy → IPv4 only](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only). If that does not help, use [the troubleshooting guide](troubleshooting.md). It helps you distinguish a blocked server port, an incompatible client, a wrong profile, and a Windows proxy setting that still points at another app.
 
 Two common follow-up questions have their own illustrated pages:
 
 - [Make websites see the server's IPv4 address](force-ipv4.md).
 - [Understand the ports and what the Connect button changes](ports-and-modes.md).
+
+## Optional XHTTP entry
+
+The single-server helper accepts `--transport xhttp` or PowerShell `-Transport xhttp`. It creates an XHTTP + REALITY inbound with path `/vpn` and an empty client flow. Export its own matching profile. The tested single-server and mobile-entry baseline is RAW; try XHTTP as a separate controlled experiment. [Transport and handshake differences](handshakes-and-versions.md#raw-or-xhttp)
 
 ## Optional shortcuts and deeper reading
 

@@ -10,6 +10,8 @@ Run this walkthrough on the **Linux client machine**, not on a rented server (VP
 
 **Optional chapter: skip it for a normal Linux desktop VPN.** [Hiddify works on Linux](clients.md) and is the main guide’s client. Continue here only if you want a standalone proxy for terminal programs or a machine without a desktop.
 
+For a standalone Xray client, use the account's original **panel-profile.txt** or request a **hybrid** profile. A classical Hiddify link needs the Hiddify engine, whose profile helper option is `--engine hiddify`. The tested 26.7.28 server accepts both handshake forms; mobile filtering can still distinguish them. [Version and handshake guide](handshakes-and-versions.md)
+
 ## Install the official core
 
 Use the [official Xray installer](https://github.com/XTLS/Xray-install), inspect it, and install the core:

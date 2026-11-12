@@ -74,7 +74,7 @@ FIGURES = [
     ("3x-ui-first-visit", "Your first visit to the prepared panel", "3x-ui 3.8.5", ["Dashboard", "Inbounds", "Clients", "Outbounds", "Routing", "Xray Settings"], "Inbounds", [
         ("Sign in through the public panel URL", "Login", "Use the generated panel account, not the SSH root password."),
         ("Open the existing listener", "Inbounds  >  Personal VPN", "The setup helper already created it; do not add a duplicate."),
-        ("Expand the first-device client", "Info / Share  >  Copy", "Or use the generated private hiddify-profile.txt export.")]),
+        ("Expand the desktop client", "Info / Share  >  Copy", "Import the generated private client-desktop.txt export.")]),
     ("hostvds-new-server", "Example: create a server on HostVDS", "HostVDS navigation example; provider labels may change", ["Servers", "New Instance", "Configuration", "Operating Systems"], "Servers", [
         ("Open the server list", "Servers  >  New Instance", "This starts the provider's server-creation form."),
         ("Choose where it runs and its size", "Region + configuration", "Example: Europe / USA; a small personal-server plan."),

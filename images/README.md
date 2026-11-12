@@ -1,46 +1,52 @@
-# Images in this guide
+# Screenshots and diagrams
 
-The SVGs are original **navigation diagrams and conceptual network schemes**, not captured screenshots. Button diagrams are version-labeled. They show button names and the order of actions rather than claiming pixel-perfect layouts. They contain only placeholder values. The old screenshots were removed from the current tree because their layouts and credential displays no longer made a reliable guide; Git history retains them.
+The existing SVGs are navigation diagrams. Their captions describe their purpose and checked UI version. Real screenshots will show the forms used by the walkthroughs.
 
-The 3x-ui diagrams describe 3.8.5; Hiddify diagrams describe 5.5.5. Windows shows the Windows 11 navigation path. Source-backed text next to each image explains alternatives when labels move.
+## Screenshots to send in order
 
-## Rebuild the illustrations
+Use **3x-ui 3.8.5** and **Hiddify 5.5.5**, or include the version you actually run. Keep the page title and relevant button visible. Two crops of a long form are fine.
+
+### Four screens used by both paths
+
+| Order | Open this screen | What should be visible | Suggested filename |
+|---|---|---|---|
+| 1 | **3x-ui Dashboard** | Panel version, **Xray core version** and running status. For the classical entry, show **26.7.28**. | `entry-core-version.png` |
+| 2 | **Inbounds → device entry → Edit** | Remark, listen address, **443 or 8443**, **VLESS**, **RAW/TCP**, **REALITY**, target, server names and fingerprint. A second crop can show the device's **Vision** flow. | `entry-raw-reality.png` |
+| 3 | **Inbounds → expand device clients → phone → Info / Share** | Which account is being exported and the **Copy** action. Cover the whole private URL and QR. | `device-profile-copy.png` |
+| 4 | **Hiddify → Profiles → ⋯ → Edit → Config Editor → Text** | A crop around **tls → reality → key_share: classical**. Also capture **+ → Clipboard** and the home screen with the selected profile and **Connect** button if possible. | `hiddify-classical-profile.png` |
+
+These take the newcomer from checking the core to importing the right account. The single-server guide uses them directly. For that path, choose its foreign server panel for screenshots 1–3.
+
+### Four additional screens for the two-server path
+
+| Order | Panel and screen | What should be visible | Suggested filename |
+|---|---|---|---|
+| 5 | **Foreign exit → Inbounds → Relay nl → Edit** | Assigned **IPv6 Listen IP**, port **443**, **VLESS**, **XHTTP**, path **/relay-nl**, mode **auto**, REALITY target/SNI and the relay client's **empty flow**. Use two crops if needed. | `exit-xhttp-inbound.png` |
+| 6 | **Moscow → Outbounds → + Outbounds → JSON** | The share-link input and **Import** button inside the add-outbound form. Cover any pasted profile. | `moscow-import-relay.png` |
+| 7 | **Moscow → Outbounds → relay-nl → Edit** | The foreign **IPv6 address**, port, XHTTP path, **stream-one**, empty flow and REALITY SNI/fingerprint. An extra JSON crop can show `sendThrough` and `sockopt.domainStrategy: ForceIPv6`. | `moscow-xhttp-outbound.png` |
+| 8 | **Moscow → Routing** | The rule list in order and an open rule with **Inbound Tags**, optional **User** account labels and **Outbound Tag**. Show the specific FR user rule above the general NL rule when sharing port 443. | `moscow-country-routing.png` |
+
+For the two-server path, screenshot 1 should come from Moscow. An additional exit-dashboard capture showing core **26.9.9** helps explain why the two cores have different versions.
+
+### Useful follow-up screens
+
+- **Foreign exit → Outbounds → direct → Edit**, with **ForceIPv4** visible.
+- **Foreign exit → Routing**, showing the Moscow IPv6 source allow rule and the blocked rule below it.
+- **Provider dashboard → IPv6**, showing where the assigned address/prefix and gateway are supplied. Replace values with documentation addresses before publishing.
+- **Hiddify → Settings → Inbound → Service mode**, for the desktop VPN/TUN instructions.
+- **Hiddify → Settings → DNS → Outbound domain strategy**, for the optional IPv4 DNS check.
+- **Hiddify → Logs** after a failed mobile attempt, with the actual error and timestamp.
+
+## Before sharing or committing
+
+Cover UUIDs, private keys, short IDs, complete VLESS links, QR codes, passwords, API tokens, subscriptions and private panel paths with opaque blocks. Crop browser address bars containing credentials or panel paths. Use demo names such as `desktop`, `phone` and `FR-phone`.
+
+For published examples, replace live addresses with `203.0.113.10` or `2001:db8:2::1`. Keep the original screenshots with secrets outside Git. Supply the app/panel version and capture date for each image.
+
+## Rebuild the existing diagrams
 
 ```bash
 python3 scripts/render_illustrations.py
 ```
 
-Run that command from the repository root. Only the known generated SVGs in this folder are rewritten. No image-generation service, browser login, or application access is needed.
-
-## Add real screenshots when available
-
-Fresh screenshots can supplement these diagrams. Capture the actual version, keep visible button labels readable, and record the version/date in the caption. Do not pass diagrams off as screenshots.
-
-## 3x-ui screens for the two-hop guide
-
-Capture these screens in 3x-ui **3.8.5**. Keep the page heading, the relevant form fields and the save or copy button in frame. Use a demo account where possible. Suggested filenames below tell you where each image belongs.
-
-| Panel | Open this screen | Keep visible | Suggested file |
-|---|---|---|---|
-| NL | **Inbounds → Relay nl → Edit** | Remark, Listen IP, port 443 and protocol VLESS | `nl-relay-listener.png` |
-| NL | In the same form, scroll to **Transport / Security → REALITY** | TCP or RAW, REALITY, Target, Server Names, fingerprint if shown and the key generation button. Cover key values and short IDs. | `nl-relay-reality.png` |
-| NL | **Inbounds → Relay nl → expand clients → relay-nl → Info / Share** | The account row and the Copy button. Cover the entire link and QR code. | `nl-relay-share.png` |
-| NL | **Outbounds → direct → Edit** | Tag `direct`, protocol `freedom` and Strategy set to `ForceIPv4` | `nl-ipv4-exit.png` |
-| NL | **Routing → edit the rule for the NL relay** | Inbound Tags, Source IP with the Moscow source represented by a placeholder, and Outbound Tag `direct`. Capture the rule list separately if showing the order of the allow and blocked rules. | `nl-relay-source-rule.png` |
-| Moscow | **Outbounds → + Outbounds → JSON** | The empty share-link field and its **Import** button. Open the add form first. | `moscow-import-relay.png` |
-| Moscow | **Outbounds → relay-nl → Edit → Basic** | Tag, IPv6 address field, port 443, VLESS and Vision flow. Cover the account UUID and any keys. | `moscow-relay-outbound.png` |
-| Moscow | **Inbounds → VLESS Moscow NL → Edit** | Remark, the listen address field, port 443, REALITY, Yandex target and Safari fingerprint if shown. A separate crop can show the client’s Vision flow. | `moscow-nl-listener.png` |
-| Moscow | **Routing → edit the NL route** | **Inbound Tags** set to the Moscow NL entry and **Outbound Tag** set to `relay-nl`. Include the rule’s position if the list fits in a separate capture. | `moscow-nl-routing.png` |
-| Moscow | **Inbounds → VLESS Moscow NL → expand clients → desktop → Info / Share** | The device account row and the Copy button. Cover the entire link and QR code. | `moscow-device-share.png` |
-
-If you are starting with three screenshots, capture **NL relay Share**, **Moscow + Outbounds → JSON**, and **Moscow Routing**. Together they show where the relay link comes from, where it goes, and how device traffic reaches it. Place the NL screenshots under **On NL, create the relay account** and the Moscow screenshots under **On Moscow, connect the device inbound to NL**. [Two-hop panel steps](../docs/two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
-
-## Other useful captures
-
-For the single-server guide, capture **Inbounds → Add Inbound**, the REALITY fields, the client’s Vision flow and the account’s Copy action. For the client guide, capture **Hiddify → + → Clipboard**, the selected profile and the **Connect** button. Capture **Settings → Inbound → Service mode** or **Settings → DNS → Outbound domain strategy** for the corresponding troubleshooting steps.
-
-Redact private keys, UUIDs, whole VLESS links, QR codes, passwords, tokens, subscription URLs, panel URL paths, and account identifiers. Crop the browser address bar and cover sensitive fields with solid opaque redactions. A public key alone is not a private key, but a complete profile still needs protection. Prefer documentation/demo accounts over production data.
-
-Keep originals with credentials out of the repository, including Git history. Genuine new screenshots require a contributor's captures; none were taken from the user's applications during this repository-only update.
-
-`hiddify-outbound-ipv4.svg` illustrates the author’s initial Android DNS check, whose reported improvement later stopped working: **Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only**, then reconnect. Keep this distinct from `3x-ui-force-ipv4.svg`, which changes the server’s website connections. Both are navigation diagrams, not captured screenshots.
+This rewrites the known SVGs. Captions should continue identifying them as diagrams. Real screenshots can be placed next to the matching instructions after they are supplied and redacted.

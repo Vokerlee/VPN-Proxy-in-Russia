@@ -208,6 +208,12 @@ For Hiddify's Windows VPN service, the checked privileged engine also wrote logs
 
 The [beginner fingerprint walkthrough](troubleshooting.md#reality-chrome-times-out-but-safari-works) shows how to select Safari and re-export the profile. Compatibility still depends on the actual client implementation: a preset working in Hiddify's fork does not establish that stock sing-box or every Xray release emits the same compatible handshake.
 
+## Classical and hybrid key shares
+
+The browser preset and the key-share mode are separate parts of ClientHello. In our controlled capture, Chrome from Xray 25.1.30 produced a 534–598-byte TLS record. Hiddify 5.5.5's Chrome record was 1,788–1,820 bytes and included a 1,216-byte X25519MLKEM768 share. Both advertised the same cipher list, SNI and ALPN.
+
+Hiddify's classical mode removes the ML-KEM component while retaining X25519 and TLS encryption. The server must accept it. The full [handshake and version guide](handshakes-and-versions.md) explains the post-quantum algorithm, exact measurements, compatibility boundary and matching profile options.
+
 ## Why a valid profile can stop working after an update
 
 Configuration compatibility and wire compatibility are different contracts. A parser can accept `security=reality` and `fp=chrome` while the engine emits a ClientHello that the server's newer policy rejects.

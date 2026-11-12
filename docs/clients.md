@@ -25,7 +25,7 @@ On Windows, install the Windows app. You do not need WSL (Windows Subsystem for 
 2. Open Hiddify and click **+ → Clipboard** (shown as **Add from clipboard** in some builds).
 3. Select the imported profile, for example **Personal VPN**.
 
-On a phone, you can scan the account’s QR code instead of copying the link. Both contain the same connection settings. Keep the link and QR code private: anyone with them can use that account. The dashboard’s browser address is a different link and cannot be imported as a VPN profile.
+On a phone, you can scan a QR generated from the intended device link. For classical mode, use the adjusted Hiddify link or a QR generated from it. A dashboard QR can contain the original hybrid export; check `keyshare=classical` before importing. Keep the link and QR code private: anyone with them can use that account. The dashboard’s browser address is a different link and cannot be imported as a VPN profile.
 
 Keep the name supplied by 3x-ui. It can combine the inbound and device account, such as **Personal VPN-desktop** or **Personal VPN-phone**. Use your own device's export; another person's similarly named profile can contain different credentials. Import the whole link, including its name and any `spx` parameter, rather than rebuilding it by hand.
 
@@ -34,6 +34,14 @@ For the two-hop setup, import the **Moscow device account**. The tested NL profi
 ![Hiddify: New profile, Add from clipboard, select Personal VPN](../images/hiddify-import.svg)
 
 **A server outside the US can need Safari too.** If its TCP port opens but Hiddify still times out, follow [the Safari export steps](troubleshooting.md#reality-chrome-times-out-but-safari-works), then import the new link. This also fixed the tested non-US connection. Changing the panel setting alone leaves your phone’s old profile unchanged.
+
+## Check the profile's handshake mode
+
+If your server uses the tested **Xray 26.7.28** preset, import the helper's **client-phone.txt** or **client-desktop.txt**, or the device link supplied by the owner. It includes `keyshare=classical`. Hiddify's saved JSON should show `"key_share": "classical"` inside **tls → reality**. The server on **26.9.9** needs a hybrid profile instead. [Versions and handshake sizes](handshakes-and-versions.md)
+
+To inspect a saved local profile in Hiddify 5.5.5, open **Profiles → ⋯ → Edit**, then choose **Config Editor → Text**. Locate the `tls.reality` object. Save a backup of the original export before editing. Use a separate account for each device.
+
+Test the same phone once on Wi-Fi and once with Wi-Fi switched off. A successful PC check establishes the PC route; the phone's mobile route needs its own successful website request.
 
 ## 3. Important: set Outbound domain strategy to IPv4 only
 

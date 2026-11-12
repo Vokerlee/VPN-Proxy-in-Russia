@@ -12,6 +12,8 @@ It installs **3x-ui**, the server's browser dashboard, and generates a connectio
 
 An existing 3x-ui installation is a different situation. The helper recognizes it and stops before resetting it. If you already have a panel, use [the existing-server walkthrough](server-inbound.md) and [Hiddify setup](clients.md); do not erase a working VPS to make an installer happy.
 
+The current fresh-server default pins **Xray 26.7.28** independently of **3x-ui 3.8.5** and writes a **classical Hiddify profile**. Keep the panel export in `panel-profile.txt`; import `hiddify-profile.txt`, whose query includes `keyshare=classical`. [Why the versions matter](handshakes-and-versions.md)
+
 ## Before the first command
 
 Download this repository using Git or GitHub's **Code → Download ZIP**, extract it, and open a terminal in the folder containing `README.md` and `scripts/`.
@@ -67,14 +69,15 @@ Keep the terminal open. A fresh installation can take several minutes. The helpe
 
 ## What the helper prepares for you
 
-The default setup uses the version this guide describes, **3x-ui 3.8.5**, rather than silently following whatever a future latest release changes. It installs the official release through the official installer, then configures the new installation through its supported CLI and API.
+The default setup uses the version this guide describes, **3x-ui 3.8.5**, rather than silently following whatever a future latest release changes. It installs the panel through its official installer, selects the pinned core with SHA-256 verification, then configures the new installation through its supported CLI and API.
 
 You get:
 
-- One VLESS + RAW/TCP + REALITY inbound and one `xtls-rprx-vision` account.
-- Public VPN TCP port **8443** with the commands above. An occupied explicitly selected port stops setup; only a free 443 may be selected instead.
+- One VLESS + RAW/TCP + REALITY inbound and separate `desktop` and `phone` accounts with Vision flow.
+- Xray **26.7.28**, a **classical** Hiddify link, and a separately saved original panel export.
+- Public VPN TCP port **8443** with the commands above. An occupied explicitly selected port stops setup; a busy default 443 can select a free 8443.
 - Generated UUID, REALITY keys, short ID, and panel credentials. The panel URL path is `/`.
-- The **Safari** fingerprint and **www.apple.com** target/SNI selected explicitly above. The bare helper's regional policy is described in the [automation guide](automation.md#choose-the-client-fingerprint-by-server-country); country is not a substitute for a real client test.
+- The **Safari** fingerprint and **www.apple.com** target/SNI selected explicitly above. The optional auto fingerprint policy is described in the [automation guide](automation.md#choose-the-client-fingerprint-by-server-country); country is not a substitute for a real client test.
 - **ForceIPv4** on the server’s outgoing path, so hostname-based website requests use IPv4.
 - A public HTTP panel on **YOUR_SERVER_IP:27297**, opened directly in a browser.
 - The VPN and panel TCP ports allowed in an existing UFW firewall, if active. UFW is Ubuntu’s firewall-management tool; the helper does not install or enable it. Existing SSH rules and custom/provider firewalls are not reset.
@@ -104,7 +107,7 @@ Open the generated `server.json` locally and find `panel_username` and `panel_pa
 
 In the sidebar, click **Inbounds**. You should see **Personal VPN**, enabled, on the VPN port recorded in `server.json`. The account already exists; do not add a duplicate inbound.
 
-![First visit to 3x-ui: Login, Inbounds, Personal VPN, then the first-device share action](../images/3x-ui-first-visit.svg)
+![First visit to 3x-ui: Login, Inbounds, Personal VPN, then the desktop account share action](../images/3x-ui-first-visit.svg)
 
 **Optional check:** **Outbounds → direct → Edit → Strategy** shows the IPv4 exit setting. It was applied by the helper; the [ForceIPv4 guide](force-ipv4.md) explains the setting and effective socket option.
 

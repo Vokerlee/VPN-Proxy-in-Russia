@@ -12,6 +12,8 @@ The dashboard runs **Xray**, the network engine that handles the connections. Th
 
 For a two-hop setup, use this page to find the form fields and follow the role-specific addresses and ports in the relay guide. [Moscow and NL panel steps](two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
 
+Check **Dashboard → Xray version** before continuing. The working mobile preset uses **26.7.28** with a classical Hiddify profile. A **26.9.9** entry requires a hybrid handshake. The panel version and server core version are separate. [Choose a matching combination](handshakes-and-versions.md)
+
 ## 1. Open the correct form
 
 1. Open the dashboard using the browser address from [Step 2](server-setup.md#required-open-the-dashboard-safely-in-your-browser). The ordinary setup uses the server's public IP and panel port; keep a forwarding window open only if you chose the optional private setup. Sign in with the panel credentials.
@@ -100,7 +102,9 @@ The **connection profile** is a private link containing the account’s connecti
 1. In **Inbounds**, expand the inbound’s client list if needed.
 2. Find the intended client row.
 3. Open its **Info / connection details** action, or the QR/share action. Depending on the layout, actions may be in **⋯**.
-4. Copy the **VLESS URL**, or scan the client's QR code in Hiddify.
+4. Copy the **VLESS URL** for that account.
+5. For the compatible classical preset, add `&keyshare=classical` before the link's `#` name. If the link already has a `keyshare` parameter, edit that value instead of adding a second one. Keep the original panel link privately.
+6. Import the adjusted link into Hiddify. A panel QR contains the panel's original export, so verify the saved profile's key-share value when using it.
 
 A placeholder link looks like this; import the panel's real export rather than copying this example:
 
@@ -113,6 +117,10 @@ Check server IP, VPN port, UUID, Flow, REALITY public key, short ID, SNI, finger
 For a desktop and phone, use two separately named client accounts, `desktop` and `phone`, on this same inbound. Export each account's own link; each device keeps its own credentials and can be revoked separately. Both accounts can use the same listener. When replacing a test account, verify the new accounts before removing the test account from the inbound and central client list.
 
 ![Client details actions: Copy VLESS URL or Show QR code](../images/3x-ui-client-share.svg)
+
+## Optional XHTTP instead of RAW
+
+Choose **XHTTP** in the transport field, set **Path** to `/vpn`, choose server mode **auto**, and keep **REALITY** as security. The XHTTP account's **Flow** is empty. Export and import the new XHTTP link; it contains a different transport and path. For this guide's RAW accounts, keep Vision flow. This entry variant is available in the helper and needs an end-to-end test on the intended network.
 
 ## 6. Optional: check the server listener from the terminal
 

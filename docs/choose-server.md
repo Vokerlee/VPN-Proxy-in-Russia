@@ -12,6 +12,8 @@ Your own computer remains as it is. You can rent and administer an Ubuntu server
 
 On this page, create **one** server using either the HostVDS example or another provider, then save its login details.
 
+For the [two-server path](two-hop-vpn.md), rent both the Moscow entry and foreign exit, and save each server's login separately. Return to that path for its provider-specific IPv6 checks and panel-linking steps. For the [single-server path](single-server.md), one foreign server is enough.
+
 ## Choose a provider and a location
 
 The original setup in this project used [HostVDS](https://hostvds.com/) for a server abroad. It is an example, not a requirement. Any provider with suitable Linux servers, a public IP, enough included data transfer, and working access from your network can fit this guide.

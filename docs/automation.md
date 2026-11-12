@@ -12,13 +12,13 @@ The **setup helper** installs server software only when explicitly applied. The 
 
 ## Set up the two-hop relay
 
-Use [the two-hop walkthrough](two-hop-vpn.md) and `python3 scripts/bootstrap_relay.py --help`. It supports a reusable Moscow hub, separate country routes on 443/8443, explicit management proxies, private backups and canonical client exports. The original single-server helpers remain available. IPv6 activation and OS configuration are the user's provider-specific task; the relay helper only checks existing addresses and routes.
+Use [the two-hop walkthrough](two-hop-vpn.md) and `python3 scripts/bootstrap_relay.py --help`. It supports a reusable Moscow hub, separate country routes on 443/8443, explicit management proxies, private backups and canonical client exports. Single-server and two-server setup are equal starting choices. IPv6 activation and OS configuration are the user's provider-specific task; the relay helper only checks existing addresses and routes.
 
-The relay route starts at a Moscow IPv4 inbound, crosses to the foreign VPS on IPv6, then exits over IPv4. Use the foreign relay account only in Moscow's outbound; export separate Moscow device accounts for Hiddify. Pass `--entry-port 443` for NL and `--entry-port 8443` for FI. The shared NL and FR layout uses account-based rules on port 443. [See the port map](schemes/README.md#add-a-country) Keep an existing single-server route as a separate mode.
+The relay route starts at a Moscow IPv4 inbound, crosses to the foreign VPS on IPv6, then exits over IPv4. Use the foreign relay account only in Moscow's outbound; export separate Moscow device accounts for Hiddify. Pass `--entry-port 443` for NL and `--entry-port 8443` for FI. The shared NL and FR layout uses account-based rules on port 443 through `--shared-entry` and distinct FR account labels. [See the port map](schemes/README.md#add-a-country) Keep an existing single-server route as a separate mode.
 
 ## Start with only a VPS IP and root password
 
-This section is for the original single-server mode.
+This section is for the single-server path.
 
 Follow the [illustrated quick start](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
 
@@ -26,9 +26,30 @@ The launchers use **SSH**, an encrypted terminal connection, through the operati
 
 The panel uses the root URL path `/` and listens publicly. Open the printed `http://SERVER_IP:PANEL_PORT/` directly in your browser; no SSH forward is required. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
 
-The helper retrieves the **actual 3x-ui client export**, including its display name and `spx` value, rather than constructing a lookalike link. Keep that name when importing: for example, an inbound named `Personal VPN` with account `first-device` may export **Personal VPN-first-device**. Different people and devices must receive their own account's export; the inbound name alone does not identify whose credentials a profile uses.
+The helper retrieves the **actual 3x-ui client export**, including its display name and `spx` value. It saves that original in **panel-profile.txt** and adds the selected client-only key-share option to **hiddify-profile.txt**. Keep that name when importing: for example, an inbound named `Personal VPN` with account `desktop` may export **Personal VPN-desktop**. Different people and devices must receive their own account's export; the inbound name alone does not identify whose credentials a profile uses.
 
-The pinned remote payload is `scripts/provision_remote.py`; it is not a workstation setup program and refuses direct invocation without the launcher's supplied options. Review the code and pinned installer before applying it. This path installs 3x-ui and its bundled Xray version; it does not silently upgrade an existing installation or promise automatic compatibility with every future client.
+The pinned remote payload is `scripts/provision_remote.py`; it is not a workstation setup program and refuses direct invocation without the launcher's supplied options. Review the code and pinned installer before applying it. This path installs pinned **3x-ui 3.8.5**, then independently downloads the selected official Xray release, verifies its SHA-256 digest from GitHub release metadata and checks its configuration before activation. The previous binary is backed up on the VPS. The service uses `GODEBUG=multipathtcp=0`. Existing panel installations are refused by this fresh-server helper.
+
+### Core version, key share and transport
+
+The single-server defaults are **Xray 26.7.28**, **Safari**, **RAW**, **classical** Hiddify profiles and separate **desktop** and **phone** accounts. Set `--clients` / `-Clients` for other account labels. Select them explicitly when saving a reusable command:
+
+```bash
+python3 scripts/bootstrap_server.py --host 203.0.113.10 \
+  --core-version 26.7.28 --key-share classical --fingerprint safari --transport raw --plan
+```
+
+```powershell
+.\scripts\Setup-Vpn.ps1 -ServerIp 203.0.113.10 -CoreVersion 26.7.28 -KeyShare classical -Fingerprint safari -Transport raw
+```
+
+For the compatible newer-core path, select **`--core-version 26.9.9 --key-share hybrid`** or **`-CoreVersion 26.9.9 -KeyShare hybrid`**. The scripts reject a classical request with a core that requires the hybrid share.
+
+Single-server XHTTP is optional. Add **`--transport xhttp --xhttp-path /vpn`** or **`-Transport xhttp -XhttpPath /vpn`**. It creates an empty-flow XHTTP account, while RAW accounts use Vision. Re-export the matching client after a transport change. The working mobile entry recorded in this guide used RAW. [Measurements and version limits](handshakes-and-versions.md)
+
+The relay helper defaults to **`--hub-core-version 26.7.28 --entry-key-share classical --relay-transport xhttp --exit-core-version 26.9.9`**. Select **`--relay-transport raw`** for the older inter-server mode. An existing panel's core must match the requested version; this helper adds routes and refuses an implicit core replacement. IPv6 addresses and routes are always configured manually first.
+
+For a third country sharing the RAW entry, use **`--route fr --entry-port 443 --shared-entry --clients FR-desktop,FR-phone`** with that country's server addresses. The helper inserts an account-specific rule above the inbound's general country route, reuses its existing listener and backs up its prior state.
 
 ### Recommended preset and legacy regional defaults
 
@@ -46,7 +67,7 @@ Add `-Apply` / `--apply` only for an authorized fresh VPS. This sets the new inb
 
 ### Choose the client fingerprint by server country
 
-During Apply, the shared payload looks up the **VPS IP**, not your computer's location, using [Country's public-IP API](https://country.is/). The default policy selects **Safari for `US`** and **Chrome for other countries**. The panel's exported client metadata and the generated share link receive the same choice. The resolved country and fingerprint are also saved in private `server.json`.
+During Apply, the shared payload looks up the **VPS IP**, not your computer's location, using [Country's public-IP API](https://country.is/). With **`--fingerprint auto`** or **`-Fingerprint auto`**, the legacy policy selects **Safari for `US`** and **Chrome for other countries**. The normal launcher default is explicit Safari. The panel's exported client metadata and the generated share link receive the same choice. The resolved country and fingerprint are also saved in private `server.json`.
 
 Use these options to skip geolocation or override its answer. The examples show plan mode; add `-Apply` / `--apply` only for the fresh server you intend to provision.
 
@@ -60,7 +81,7 @@ python3 scripts/bootstrap_server.py --host YOUR_SERVER_IP --server-country US --
 python3 scripts/bootstrap_server.py --host YOUR_SERVER_IP --server-country DE --fingerprint firefox --plan
 ```
 
-An explicit fingerprint always wins and does not require geolocation. Available explicit presets are `chrome`, `safari`, `firefox`, `edge`, `ios`, `android`, `random`, `randomized`, `360`, and `qq`; client-core support must still be checked. With both choices left at `auto`, an unavailable, malformed, or unknown-country lookup stops setup before package installation instead of guessing. Supply the provider's country code or an explicit preset to continue. Plan mode remains offline.
+An explicit fingerprint always wins and does not require geolocation. Available explicit presets are `chrome`, `safari`, `firefox`, `edge`, `ios`, `android`, `random`, `randomized`, `360`, and `qq`; client-core support must still be checked. With both choices explicitly set to `auto`, an unavailable, malformed, or unknown-country lookup stops setup before package installation instead of guessing. Supply the provider's country code or an explicit preset to continue. Plan mode runs locally.
 
 This regional policy is an initial selection, not evidence that all US networks reject Chrome or that every other preset works everywhere else. The controlled comparisons found Chrome/Safari differences on both a US and a non-US endpoint. If your actual Hiddify test needs Safari, use the explicit `--fingerprint safari` / `-Fingerprint safari` override during fresh setup. For an existing server, change its export in the panel and reimport it; do not rerun the fresh-server installer. Test a real HTTPS request after import; see [what a TLS fingerprint changes](xray-internals.md#what-a-tls-fingerprint-changes-and-why-chrome-can-fail). Helpers that inspect or convert an existing profile preserve its selected fingerprint rather than silently replacing it according to geography.
 
@@ -133,17 +154,34 @@ If it already exists, check its permissions rather than assuming `mkdir` succeed
 
 Inspection validates the UUID, REALITY key shape, short ID, SNI, transport and flow. It does not verify that the server actually has those values. `inspect --connect` also attempts TCP to the selected VPN port; the output explicitly distinguishes this from authentication.
 
-This helper intentionally supports the guide's **VLESS + RAW/TCP + REALITY + Vision + encryption=none** profile. It rejects other transports/encryption choices instead of silently producing an unsuitable configuration.
+The helper supports **VLESS + REALITY + encryption=none** with RAW (Vision or empty flow) and basic XHTTP (empty flow, path, mode and optional Host). Advanced XHTTP `extra` settings require the client UI. Use the Hiddify engine for a classical profile.
 
 ## Generate a client configuration
 
 ```bash
-python3 scripts/vpn_profile.py config --output .secrets/client.json --port 10801
+python3 scripts/vpn_profile.py config --engine xray --link-file .secrets/panel-profile.txt --output .secrets/client.json --port 10801
 ```
 
 Paste the link at the hidden prompt. Or add `--link-file .secrets/profile.txt`. The generated file listens on **127.0.0.1 only** and contains the account credentials, so do not publish it. The helper's default port is **10809**; the command above explicitly selects the Linux walkthrough's **10801**.
 
 Existing output is refused. If you deliberately want to replace it, `--overwrite` first saves a uniquely named backup. No service is restarted. To install the result as a Linux service configuration, follow [the Linux walkthrough](linux-xray.md#put-your-account-settings-in-a-client-file).
+
+### Classical profiles need the Hiddify engine
+
+The profile helper reads RAW, basic XHTTP and the key-share option. A classical profile needs **`--engine hiddify`**, because generating an ordinary Xray configuration cannot enforce Hiddify's classical-only setting. The helper rejects that mismatch instead of dropping the option.
+
+```bash
+python3 scripts/vpn_profile.py config --engine hiddify --link-file .secrets/hiddify-profile.txt --output .secrets/hiddify-test.json
+python3 scripts/vpn_profile.py test --engine hiddify --hiddify /path/to/HiddifyCli --link-file .secrets/hiddify-profile.txt
+```
+
+On Windows, run Windows Python and pass the installed CLI path:
+
+```powershell
+py scripts/vpn_profile.py test --engine hiddify --hiddify 'C:\Program Files\Hiddify\HiddifyCli.exe' --link-file .secrets/hiddify-profile.txt
+```
+
+This starts a separate `HiddifyCli srun` child on a temporary loopback port and closes that child after the request. It exercises the saved profile's key share, transport, path and flow. The ordinary `--engine xray` path remains available for hybrid profiles.
 
 ## Test a real authenticated tunnel
 
@@ -171,7 +209,7 @@ A Linux test from WSL and a Windows test exercise different native cores and OS 
 
 ## Repair Hiddify preferences on Windows
 
-**Optional fallback, not the first Hiddify fix.** First set [Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only) and reconnect. That resolved the author’s Android connection; this Windows-only helper does not set that option.
+**Optional fallback, not the first Hiddify fix.** First set [Hiddify → Settings → DNS → Outbound domain strategy → IPv4 only](clients.md#3-important-set-outbound-domain-strategy-to-ipv4-only) and reconnect. That briefly helped an earlier Android test. For mobile handshake failures, check the [version and key-share table](handshakes-and-versions.md) first. This preferences helper changes DNS/service preferences; the profile's key-share field is a separate setting.
 
 Read the [Hiddify recovery explanation](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) first. Start with a preview from PowerShell:
 

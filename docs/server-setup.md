@@ -12,6 +12,8 @@ UI instructions in this guide are based on **3x-ui 3.8.5**, checked on **2026-11
 
 **Required here:** connect over SSH, install and open the dashboard, and choose the VPN port (sections 2–4). The other sections are optional background, security improvements, or extra checks. Longer alternatives are closed below so you can follow the main path without reading them.
 
+For the [two-server path](two-hop-vpn.md), prepare the dashboard on both VPSs, select the role's core version and return to the two-server panel-linking steps. The foreign relay account is created there.
+
 ## 1. The ordinary setup: one server, one app
 
 Use your existing rented server (**VPS**) and install **Hiddify**, the VPN app, on each device you want to connect. Windows and Linux desktops follow the same path. You do not need another server.
@@ -70,8 +72,8 @@ Run `apt upgrade -y` if you want to update existing packages now. If an update r
 Use the [official 3x-ui repository](https://github.com/MHSanaei/3x-ui) and its [release instructions](https://github.com/MHSanaei/3x-ui/releases). Download and run the installer:
 
 ```bash
-curl -fL https://raw.githubusercontent.com/MHSanaei/3x-ui/main/install.sh -o /tmp/3x-ui-install.sh
-bash /tmp/3x-ui-install.sh
+curl -fL https://raw.githubusercontent.com/MHSanaei/3x-ui/v3.8.5/install.sh -o /tmp/3x-ui-install.sh
+bash /tmp/3x-ui-install.sh v3.8.5
 ```
 
 The installer runs with administrator access, so use the official source linked above. **Optional review:** after downloading and before running it, `less /tmp/3x-ui-install.sh` lets you read the script; press `q` to exit. Record the installed version if you later need troubleshooting help.
@@ -146,6 +148,12 @@ The panel port is an administration port. Do not put it in the VPN client's serv
 If you lose the panel URL or credentials, run `x-ui` over SSH and use the menu's settings/reset options. Do not assume the installer always chooses the same defaults.
 
 ![Panel login walkthrough: full URL, credentials, and Login](../images/3x-ui-panel-login.svg)
+
+### Required: choose the core version for your profile
+
+After the panel starts, record its **Xray version** on the dashboard. For the tested classical mobile setup, select **Xray 26.7.28** in the core version control. The fresh-server helper downloads and verifies that exact version independently of 3x-ui. If you use an existing server, back up the panel and original core before changing it, and check both desktop and phone afterward.
+
+Use the [version table](handshakes-and-versions.md#match-the-client-option-to-the-server) to choose between classical and hybrid profiles. An ordinary software update can change this compatibility.
 
 ## 4. Choose the VPN port
 
