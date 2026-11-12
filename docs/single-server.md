@@ -7,22 +7,32 @@ We’ll rent a computer abroad, set up the VPN on it, and connect your phone or 
 That rented computer is the **server**. Hiddify is the **client** app on your device. The server stays on in the hosting company’s data centre; your own computer can be switched off once setup is done.
 
 ```text
-Your phone / PC
-      |
-      | IPv4
-      v
-Your internet provider
-      |
-      | through internet networks
-      v
-Your VPN server abroad
-      |
-      | through its hosting provider and the internet
-      v
-Website
+            One server
+         1 VPN connection
+
+         Your phone / PC
+                |
+                | VPN over IPv4
+                v
+      Your internet provider
+                |
+                v
+        Internet networks
+                |
+                v
++--------------------------------+
+|       Your server abroad       |
+|    VPN connection ends here    |
++--------------------------------+
+                |
+                v
+   Hosting provider / internet
+                |
+                v
+             Website
 ```
 
-Each arrow can cross other networks too. The VPN uses internet providers just like any other connection; it doesn’t go around them. The encrypted VPN connection runs from your device to the VPN server, through your provider.
+The box marks the server you rent. There is **one VPN connection**, from Hiddify on your device to that server. Your internet provider and the networks in between carry its encrypted traffic. The server then opens a separate connection to the website through its hosting provider. Replies come back through the same stages.
 
 This walkthrough connects to the server over **IPv4**, so your device doesn’t need IPv6. If you later want to connect directly to the server’s **IPv6 address**, your device and its current internet connection must both support IPv6. Hiddify can’t add native IPv6 connectivity that your network doesn’t provide. The [two-server route](two-hop-vpn.md) keeps IPv6 between the servers and lets devices connect over IPv4.
 
