@@ -51,48 +51,50 @@ There’s also a **control panel**: a website where you manage the server’s VP
 
 ## One server or two?
 
-**One server is the easier place to start.** You rent a server abroad, and your device connects to it through your internet provider.
+**One server gives you one VPN connection:** your device connects to the server abroad through your internet provider. It’s the easier place to start.
+
+**Two servers give you two VPN connections in a row:** your device connects to the Russian server, then that server opens a second VPN connection to your server abroad.
 
 ```text
-Your phone / PC
-      |
-      | IPv4
-      v
-Your internet provider
-      |
-      | through internet networks
-      v
-Your VPN server abroad
-      |
-      | through its hosting provider and the internet
-      v
-Website
+            One server                           Two servers
+         1 VPN connection                     2 VPN connections
+
+         Your phone / PC                       Your phone / PC
+                |                                     |
+                | VPN over IPv4                       | VPN 1 over IPv4
+                v                                     v
+      Your internet provider                Your internet provider
+                |                                     |
+                v                                     v
+        Internet networks                     Internet networks
+                |                                     |
+                v                                     v
++--------------------------------+    +--------------------------------+
+|       Your server abroad       |    |     Your server in Russia      |
+|    VPN connection ends here    |    |    VPN 1 ends; VPN 2 starts    |
++--------------------------------+    +--------------------------------+
+                |                                     |
+                v                                     | VPN 2 over IPv6
+   Hosting provider / internet                        v
+                |                        Hosting providers / internet
+                v                                     |
+             Website                                  v
+                                      +--------------------------------+
+                                      |       Your server abroad       |
+                                      |        VPN 2 ends here         |
+                                      +--------------------------------+
+                                                      |
+                                                      | IPv4
+                                                      v
+                                         Hosting provider / internet
+                                                      |
+                                                      v
+                                                   Website
 ```
 
-The encrypted VPN connection runs from your device to the foreign server, through your provider and the networks in between.
+With **one server**, the encrypted VPN connection runs from your device to the foreign server, through your provider and the networks in between.
 
-**Two servers move the foreign connection off your phone.** Your device connects to a server in Russia, and that server passes the traffic to your server abroad.
-
-```text
-Your phone / PC
-      |
-      | IPv4
-      v
-Your internet provider
-      |
-      v
-Your server in Russia
-      |
-      | IPv6, through hosting providers and the internet
-      v
-Your server abroad
-      |
-      | IPv4, through its hosting provider and the internet
-      v
-Website
-```
-
-There are two encrypted VPN connections: device to Russian server, then Russian server to foreign server. IPv6 is needed only between the servers.
+With **two servers**, VPN 1 runs from your device to the Russian server over IPv4. VPN 2 runs from the Russian server to the foreign server over IPv6. The Russian server passes traffic from one connection into the other. **You still press Connect once in Hiddify**—the server handles the second connection. Your phone doesn’t need two VPN apps or IPv6.
 
 The idea is to make the foreign VPN connection less obvious on your home or mobile provider’s network: the destination it sees is your Russian server, rather than a foreign hosting address. The connection abroad starts at the Russian server instead. That connection is still visible to its hosting provider and the networks along the way; a Russian address alone doesn’t hide VPN traffic.
 
