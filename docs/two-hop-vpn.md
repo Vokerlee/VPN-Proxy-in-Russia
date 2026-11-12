@@ -4,9 +4,24 @@
 
 Here we’ll set up two servers. Your phone connects to the one in Russia. That server passes your traffic to the one abroad, and websites send their replies back along the same route.
 
-```text
-Your phone → Moscow → Server abroad → Website
+```mermaid
+flowchart TB
+    device["Your phone or computer"]
+    provider["Your internet provider"]
+    entry["Your server in Russia"]
+    networks["Hosting providers and internet networks"]
+    exit["Your server abroad"]
+    onward["Hosting provider and internet networks"]
+    website["Website"]
+    device --> provider
+    provider --> entry
+    entry --> networks
+    networks --> exit
+    exit --> onward
+    onward --> website
 ```
+
+Each arrow can cross other networks too. The VPN uses internet providers just like any other connection; it doesn’t go around them. Your device opens one encrypted connection to the Russian server. That server opens a separate encrypted connection to the foreign server.
 
 The Russian server is the **entry**: the first server your device reaches. The foreign server is the **exit**: the one websites see. Hiddify is the **client** app on your phone or computer. You only add the Moscow device link to Hiddify; you don’t need to connect two apps yourself.
 

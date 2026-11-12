@@ -8,11 +8,24 @@ With one server, your device talks to the server abroad. With two, it talks to a
 
 ## Follow one request
 
-```text
-Device ── IPv4 + VLESS ──> Moscow :443
-Moscow ── IPv6 + XHTTP ──> NL :443
-NL     ── IPv4 ─────────> Website
+```mermaid
+flowchart TB
+    device["Your phone or computer"]
+    provider["Your internet provider"]
+    entry["Your server in Russia"]
+    networks["Hosting providers and internet networks"]
+    exit["Your server abroad"]
+    onward["Hosting provider and internet networks"]
+    website["Website"]
+    device --> provider
+    provider --> entry
+    entry --> networks
+    networks --> exit
+    exit --> onward
+    onward --> website
 ```
+
+Each arrow can cross other networks too. The VPN uses internet providers just like any other connection; it doesn’t go around them. In this example, the Russian server is Moscow and the foreign server is NL. The device connection uses IPv4; Moscow’s connection to NL uses IPv6.
 
 Moscow receives the connection from your device and opens another one to NL. VLESS is the VPN connection protocol used here; XHTTP is the way we carry traffic between the servers. Replies come back along the same path. In the tested setup, the device uses Yandex and Safari. Moscow uses a Google target name, a Chrome-shaped first message and XHTTP for its connection to NL. These settings describe connection setup, not which websites you can visit. The phone profile uses classical mode with the compatible entry core. [Handshake versions](../handshakes-and-versions.md)
 
@@ -21,20 +34,40 @@ Moscow receives the connection from your device and opens another one to NL. VLE
 An **inbound** accepts traffic into a server. An **outbound** sends it on. You’ll see these names in 3x-ui, the browser dashboard for managing the VPN. A **routing rule** connects an inbound or account to the outbound it should use.
 
 
-```text
-NL Inbounds / relay-nl  ── copy link ──> Moscow Outbounds / relay-nl
-Moscow Inbounds / desktop ── copy link ──> Hiddify
+```mermaid
+flowchart TB
+    relay["NL: copy the relay account link"]
+    outbound["Moscow: import it into an outbound"]
+    routing["Moscow: routing sends device traffic to that outbound"]
+    account["Moscow: copy a device account link"]
+    app["Import the device link into Hiddify"]
+    relay --> outbound
+    outbound --> routing
+    account --> app
 ```
 
 In Moscow’s **Routing** page, send traffic from the Moscow NL inbound to the outbound named `relay-nl`. [The panel steps](../two-hop-vpn.md#how-the-two-3x-ui-panels-connect)
 
 ## Add a country
 
-```text
-Moscow :443   / NL profile  ──> NL exit
-Moscow :443   / FR account  ──> FR exit
-Moscow :8443  / FI account  ──> FI exit
+```mermaid
+flowchart TB
+    entry["Moscow: choose the route by account"]
+    nl["Port 443: NL account"]
+    fr["Port 443: FR account"]
+    fi["Port 8443: FI account"]
+    nlserver["NL server"]
+    frserver["FR server"]
+    fiserver["FI server"]
+    entry --> nl
+    entry --> fr
+    entry --> fi
+    nl --> nlserver
+    fr --> frserver
+    fi --> fiserver
 ```
+
+This shows account routing only. Hosting providers and internet networks carry each server-to-server connection, as in the full route above.
 
 This is the layout once all three exits are configured. On shared port 443, Xray matches the authenticated account label to its outbound. For example, NL and FR accounts such as `desktop` and `FR-desktop` use the same port and go to different exits. The helper creates a separate inbound by default. Use `--shared-entry` with distinct country account labels to add the user-based rule on an existing RAW entry. [Xray routing reference](https://xtls.github.io/en/config/routing#ruleobject)
 
@@ -51,8 +84,17 @@ Test the connections in order. If the TCP port times out, check the address, rou
 
 ## One server is also a complete setup
 
-```text
-Phone ── RAW + REALITY over IPv4 ──> Foreign VPS ── IPv4 ──> Website
+```mermaid
+flowchart TB
+    device["Your phone or computer"]
+    provider["Your internet provider"]
+    server["Your VPN server abroad"]
+    hosting["Hosting provider and internet networks"]
+    website["Website"]
+    device --> provider
+    provider --> server
+    server --> hosting
+    hosting --> website
 ```
 
 This has one panel, one account export and one server to maintain. IPv6 is optional for this path. [Single-server walkthrough](../single-server.md)

@@ -6,10 +6,20 @@ If your VPN works but websites show an address with colons instead of dots, you 
 
 IPv4 looks like `203.0.113.10`; IPv6 looks like `2001:db8::10`. The address a website sees is the server’s **exit address**. It can differ from the address your phone uses to connect to the server.
 
-```text
-Your device → VPN server → Website
-              chooses the address used on this last connection
+```mermaid
+flowchart TB
+    device["Your device"]
+    provider["Your internet provider"]
+    server["VPN exit server"]
+    networks["Hosting provider and internet networks"]
+    website["Website"]
+    device --> provider
+    provider --> server
+    server -->|"Chooses outgoing IPv4 or IPv6 address"| networks
+    networks --> website
 ```
+
+Other networks can sit between these stops too. This setting changes the exit server’s outgoing connection; your internet provider still carries your connection to the VPN.
 
 You need access to **3x-ui**, the server’s browser dashboard, and a working device connection in **Hiddify**. [Set up a device first](clients.md) if you haven’t connected yet. In a two-server setup, make this change on the **foreign server**, which opens the website connections.
 

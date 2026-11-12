@@ -8,11 +8,40 @@ You don’t need previous experience with servers. You will need a computer for 
 
 Without a VPN, your device connects to websites through your internet provider. With this setup, it first opens an encrypted connection to a computer you rent. That computer connects to the websites for you and sends their replies back.
 
-```text
-Without a VPN:  Your phone → Internet provider → Website
-With this VPN:  Your phone → Your VPN server → Website
-               (the connection to your server is encrypted)
+```mermaid
+flowchart LR
+    subgraph direct["Without a VPN"]
+        direction TB
+        dphone["Your phone"]
+        dprovider["Your internet provider"]
+        dnetworks["Other internet networks"]
+        dwebsite["Website"]
+        dphone --> dprovider
+        dprovider --> dnetworks
+        dnetworks --> dwebsite
+    end
+
+    subgraph vpn["With your VPN"]
+        direction TB
+        vphone["Your phone"]
+        vprovider["Your internet provider"]
+        vnetworks["Other internet networks"]
+        vserver["Your VPN server"]
+        vhosting["Hosting provider and internet networks"]
+        vwebsite["Website"]
+        vphone --> vprovider
+        vprovider --> vnetworks
+        vnetworks --> vserver
+        vserver --> vhosting
+        vhosting --> vwebsite
+    end
+
+    direct ~~~ vpn
 ```
+
+These are simplified routes, not a list of every network along the way. **Your provider carries the traffic in both cases.** With the VPN on, the app’s encrypted connection runs all the way to your VPN server, through the provider’s network. The server then opens a separate connection to the website through its hosting provider. Replies travel back through the same stages.
+
+HTTPS websites also encrypt the connection between your browser and the website, whether or not you use a VPN.
 
 Your internet provider still carries the connection and can see that you’re talking to the server. Websites normally see the server’s internet address instead of yours. This can help you reach sites that don’t open on your usual connection. It doesn’t make you anonymous: a website can still recognize an account you sign in to, and a provider can still block the connection to your server.
 
@@ -26,17 +55,9 @@ There’s also a **control panel**: a website where you manage the server’s VP
 
 ## One server or two?
 
-**One server is the easier place to start.** You rent a server abroad, and your device connects straight to it:
+**One server is the easier place to start.** You rent a server abroad, and your device connects to it through your internet provider.
 
-```text
-Your device → Server abroad → Website
-```
-
-**Two servers give you another route.** Your device connects to a server in Russia, and that server passes the traffic to your server abroad:
-
-```text
-Your device → Server in Russia → Server abroad → Website
-```
+**Two servers give you another route.** Your device connects to a server in Russia, and that server passes the traffic to your server abroad.
 
 This is useful when the foreign server is hard to reach directly. It costs more and takes more setup. In our example, the servers talk using IPv6—another kind of internet address—which you’ll configure using each hosting company’s instructions. Two servers can still be blocked; this is another route to try, not a promise that it will always work.
 
@@ -52,8 +73,17 @@ The two routes are outlined below. Follow one of them. The script shortcuts stay
 
 ## Path 1 — One server
 
-```text
-Your phone or computer ──> Your server abroad ──> Website
+```mermaid
+flowchart TB
+    device["Your phone or computer"]
+    provider["Your internet provider"]
+    server["Your VPN server abroad"]
+    hosting["Hosting provider and internet networks"]
+    website["Website"]
+    device --> provider
+    provider --> server
+    server --> hosting
+    hosting --> website
 ```
 
 You pay for one server abroad. Your phone or computer connects to it, and it opens websites for you. Start here if you haven’t tried running your own VPN before.
@@ -86,8 +116,21 @@ Use your fresh VPS address. After checking the plan, replace `--plan` with `--ap
 
 ## Path 2 — Two servers
 
-```text
-Your phone or computer ──> Your server in Russia ──> Your server abroad ──> Website
+```mermaid
+flowchart TB
+    device["Your phone or computer"]
+    provider["Your internet provider"]
+    entry["Your server in Russia"]
+    networks["Hosting providers and internet networks"]
+    exit["Your server abroad"]
+    onward["Hosting provider and internet networks"]
+    website["Website"]
+    device --> provider
+    provider --> entry
+    entry --> networks
+    networks --> exit
+    exit --> onward
+    onward --> website
 ```
 
 You pay for two servers. Your device connects to the one in Russia, which passes the connection to the one abroad. Websites see the foreign server’s address. Our example uses Moscow; you can also connect that server to several countries later.
