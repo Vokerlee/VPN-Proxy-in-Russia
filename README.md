@@ -9,24 +9,30 @@ You don’t need previous experience with servers. You will need a computer for 
 Without a VPN, your device connects to websites through your internet provider. With this setup, it first opens an encrypted connection to a computer you rent. That computer connects to the websites for you and sends their replies back.
 
 ```text
-Without a VPN                With your VPN
+      Without a VPN                    With your VPN
 
-Your phone                   Your phone
-    |                            |
-    v                            v
-Your internet provider       Your internet provider
-    |                            |
-    v                            v
-Other internet networks      Other internet networks
-    |                            |
-    v                            v
-Website                      Your VPN server
-                                 |
-                                 v
-                             Hosting provider / internet
-                                 |
-                                 v
-                             Website
+        Your phone                       Your phone
+            |                                |
+            v                                v
+  Your internet provider           Your internet provider
+            |                                |
+            v                                v
+ Other internet networks          Other internet networks
+            |                                |
+            v                                v
+         Website             +--------------------------------+
+                             |        Your VPN server         |
+                             |      The server you rent       |
+                             +--------------------------------+
+                                             |
+                                             v
+                             +--------------------------------+
+                             |  Hosting provider / internet   |
+                             |      The server's network      |
+                             +--------------------------------+
+                                             |
+                                             v
+                                          Website
 ```
 
 These are simplified routes, not a list of every network along the way. **Your provider carries the traffic in both cases.** With the VPN on, the app’s encrypted connection runs all the way to your VPN server, through the provider’s network. The server then opens a separate connection to the website through its hosting provider. Replies travel back through the same stages.
