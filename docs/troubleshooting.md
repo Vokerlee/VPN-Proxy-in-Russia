@@ -44,7 +44,7 @@ If traffic works for a few seconds and stops, record that too. It doesn’t iden
 
 **Optional DNS check.** This briefly helped an earlier Android test, but the timeout returned. DNS turns website names into internet addresses. In **Hiddify → Settings → DNS → Outbound domain strategy**, select **IPv4 only**, reconnect, and test a website. If the server’s TCP port opens but websites still time out, check the fingerprint below too.
 
-[See the short button-by-button walkthrough](clients.md#optional-dns-check-ipv4-only). The earlier changes to Fake DNS, Region, and IPv6 routing had not fixed the phone. Windows preference-file edits are not the first step for this symptom.
+[See the short button-by-button walkthrough](hiddify-troubleshooting.md#optional-dns-check-ipv4-only). The earlier changes to Fake DNS, Region, and IPv6 routing had not fixed the phone. Windows preference-file edits are not the first step for this symptom.
 
 This is an app setting. The similarly named server outbound setting in 3x-ui controls the server’s website connections; it is not the same control.
 
@@ -119,7 +119,7 @@ Test-NetConnection YOUR_SERVER_IP -Port 443
 
 If `TcpTestSucceeded` is false, compare the port in the exported profile, the server listener, the host firewall, and the provider security group. Use a mobile hotspot as a comparison when possible. Run the check from the device and network where the VPN fails; a mobile hotspot comparison can help reveal a network-specific block.
 
-If the port is reachable, try [a webpage request through Hiddify](clients.md#press-connect-then-prove-the-route). REALITY can forward an unauthenticated connection to its configured target website, so merely receiving a website response directly from the server port does not check your VPN account.
+If the port is reachable, try [a webpage request through Hiddify](hiddify-troubleshooting.md#press-connect-then-prove-the-route). REALITY can forward an unauthenticated connection to its configured target website, so merely receiving a website response directly from the server port does not check your VPN account.
 
 ## The TCP port opens, but REALITY fails
 
@@ -137,7 +137,7 @@ failed to find an available destination
 4. Record the app version and its **network engine/core version**. The app’s About or Logs page may show both; an app and its engine can have different version numbers.
 5. Check that the key-share mode matches the server version. A classical Hiddify profile needs the [Hiddify test helper](automation.md#classical-profiles-need-the-hiddify-engine); use standalone Xray only for a compatible hybrid profile.
 
-The tests recorded for this guide found that Xray client **25.1.30** failed against Xray server **26.9.9**, while client **26.10.31** connected with the same account link and provider. [Invisible Man - XRay Client](clients.md#switching-from-invisible-man---xray-client), a Windows VPN/proxy app used in the original guide, bundled that older engine in release 3.2.5. If your engine is similarly outdated, update the client and retest; copying the account link again leaves the engine unchanged.
+The tests recorded for this guide found that Xray client **25.1.30** failed against Xray server **26.9.9**, while client **26.10.31** connected with the same account link and provider. [Invisible Man - XRay Client](hiddify-troubleshooting.md#switching-from-invisible-man---xray-client), a Windows VPN/proxy app used in the original guide, bundled that older engine in release 3.2.5. If your engine is similarly outdated, update the client and retest; copying the account link again leaves the engine unchanged.
 
 Some newer REALITY servers require changes to the initial encrypted connection setup, which older engines may lack. Hiddify 5.5.5 connected successfully in the recorded tests. The [technical explanation](xray-internals.md#why-a-valid-profile-can-stop-working-after-an-update) covers the version-specific details.
 
@@ -161,7 +161,7 @@ A profile contains the account’s connection settings. Hiddify adds its own set
 
 In the earlier Windows investigation, the installed Hiddify Windows core repeatedly connected with a small configuration, while the complete generated configuration failed. Rebuilding the app configuration with **Region Other**, **Fake DNS off**, **independent DNS cache off**, and **Clash API off** was followed by a successful request through the app’s proxy. Because several options changed together, re-enable them one at a time if you want to find which option affects your device.
 
-Use the [Hiddify recovery walkthrough](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough). Start with the visible UI options. For hidden preferences, the repair helper previews changes and saves a backup. Re-enable features individually, testing after each one; note which change reintroduces the symptom.
+Use the [Hiddify recovery walkthrough](hiddify-troubleshooting.md#advanced-recovery-when-the-normal-settings-are-not-enough). Start with the visible UI options. For hidden preferences, the repair helper previews changes and saves a backup. Re-enable features individually, testing after each one; note which change reintroduces the symptom.
 
 Do not patch `data/current-config.json` and expect the fix to persist. It is rebuilt on the next connection.
 
@@ -178,6 +178,20 @@ If websites fail but the port is reachable, read the error from that request rat
 Use the full saved address: **`http://YOUR_SERVER_IP:YOUR_PANEL_PORT/YOUR_PANEL_PATH/`**. Check the actual panel port and path from the installer output. The dashboard’s port is different from the VPN port.
 
 If that address still doesn’t open, check that the server service is running using [the server checks below](#server-checks). In the hosting company’s dashboard, allow incoming TCP on the panel port if its firewall restricts it. For a server with existing custom firewall rules, inspect that policy rather than resetting it. Return to [opening the panel](server-setup.md#open-the-dashboard-in-your-browser) after fixing the failed check.
+
+## The VPN port is already in use
+
+Use this only when 3x-ui reports a port conflict while saving the new inbound. Keep the existing service. If the new inbound uses **8443**, try **443**; if it uses **443**, try **8443**. Those are the two allowed public VPN ports in this guide.
+
+Save the new inbound with that number, then export its device link again so Hiddify receives the matching port. In the two-server route, update the corresponding foreign relay link or Moscow device link, depending on which server’s port changed.
+
+If both ports are occupied, stop and inspect the existing services before changing them. For an administrator, this command runs **on the server** and lists its TCP listeners:
+
+```bash
+ss -lntp
+```
+
+This is a failure-recovery check, not part of setting up a fresh server.
 
 ## Server checks
 
@@ -204,7 +218,9 @@ A failed IPv6 test is not a problem if you deliberately use IPv4 only. Inspect h
 
 ## fail2ban is installed but SSH protection isn’t active
 
-Use this only if `fail2ban-client status sshd` failed during [the server setup](server-setup.md#5-protect-ssh-logins-with-fail2ban). Installing fail2ban starts the program; an enabled **jail** tells it which login service to protect. Here that service is SSH.
+Use this if fail2ban failed to start during [the server setup](server-setup.md#4-protect-ssh-logins-with-fail2ban), or when you specifically need to verify its SSH protection. This is a diagnostic section. Installing fail2ban starts the program; an enabled **jail** tells it which login service to protect. Here that service is SSH.
+
+In the server’s SSH terminal, run `fail2ban-client status sshd`. If it shows the **sshd** jail, that protection is loaded. If it reports an error, use the checks below.
 
 In **that server’s SSH terminal**, as root, check the error:
 
@@ -229,7 +245,7 @@ systemctl restart fail2ban
 fail2ban-client status sshd
 ```
 
-Continue when it shows the **sshd** jail. If it still fails, keep the new log error; don’t assume protection is active. Return to [the end of server setup](server-setup.md#5-protect-ssh-logins-with-fail2ban) after fixing it.
+Continue when it shows the **sshd** jail. If it still fails, keep the new log error; don’t assume protection is active. Return to [the end of server setup](server-setup.md#4-protect-ssh-logins-with-fail2ban) after fixing it.
 
 ## Read fresh logs, not the last installation's error
 

@@ -31,7 +31,7 @@ You need Hiddify installed and a connection link already imported. If you haven�
 
 These are examples, not globally reserved values for those apps. A program chooses its listener address and port. You can change a local proxy port if it is occupied, then update the applications that use it.
 
-Port 443 has a familiar HTTPS convention; that does not mean your local proxy must use it. On the VPS, REALITY occupies its public listener. On your PC, 12334 can remain a perfectly ordinary local proxy port.
+**443 is the standard HTTPS port; 8443 is a common alternative for HTTPS services.** We choose familiar encrypted-web ports to go with REALITY’s browser-like TLS connection setup. Both can carry the same VPN configuration. The port number alone doesn’t make that traffic indistinguishable from a website connection. A particular network may still filter them differently. Local app proxy ports are separate from these public server ports. On the VPS, REALITY occupies its public listener. On your PC, 12334 can remain a perfectly ordinary local proxy port.
 
 `127.0.0.1` means **this machine**. It is your PC when entered in Windows, and the VPS when entered over SSH. Changing it to `0.0.0.0` changes who can reach the listener; it does not make the proxy more effective.
 
@@ -129,3 +129,8 @@ WSL’s **mirrored** mode shares more of Windows’ network behavior; **NAT** mo
 For an unambiguous Windows test, run `curl.exe` from PowerShell against the Windows listener. For an unambiguous Linux test, run Linux curl against a Linux listener. Match the test to the thing you are trying to prove.
 
 **You’re done when:** the app you want to use follows Hiddify and the [address check](clients.md#4-connect-and-check-a-website) shows the expected server. [Return to connecting your device](clients.md).
+
+## Port references
+
+- [IANA: HTTPS on TCP 443](https://www.iana.org/assignments/service-names-port-numbers?search=https)
+- [Apache Tomcat: HTTPS configuration using 8443](https://tomcat.apache.org/tomcat-9.0-doc/ssl-howto.html)

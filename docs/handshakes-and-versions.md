@@ -42,9 +42,64 @@ A larger ClientHello can span more TCP packets, and its contents give filtering 
 
 **Classical mode keeps X25519 and omits the ML-KEM share.** TLS encryption still protects the connection. This choice gives up that hybrid post-quantum component in exchange for the smaller handshake in the tested deployment. [Hiddify investigation](https://github.com/hiddify/hiddify-app/issues/2463#issuecomment-6730522122)
 
+## Why newer versions can fail on some networks
+
+**26.7.28 is our chosen compatibility version, not a claim that every higher version fails.** The recorded newer-server failure involved **26.9.9**, Hiddify 5.5.5 and the affected mobile connection. The same deployment could work on desktop or Wi-Fi. There are two separate changes to understand: the message the client sends and the messages the server accepts.
+
+### 1. A client update can enlarge ClientHello
+
+The client constructs ClientHello before the VPN carries a website request. Its engine, browser fingerprint and key-share setting determine the bytes sent. Updating Hiddify or its TLS implementation can therefore change the opening message even when you import the same account link.
+
+The hybrid **X25519MLKEM768** option adds post-quantum key-exchange material. This is a change to how the shared secret is established, rather than simply choosing a different bulk-data cipher such as AES. In our comparison, the cipher-suite lists matched while the key shares differed.
+
+ML-KEM is designed to protect key establishment against future quantum-computer attacks. That protection has a size cost: its ML-KEM-768 public encapsulation key is **1,184 bytes**, combined here with **32 bytes** for X25519. The result is the **1,216-byte hybrid share**. A separate classical X25519 share may also be advertised. Those shares sit inside ClientHello along with its other extensions. [NIST’s ML-KEM standard](https://csrc.nist.gov/pubs/fips/203/final), [FIPS 203 key sizes, Table 3](https://nvlpubs.nist.gov/nistpubs/fips/nist.fips.203.pdf)
+
+Our measured opening TLS records grew from **534–598 bytes** in the older Xray client to **1,788–1,820 bytes** in the compared Hiddify configuration. These are samples from specific engines with Chrome selected, not universal sizes for Chrome, Safari or all classical profiles.
+
+### 2. A server update can reject the smaller alternative
+
+A newer REALITY implementation added a check requiring the expected **X25519MLKEM768** key-share layout, with a possible standalone X25519 share afterward. A classical-only client doesn’t satisfy that check. This is the compatibility change associated with the **26.9.8/26.9.9** period; it isn’t a rule applying to every release after 26.7.28. [The upstream REALITY change](https://github.com/XTLS/REALITY/commit/8cdf7bf9c7f09cb9814bf08c3eb877f68b85fba8)
+
+That creates a practical conflict on an affected path: the hybrid message fails to get a working connection, but selecting classical mode makes the newer server reject the handshake. Changing only the UUID, SNI or display name doesn’t remove that requirement.
+
+The guide pairs **server 26.7.28** with **Hiddify `keyshare=classical`** because this server accepts the smaller alternative. **Both settings matter.** Installing the older server doesn’t automatically remove the hybrid share from a client’s default message. Changing only the client option doesn’t make an incompatible newer server accept it. [Hiddify discussion and classical-mode compatibility](https://github.com/hiddify/hiddify-app/issues/2463#issuecomment-6750196534)
+
+### 3. A larger message changes what the network has to deliver
+
+A TLS record doesn’t have to fit in one TCP segment. Splitting it across segments is normal. For illustration, if a path carries around 1,400 bytes of TCP data per segment, a roughly 1,800-byte message needs more than one segment. The server needs the complete message to continue the handshake.
+
+```text
+Illustration only; not a mobile packet capture:
+
+ClientHello: about 1,800 bytes
+      |
+      +-- first segment: about 1,400 bytes --> server
+      |
+      +-- remaining bytes ----------------> server
+
+Both parts must arrive for the complete message to be read.
+```
+
+Packet loss, a faulty network device or traffic filtering can interrupt that delivery. Filtering can also match message contents and extension layout, rather than just its size. A timeout by itself doesn’t identify which happened.
+
+Earlier captures in this project showed incomplete handshakes arriving at a server while the missing bytes were retransmitted at the client. However, that fingerprint comparison changed several message properties at once. A successful Safari REALITY record there was about **1,533 bytes**, so we did **not** establish a universal “large messages are blocked” threshold. That was also a separate experiment from the local old/new-client size comparison above.
+
+### How to distinguish the failures
+
+| What the fresh checks show | What to investigate |
+|---|---|
+| The TCP connection itself never opens | Address, route, listening port or firewall; ClientHello hasn’t been exchanged yet |
+| TCP opens, but the server capture lacks part of ClientHello | Delivery between the capture points; a server setting can’t validate bytes it hasn’t received |
+| The complete message arrives, but the server rejects classical mode | REALITY version and key-share compatibility |
+| An isolated account test works, but Hiddify’s browser traffic fails | The app’s generated settings, selected profile and device routing |
+
+Record the app and engine versions, server version, fingerprint, key-share mode and fresh request result. Compare the same account on Wi-Fi and mobile data before attributing the failure to an operator. The successful classical test supports the guide’s workaround on that path; it doesn’t establish that post-quantum algorithms are generally blocked in Russia.
+
 ## Match the client option to the server
 
-For a device profile, check the server **the device connects to**. That is your only foreign server for the one-server route, or Moscow for the two-server route. In the two-server route, the foreign exit has a separate version and receives its connection from Moscow, not your phone.
+**Current guide preset: Xray 26.7.28 on every server.** Use classical mode for device links and the guide’s XHTTP settings between servers. The table below records earlier tests with other versions; those numbers are historical results, not instructions to install a different version on the foreign server.
+
+For a device profile, check the server **the device connects to**. That is your only foreign server for the one-server route, or Moscow for the two-server route. In the two-server route, the foreign exit also uses **26.7.28** in this guide, but its client is Moscow rather than your phone. Its inter-server profile can therefore have different handshake settings.
 
 | Server role and version | Client key share | Result in this project |
 |---|---|---|
@@ -70,3 +125,7 @@ Xray 26.7.28 is an older compatibility choice. Later releases contain security f
 Both setup helpers offer XHTTP. Single-server XHTTP and device-to-Moscow XHTTP are optional experiments; the mobile success recorded here used RAW at device entry. Re-export the account after changing its transport, path or flow, then test the matching client profile.
 
 **Next:** [make the matching device link](server-inbound.md#5-export-the-connection), [import it into Hiddify](clients.md), or [continue troubleshooting](troubleshooting.md).
+
+## Installation interface references
+
+The beginner guide’s exact version-installation actions were checked against [the version button in 3x-ui 3.8.5](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/index/OverviewActionBar.tsx) and [its release-selection and confirmation dialog](https://github.com/MHSanaei/3x-ui/blob/v3.8.5/frontend/src/pages/index/VersionModal.tsx).

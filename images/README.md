@@ -39,7 +39,7 @@ These take the newcomer from checking the core to importing the right account. T
 | 7 | **Moscow → Outbounds → relay-nl → Edit** | The foreign **IPv6 address**, port, XHTTP path, **stream-one**, empty flow and REALITY SNI/fingerprint. An extra JSON crop can show `sendThrough` and `sockopt.domainStrategy: ForceIPv6`. | `moscow-xhttp-outbound.png` |
 | 8 | **Moscow → Routing** | The rule list in order and an open rule with **Inbound Tags**, optional **User** account labels and **Outbound Tag**. Show the specific FR user rule above the general NL rule when sharing port 443. | `moscow-country-routing.png` |
 
-For the two-server path, screenshot 1 should come from Moscow. An additional exit-dashboard capture showing core **26.9.9** helps explain why the two cores have different versions.
+For the two-server path, screenshot 1 should come from Moscow. Capture the foreign dashboard too, showing the same **26.7.28** version and **Running** status. Both servers use this version in the walkthrough.
 
 ### Useful follow-up screens
 

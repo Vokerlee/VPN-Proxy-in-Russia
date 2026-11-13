@@ -167,7 +167,7 @@ Configure IPv6 on both servers first. [Download the repository and open a termin
 python3 scripts/bootstrap_relay.py \
   --hub-host 203.0.113.10 --exit-host 198.51.100.20 \
   --exit-ipv6 2001:db8:2::1 --route nl --entry-port 443 \
-  --hub-core-version 26.7.28 --exit-core-version 26.9.9 \
+  --hub-core-version 26.7.28 --exit-core-version 26.7.28 \
   --entry-key-share classical --relay-transport xhttp \
   --clients desktop,phone --plan
 ```
@@ -190,14 +190,14 @@ If Wi-Fi works and mobile data hangs, start with [versions and handshakes](docs/
 
 ## Versions used by this guide
 
-The setup pages tell you which versions to select when you reach that step. If you already have a VPN and are comparing settings, the test results are below.
+Install **Xray 26.7.28 on every server**, following [the current-version check and exact installation steps](docs/server-setup.md#install-the-vpn-program-version-used-in-this-guide). The optional [advanced explanation](docs/handshakes-and-versions.md#why-newer-versions-can-fail-on-some-networks) covers the larger post-quantum TLS opening messages and compatibility changes. If you already have a VPN and are comparing settings, the historical test results are below.
 
 <details>
-<summary>Show tested versions and the mobile connection fix</summary>
+<summary>Historical test results: why the guide uses this version</summary>
 
-## Check the versions first
+## Earlier version comparisons
 
-The **3x-ui panel** is the browser dashboard. **Xray** is the server's network engine. **Hiddify** is the client app. Their version numbers are separate.
+**These are earlier measurements, not the current installation choices.** The **3x-ui panel** is the browser dashboard. **Xray** is the server's network engine. **Hiddify** is the client app. Their version numbers are separate.
 
 | Tested setup | What happened |
 |---|---|

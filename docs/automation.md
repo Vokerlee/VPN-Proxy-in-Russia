@@ -22,7 +22,7 @@ This section installs a **one-server VPN on the foreign server**, such as your H
 
 Follow the [script walkthrough](quick-start.md) for the full sequence, including opening the panel and importing the generated profile. Windows users run `scripts/Setup-Vpn.ps1`; Linux/macOS users run `scripts/bootstrap_server.py`. Both default to a plan; `-Apply` / `--apply` is the explicit provisioning action.
 
-The launchers use **SSH**, an encrypted terminal connection, through the operating system’s **OpenSSH** program. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. Public VPN inbound ports are restricted to **443 or 8443**. A busy default 443 falls back to 8443; provider-firewall work is reported as a separate action when needed. Allow the VPN port and the separate panel TCP port; the helper adds both rules only when UFW is already active.
+The launchers use **SSH**, an encrypted terminal connection, through the operating system’s **OpenSSH** program. They prompt for the IP if omitted, then SSH prompts for the root password and a new host key. Root passwords are never accepted as flags or stored. The scripts refuse existing panel installations and preserve occupied listeners. Public VPN inbound ports are restricted to **443 or 8443**. Either number can carry the same VPN configuration; choose a free one and use it consistently. A busy default 443 falls back to 8443; provider-firewall work is reported as a separate action when needed. Allow the VPN port and the separate panel TCP port; the helper adds both rules only when UFW is already active.
 
 The panel uses the root URL path `/` and listens publicly. Open the printed `http://SERVER_IP:PANEL_PORT/` directly in your browser; no SSH forward is required. Generated panel credentials and the Hiddify share link are written under `.secrets/`; do not publish them. The server also retains a root-only result file for recovery. No launcher stops a local VPN client or changes Windows' proxy or routes.
 
@@ -43,11 +43,11 @@ python3 scripts/bootstrap_server.py --host 203.0.113.10 \
 .\scripts\Setup-Vpn.ps1 -ServerIp 203.0.113.10 -CoreVersion 26.7.28 -KeyShare classical -Fingerprint safari -Transport raw
 ```
 
-For the compatible newer-core path, select **`--core-version 26.9.9 --key-share hybrid`** or **`-CoreVersion 26.9.9 -KeyShare hybrid`**. The scripts reject a classical request with a core that requires the hybrid share.
+Use **26.7.28** for every server in this walkthrough. The scripts still validate a requested version against its connection settings; historical compatibility results are in [the version notes](handshakes-and-versions.md).
 
 Single-server XHTTP is optional. Add **`--transport xhttp --xhttp-path /vpn`** or **`-Transport xhttp -XhttpPath /vpn`**. It creates an empty-flow XHTTP account, while RAW accounts use Vision. Re-export the matching client after a transport change. The working mobile entry recorded in this guide used RAW. [Measurements and version limits](handshakes-and-versions.md)
 
-The relay helper defaults to **`--hub-core-version 26.7.28 --entry-key-share classical --relay-transport xhttp --exit-core-version 26.9.9`**. Select **`--relay-transport raw`** for the older inter-server mode. An existing panel's core must match the requested version; this helper adds routes and refuses an implicit core replacement. IPv6 addresses and routes are always configured manually first.
+The relay helper uses **26.7.28 on both servers**. It defaults to **`--hub-core-version 26.7.28 --entry-key-share classical --relay-transport xhttp --exit-core-version 26.7.28`**. Select **`--relay-transport raw`** for the older inter-server mode. An existing panel's core must match the requested version; this helper adds routes and refuses an implicit core replacement. IPv6 addresses and routes are always configured manually first.
 
 For a third country sharing the RAW entry, use **`--route fr --entry-port 443 --shared-entry --clients FR-desktop,FR-phone`** with that country's server addresses. The helper inserts an account-specific rule above the inbound's general country route, reuses its existing listener and backs up its prior state.
 
@@ -241,7 +241,7 @@ A Linux test from WSL and a Windows test exercise different native cores and OS 
 
 **Windows fallback for a failed app configuration.** Start with [the symptom table](troubleshooting.md#first-choose-the-symptom-that-matches-yours). A working connection doesn’t need a preference repair. For mobile handshake failures, check the [version and key-share table](handshakes-and-versions.md) first. This preferences helper changes DNS/service preferences; the profile's key-share field is a separate setting.
 
-Read the [Hiddify recovery explanation](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) first. Start with a preview from PowerShell:
+Read the [Hiddify recovery explanation](hiddify-troubleshooting.md#advanced-recovery-when-the-normal-settings-are-not-enough) first. Start with a preview from PowerShell:
 
 ```powershell
 .\scripts\Repair-Hiddify.ps1

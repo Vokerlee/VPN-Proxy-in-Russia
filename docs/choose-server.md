@@ -21,6 +21,8 @@ Already have the foreign server? Keep it and rent only the missing Moscow server
 
 ## Choose a provider and a location
 
+The location decides where your connection goes. For one server, websites see that foreign server’s address. For two servers, your device first reaches Moscow and the foreign server still opens the websites. We’ll choose a provider for each of those jobs.
+
 The original setup in this project used **HostVDS for the foreign server**. For the two-server setup, you also need somewhere to rent the Russian server.
 
 | Server you need | Where to rent it |
@@ -36,7 +38,7 @@ These are examples used by this guide. Another provider with a suitable Linux se
 
 For the **foreign server**, choose the country where you want websites to see your connection, such as an available European or US location. For the **Russian entry**, choose **Moscow** in the example. A nearby location may reduce latency, but an actual connection test is more useful than geography alone. Check current payment methods, included traffic, and whether the provider accepts customers from your location before purchasing.
 
-For one server, choose a country abroad. For two servers, rent one in Russia and one abroad; the example uses Moscow and the Netherlands (**NL**). Before paying for the two-server route, check that **both servers can get IPv6**, whether included or supplied as an extra option and that the providers explain how to configure it. IPv6 is a second kind of internet address used for the connection between these servers. [Compare the routes](../README.md#one-server-or-two)
+For one server, choose a country abroad. For two servers, rent one in Russia and one abroad; the example uses Moscow and the Netherlands (**NL**). Before paying for the two-server route, check that **both servers can get IPv6**, whether included or supplied as an extra option, and that the providers explain how to configure it. IPv6 is a second kind of internet address used for the connection between these servers. [Compare the routes](../README.md#one-server-or-two)
 
 Check the total recurring price, including any extra charge for IPv4, traffic and tax. Keep the server while you use the VPN; deleting your local setup folder does not cancel its rental. To stop paying later, follow the hosting company’s cancellation or deletion procedure.
 
@@ -45,6 +47,8 @@ Check the total recurring price, including any extra charge for IPv4, traffic an
 **This order buys only the Russian half of the two-server setup. You still need a foreign server from HostVDS afterward.** The Moscow server receives your device’s connection; the HostVDS server abroad opens the websites. Buying the Moscow server doesn’t replace the foreign server.
 
 For the one-server route, skip this section and [rent only the foreign HostVDS server](#rent-the-foreign-server-hostvds-example).
+
+We’ll rent a small machine with **Ubuntu**, its operating system. Ubuntu lets us use the installation commands on the next page. A plain Ubuntu image is enough; we’ll add our own VPN dashboard rather than buying a website-hosting panel. We need **IPv4** for the device and administration connections and **IPv6** for Moscow’s connection to the foreign server.
 
 1. Open [FirstVDS’s VPS plans](https://firstvds.ru/products/vds_vps_hosting) and start a server order.
 2. Choose **Moscow** as the location. This will be the server your phone connects to first.
@@ -58,7 +62,9 @@ You’ll configure IPv6 using FirstVDS’s instructions after the server is runn
 
 ## Rent the foreign server: HostVDS example
 
-**Both routes need this foreign server.** In the one-server route, it’s the only server you rent. In the two-server route, it’s the second server, in addition to the Moscow server from FirstVDS. Use [HostVDS](https://hostvds.com/) if its locations and plans fit your needs. The provider's [own walkthrough](https://hostvds.com/knowledge/6) uses this creation flow:
+**Both routes need this foreign server.** In the one-server route, it’s the only server you rent. In the two-server route, it’s the second server, in addition to the Moscow server from FirstVDS. Use [HostVDS](https://hostvds.com/) if its locations and plans fit your needs. For this server, a small plan is the starting point for a few personal devices. Choose plain **Ubuntu**, the operating system used by the installation commands later. In the two-server route, add IPv6 so Moscow can reach it using the middle connection.
+
+The provider’s [own walkthrough](https://hostvds.com/knowledge/6) uses this creation flow:
 
 1. Sign in, open **Servers**, and click **New Instance**.
 2. Choose an available European or US region for the VPN exit. Check the current region list; you do not need one particular city.
@@ -108,12 +114,6 @@ For one server, save one private note labelled **Foreign — HostVDS**. For two 
 | IPv6 address, prefix and gateway | Required for **each** server in the two-server route; get each provider’s own values |
 
 `root` is the administrator account, not a password. A provider that creates an `ubuntu` user and an SSH key does not necessarily enable root-password login; follow the supplied access method instead of repeatedly guessing a root password.
-
-## A firewall note before leaving the provider dashboard
-
-A **firewall** decides which incoming connections the server accepts. Some providers put an extra one in their web dashboard, often called **Firewall**, **Security group**, or **Network rules**.
-
-Keep the supplied SSH access allowed. Later, you will allow the actual VPN TCP port chosen during setup, usually 443 or 8443. The browser dashboard will use its own separate port. The next chapter explains those ports when you reach them; there is no need to open every port in advance.
 
 ## Provider references
 

@@ -12,6 +12,8 @@ This is for a **one-server VPN on one fresh foreign server**, such as your HostV
 
 ## Before the first command
 
+The setup script runs on **your computer** and uses SSH to do the installation on the rented server. Downloading the repository gives your computer the script; checking SSH and Python now avoids discovering a missing tool halfway through setup.
+
 1. On this repository’s GitHub page, choose **Code → Download ZIP** and extract it, or use your existing Git checkout.
 2. Open the extracted folder containing **README.md** and **scripts**. On Windows, right-click inside it and open a terminal with PowerShell. On Linux or Mac, open a terminal there. All commands on this page start on **your computer**, not in the server’s SSH terminal.
 3. Run `ssh -V`. If it’s missing, install the OpenSSH client for your operating system. On Windows it’s an Optional Feature called **OpenSSH Client**.
@@ -19,7 +21,13 @@ This is for a **one-server VPN on one fresh foreign server**, such as your HostV
 
 ## See the plan, then let SSH ask for the password
 
+We’ll preview the settings before changing the server, so you can check the address and account names. The preview makes no server changes. Once the plan is right, `Apply` tells the script to carry out the installation.
+
 Choose the commands for your computer. Replace **203.0.113.10** with your server’s real IPv4 address. It’s an example address, so copying it unchanged won’t connect to your server.
+
+The examples below create accounts named **desktop** and **phone** by default. To choose your own labels, add **`-Clients alex,anna,laptop`** on Windows or **`--clients alex,anna,laptop`** with Python. That example creates three separate VPN accounts. [How names and output files work](automation.md#choose-the-vpn-account-names)
+
+The examples use **8443 for the VPN connection** and **27297 for its browser dashboard**. These are separate numbered entry points on the server. HTTPS websites normally use 443, and 8443 is a common alternative; those familiar ports fit REALITY’s browser-like connection setup. You can choose 443 for the VPN instead. The port alone doesn’t disguise it.
 
 ### Windows PowerShell
 
@@ -68,13 +76,11 @@ SSH may ask you to confirm the server’s identity on the first connection. Comp
 
 Leave the terminal open until setup finishes. The script checks for a fresh installation, installs the software, creates **desktop** and **phone** accounts, and saves the results. It doesn’t stop your existing VPN apps or change your computer’s network settings. If it stops with an error, use the table below rather than reinstalling the server.
 
-The commands above create accounts named **desktop** and **phone** by default. To choose your own labels, add **`-Clients alex,anna,laptop`** on Windows or **`--clients alex,anna,laptop`** with Python. That example creates three separate VPN accounts. [How names and output files work](automation.md#choose-the-vpn-account-names)
-
-These commands use **8443** for the VPN and **27297** for the dashboard. A port is a numbered connection entry point; those two numbers do different jobs. If the chosen VPN port is occupied, use 443 only if free. Don’t overwrite another service.
-
 For a custom SSH port, add `-SshPort YOUR_PORT` on Windows or `--ssh-port YOUR_PORT` with Python. [Other options](automation.md#start-with-only-a-vps-ip-and-root-password)
 
 ## Open 3x-ui directly in your browser
+
+The script has installed the dashboard and created your accounts. We’ll sign in once to check that the installation is there and the accounts are enabled. You’ll use this same dashboard later to add or remove a device.
 
 When setup finishes, it prints the panel URL and the private output folder. Open that folder in your file manager; it sits under **.secrets** in this repository. On Linux, use **Ctrl+H** to show hidden folders if needed.
 
@@ -83,9 +89,11 @@ When setup finishes, it prints the panel URL and the private output folder. Open
 3. Sign in using those panel credentials. The SSH root password is a separate login.
 4. Open **Inbounds**. You should see **Personal VPN**, enabled, with **desktop** and **phone** accounts. The script already created them; don’t add them again.
 
-If the page doesn’t open, allow the actual panel TCP port in the hosting company’s firewall dashboard. The script can update an already active UFW firewall on the server, but it can’t change your provider account’s firewall. Keep SSH allowed too. [Open the panel in your browser](server-setup.md#open-the-dashboard-in-your-browser)
+If the page doesn’t open, use [the panel connection checks](troubleshooting.md#the-dashboard-doesnt-open-in-the-browser).
 
 ## Bring the profile into Hiddify
+
+The script has already collected the address, account and security settings into a private link for each device. We’ll copy that link into Hiddify so it can connect without entering those settings by hand.
 
 With the default account names, open **client-phone.txt** for your phone or **client-desktop.txt** for your computer. If you chose other names, open the matching **client-NAME.txt**, such as **client-alex.txt**. Copy the whole `vless://…` line. That’s the private connection link for that device.
 
@@ -110,7 +118,7 @@ A stopped helper tells you which stage needs attention. It does not roll back pa
 | Browser cannot open the panel | Use the printed public IP, actual panel port and saved path; check the public listener and provider/custom firewall |
 | Hiddify errors after import | Follow the [handshake and generated-config checks](troubleshooting.md), including the documented recovery helper |
 
-**After the connection works:** follow [the fail2ban steps](server-setup.md#5-protect-ssh-logins-with-fail2ban) on the server to protect SSH logins. The setup helper doesn’t install fail2ban.
+**After the connection works:** follow [the fail2ban steps](server-setup.md#4-protect-ssh-logins-with-fail2ban) on the server to protect SSH logins. The setup helper doesn’t install fail2ban.
 
 <details>
 <summary>For reviewers: what has and has not been tested</summary>

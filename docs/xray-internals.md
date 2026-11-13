@@ -248,7 +248,7 @@ The [beginner fingerprint walkthrough](troubleshooting.md#reality-chrome-times-o
 
 The browser preset and the key-share mode are separate parts of ClientHello. In our controlled capture, Chrome from Xray 25.1.30 produced a 534–598-byte TLS record. Hiddify 5.5.5's Chrome record was 1,788–1,820 bytes and included a 1,216-byte X25519MLKEM768 share. Both advertised the same cipher list, SNI and ALPN.
 
-Hiddify's classical mode removes the ML-KEM component while retaining X25519 and TLS encryption. The server must accept it. The full [handshake and version guide](handshakes-and-versions.md) explains the post-quantum algorithm, exact measurements, compatibility boundary and matching profile options.
+Hiddify's classical mode removes the ML-KEM component while retaining X25519 and TLS encryption. The server must accept it. The full [handshake and version guide](handshakes-and-versions.md#why-newer-versions-can-fail-on-some-networks) explains the post-quantum algorithm, exact measurements, the newer server’s acceptance check and how to distinguish message-delivery failures from server rejection.
 
 ## Why a valid profile can stop working after an update
 
@@ -258,7 +258,7 @@ A concrete example: the [REALITY change adopted in the 26.9.8/26.9.9 period](htt
 
 **sing-box** is another proxy engine; **Hiddify**, the VPN app in the practical guide, uses a modified version of it. The [sing-box compatibility report](https://github.com/SagerNet/sing-box/issues/4520) tracks affected implementations and experimental fixes. For the recorded setup, Hiddify 5.5.5’s own engine connected successfully. Compare actual engine versions and results when applying that report to another installation.
 
-The reproduced comparison used the same profile, provider, destination, and server: Xray **25.1.30** failed; **26.10.31** succeeded against server **26.9.9**. That is evidence for a core-dependent failure, not evidence that the UUID needed regeneration. A separate comparison then showed Hiddify's plain profile working while its full generated configuration failed; the [recorded Windows preference changes](clients.md#advanced-recovery-when-the-normal-settings-are-not-enough) were followed by success without isolating one causal option. The earlier Android DNS improvement didn’t last; the later mobile success used the compatible classical handshake described above.
+The reproduced comparison used the same profile, provider, destination, and server: Xray **25.1.30** failed; **26.10.31** succeeded against server **26.9.9**. That is evidence for a core-dependent failure, not evidence that the UUID needed regeneration. A separate comparison then showed Hiddify's plain profile working while its full generated configuration failed; the [recorded Windows preference changes](hiddify-troubleshooting.md#advanced-recovery-when-the-normal-settings-are-not-enough) were followed by success without isolating one causal option. The earlier Android DNS improvement didn’t last; the later mobile success used the compatible classical handshake described above.
 
 Similarly, finding an Xray module in a GUI binary proves a build dependency, not that its traffic is carried by an Xray backend. Inspect the actual execution path or test it. The checked Hiddify fork's [Xray outbound constructor](https://github.com/hiddify/hiddify-sing-box/blob/1614c5edb52dd44a4cc079201ba1e790fdfad8a0/protocol/hiddify/xray/outbound.go) returned an unimplemented error.
 
