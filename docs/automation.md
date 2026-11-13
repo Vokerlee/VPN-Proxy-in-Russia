@@ -28,9 +28,16 @@ The panel uses the root URL path `/` and listens publicly. Open the printed `htt
 
 The helper retrieves the **actual 3x-ui client export**, including its display name and `spx` value. It saves that original in **panel-profile.txt** and adds the selected client-only key-share option to **hiddify-profile.txt**. Keep that name when importing: for example, an inbound named `Personal VPN` with account `desktop` may export **Personal VPN-desktop**. Different people and devices must receive their own account's export; the inbound name alone does not identify whose credentials a profile uses.
 
+<details>
+<summary>Optional: what the installer checks internally</summary>
+
 The pinned remote payload is `scripts/provision_remote.py`; it is not a workstation setup program and refuses direct invocation without the launcher's supplied options. Review the code and pinned installer before applying it. This path installs pinned **3x-ui 3.8.5**, then independently downloads the selected official Xray release, verifies its SHA-256 digest from GitHub release metadata and checks its configuration before activation. The previous binary is backed up on the VPS. The service uses `GODEBUG=multipathtcp=0`. Existing panel installations are refused by this fresh-server helper.
 
+</details>
+
 ### Core version, key share and transport
+
+Here is what the settings mean before you use them. **Xray** is the server’s VPN program; **26.7.28** is the version paired with the shorter **classical** opening message used by Hiddify. **Safari** is the browser pattern for that message, not an app to install. **RAW** (also called TCP) carries the VPN directly over a TCP connection. **XHTTP** carries it in HTTP requests and streams instead. Both can use REALITY encryption; they need different matching profiles.
 
 The single-server defaults are **Xray 26.7.28**, **Safari**, **RAW**, **classical** Hiddify profiles and separate **desktop** and **phone** accounts. Set `--clients` / `-Clients` for other account labels. Select them explicitly when saving a reusable command:
 
@@ -45,7 +52,14 @@ python3 scripts/bootstrap_server.py --host 203.0.113.10 \
 
 Use **26.7.28** for every server in this walkthrough. The scripts still validate a requested version against its connection settings; historical compatibility results are in [the version notes](handshakes-and-versions.md).
 
+<details>
+<summary>Optional: try XHTTP for a single-server connection</summary>
+
 Single-server XHTTP is optional. Add **`--transport xhttp --xhttp-path /vpn`** or **`-Transport xhttp -XhttpPath /vpn`**. It creates an empty-flow XHTTP account, while RAW accounts use Vision. Re-export the matching client after a transport change. The working mobile entry recorded in this guide used RAW. [Measurements and version limits](handshakes-and-versions.md)
+
+Use the [separate test-inbound steps](server-inbound.md#optional-xhttp-instead-of-raw) for an existing server. The fresh-server installer refuses existing panels, so don’t rerun it to change a working installation.
+
+</details>
 
 The relay helper uses **26.7.28 on both servers**. It defaults to **`--hub-core-version 26.7.28 --entry-key-share classical --relay-transport xhttp --exit-core-version 26.7.28`**. Select **`--relay-transport raw`** for the older inter-server mode. An existing panel's core must match the requested version; this helper adds routes and refuses an implicit core replacement. IPv6 addresses and routes are always configured manually first.
 

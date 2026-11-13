@@ -19,14 +19,16 @@ Take each screenshot at the point a reader would reach that screen. A full form 
 
 Use **3x-ui 3.8.5** and **Hiddify 5.5.5**, or include the version you actually run. Keep the page title and relevant button visible. Two crops of a long form are fine.
 
-### Four screens used by both paths
+### Screens used by both paths
 
 | Order | Open this screen | What should be visible | Suggested filename |
 |---|---|---|---|
-| 1 | **3x-ui Dashboard** | Panel version, **Xray version button** and running status. Also capture **Xray Updates**, the release selection circle and **Confirm** dialog. For the device server, show **26.7.28**. | `entry-core-version.png` |
-| 2 | **Inbounds → device entry → Edit** | Remark, listen address, **443 or 8443**, **VLESS**, **RAW/TCP**, **REALITY**, target, server names and fingerprint. A second crop can show the device's **Vision** flow. | `entry-raw-reality.png` |
-| 3 | **Inbounds → expand device clients → phone → Info / Share** | Which account is being exported and the **Copy** action. Cover the whole private URL and QR. | `device-profile-copy.png` |
-| 4 | **Hiddify → Profiles → ⋯ → Edit → Config Editor → Text** | A crop around **tls → reality → key_share: classical**. Also capture **+ → Clipboard** and the home screen with the selected profile and **Connect** button if possible. | `hiddify-classical-profile.png` |
+| 1 | **3x-ui → Overview** | Panel version, **Xray version button** and running status. Also capture **Xray Updates**, the release selection circle and **Confirm** dialog. For the device server, show **26.7.28**. | `entry-core-version.png` |
+| 2 | **Inbounds → device entry → Edit** | Capture **Basics** (Remark, Address, port, Custom share address), **Stream** (RAW) and **Security** (REALITY, Target, SNI, uTLS). Cover private key and short IDs. | `entry-raw-reality.png` |
+| 3 | **Clients → phone → ⓘ Client Information → Copy URL** | Which account is being exported and the **Copy** action. Cover the whole private URL and QR. | `device-profile-copy.png` |
+| 4 | **Hiddify → + → Clipboard**, then the home screen | The import action, selected profile and **Connect** button; a second capture after connecting. | `hiddify-import-connect.png` |
+
+Also capture **Clients → Add Client → Basics**, with **Email** and **Attached inbounds** visible, then **Credentials**, with **Flow → xtls-rprx-vision**. Cover the UUID. Suggested filename: `device-account.png`. This account form is separate from the inbound form.
 
 These take the newcomer from checking the core to importing the right account. The single-server guide uses them directly. For that path, choose its foreign server panel for screenshots 1–3.
 
@@ -34,14 +36,16 @@ These take the newcomer from checking the core to importing the right account. T
 
 | Order | Panel and screen | What should be visible | Suggested filename |
 |---|---|---|---|
-| 5 | **Foreign exit → Inbounds → Relay nl → Edit** | Assigned **IPv6 Listen IP**, port **443**, **VLESS**, **XHTTP**, path **/relay-nl**, mode **auto**, REALITY target/SNI and the relay client's **empty flow**. Use two crops if needed. | `exit-xhttp-inbound.png` |
+| 5 | **Foreign exit → Inbounds → Relay nl → Edit** | In **Basics**, IPv6 **Address**, **Custom share address**, port **443** and **Disable XTLS flow** on; in **Stream**, XHTTP, path **/relay-nl**, mode **auto**; in **Security**, REALITY target/SNI. Capture the relay account separately under Clients, with empty flow. | `exit-xhttp-inbound.png` |
 | 6 | **Moscow → Outbounds → + Outbounds → JSON** | The share-link input and **Import** button inside the add-outbound form. Cover any pasted profile. | `moscow-import-relay.png` |
-| 7 | **Moscow → Outbounds → relay-nl → Edit** | The foreign **IPv6 address**, port, XHTTP path, **stream-one**, empty flow and REALITY SNI/fingerprint. An extra JSON crop can show `sendThrough` and `sockopt.domainStrategy: ForceIPv6`. | `moscow-xhttp-outbound.png` |
-| 8 | **Moscow → Routing** | The rule list in order and an open rule with **Inbound Tags**, optional **User** account labels and **Outbound Tag**. Show the specific FR user rule above the general NL rule when sharing port 443. | `moscow-country-routing.png` |
+| 7 | **Moscow → Outbounds → relay-nl → Edit** | The foreign **IPv6 address**, port, XHTTP path, **stream-one**, empty flow and REALITY SNI/fingerprint. Show **Basics → Send Through** (Moscow IPv6) and **Target Strategy → ForceIPv6**; no JSON editing is required. | `moscow-xhttp-outbound.png` |
+| 8 | **Moscow → Routing → Routing Rules** | The rule list in order and an open rule with **Inbound tags**, optional **User** account labels and **Outbound tag**. Show the specific FR user rule above the general NL rule when sharing port 443. | `moscow-country-routing.png` |
 
 For the two-server path, screenshot 1 should come from Moscow. Capture the foreign dashboard too, showing the same **26.7.28** version and **Running** status. Both servers use this version in the walkthrough.
 
 ### Useful follow-up screens
+
+- **Hiddify → Profiles → ⋯ → Edit → Config Editor → Text**, around **tls → reality → key_share: classical**, for the advanced compatibility explanation. Cover the rest of the profile.
 
 - **Foreign exit → Outbounds → direct → Edit**, with **ForceIPv4** visible.
 - **Foreign exit → Routing**, showing the Moscow IPv6 source allow rule and the blocked rule below it.

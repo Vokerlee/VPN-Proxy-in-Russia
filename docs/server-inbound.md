@@ -24,99 +24,104 @@ The dashboard is ready, but it doesn’t yet have an entry for your devices to c
 
 ## 2. Set the listener
 
-We need to tell the server where the phone’s VPN connection should arrive. The **Port** field is the number for that entry point; it is separate from the browser dashboard’s port.
+The **Port** is the number where your device’s VPN connection arrives. It is separate from the browser dashboard’s port. Use **8443** here; **443** works too. HTTPS websites normally use 443, and 8443 is a common HTTPS alternative. Both suit this connection’s browser-like opening, but the port number alone doesn’t disguise a VPN.
 
-Choose **8443** for this example and enter it in **Port** below. **443** also works. HTTPS websites normally use **443**, and **8443** is a common HTTPS alternative, so both fit REALITY’s aim of resembling encrypted browser traffic. The number alone doesn’t disguise the VPN. We’ll use the same number in the device link automatically when exporting it.
+In the **Basics** tab, fill in:
 
-| Field | Set it to | Check |
-|---|---|---|
-| Enable | On | The inbound must remain enabled |
-| Remark | A recognizable name, such as `Personal VPN` | This is a display name |
-| Protocol | `vless` | The imported client must also use VLESS |
-| Listen IP | Empty/default, or the intended public listener address | Do not set it to `127.0.0.1` for a public listener |
-| Port | `8443` for this example, or `443` | The exported device link must use this same number |
+| Field | Enter |
+|---|---|
+| **Enable** | Off for now; we’ll turn it on after adding the accounts |
+| **Remark** | `Personal VPN` |
+| **Protocol** | `vless` |
+| **Address** | Your server’s public IPv4 address |
+| **Port** | `8443` |
+| **Share address strategy** | `Custom` |
+| **Custom share address** | The same public IPv4 address, without `http://` or a port |
+| **Disable XTLS flow** | Off |
 
-Do not replace a working listener just to match the examples. Preserve its actual port and connection parameters.
+**Address** controls where the server accepts connections. **Custom share address** puts the right server address into your device links. The flow switch stays off because we’ll use Vision, a connection setting selected on each account below.
+
+Leave the form open. We still need its transport and security settings.
 
 ## 3. Set transport and security
 
-The server and app need to agree on how they carry and protect the connection. We’ll use **VLESS** to identify the VPN account, **RAW/TCP** to carry its traffic, and **REALITY** to protect the device-to-server connection. The settings below establish that shared setup; the exported link will copy them into Hiddify later.
+A **transport** is how the VPN carries your traffic. **RAW**, previously called TCP, carries it directly over a TCP connection. **XHTTP** packages it into HTTP requests and streams instead. Both can use the same encrypted protection. XHTTP isn’t automatically harder to block; it changes the traffic pattern and needs a matching client profile.
 
-| Field | Set it to | Why |
+For this first device connection, use **RAW**: it is the phone setup tested in this guide. We’ll protect it using **REALITY**, which makes the initial connection resemble a secure website connection and lets your app recognize your server.
+
+1. In the form, click **Stream** and set **Network** to **RAW** (TCP in some versions).
+2. Click **Security** and select **REALITY**.
+3. Enter these settings:
+
+| Field | Enter | What it does |
 |---|---|---|
-| Transmission / Network | `TCP` or `RAW` | Newer Xray names TCP transport RAW; `tcp` remains an alias in relevant releases |
-| Security | **REALITY** | Protects the connection between your device and this server |
-| Proxy Protocol | Off | Enable only when an upstream proxy actually sends PROXY headers |
-| Target / Dest | `www.apple.com:443` | A website used during REALITY connection setup; it must be reachable from this server |
-| Server Names / SNI | `www.apple.com` for that example | SNI is the website name sent during connection setup; use one covered by the target’s certificate |
-| Fingerprint / uTLS, when offered | `safari` | Shapes the app’s opening connection message; this value worked in our tests |
-| Short IDs | Generate a short ID | A short random label used to recognize this connection; keep the exported value |
-| Private / Public Key | Click **Get New Key** for a new inbound | Keep the private key on the server |
-| SpiderX, when offered | `/` | Keep the exported value |
-| Sniffing | Off for the initial setup | Inspects initial traffic to identify its destination; unnecessary for this simple setup |
+| **Target** | `www.apple.com:443` | Website used during connection setup |
+| **SNI** | `www.apple.com` | Website name sent in the opening message; keep it paired with Target |
+| **uTLS** | `safari` | Makes the app’s opening message resemble Safari’s; Safari needn’t be installed |
 
-The target website is used during connection setup, rather than deciding which sites you can visit. Keep **Target** and **SNI** paired as shown. **Safari** describes the app’s opening message. The generated keys let the app recognize your server; the private key stays on the server and the exported link carries the public one.
+The target doesn’t decide which websites you can visit. It is used to set up the protected connection.
 
-For an existing inbound, keep its keys and short IDs. Generating new ones would stop its existing device links from working. For a new inbound, generate them once and let the exported links carry the right values.
+4. Click **Get New Cert** below the key fields. In 3x-ui 3.8.5 this generates the REALITY keys; you don’t need to buy a certificate or domain. **Public Key** and **Private Key** should fill in.
+5. Keep the generated **Short IDs**. If empty, use the circular regenerate button beside that field.
+6. Leave the other settings unchanged and click **Create**.
+
+You should see **Personal VPN** in **Inbounds**, still disabled. Its keys will be included correctly in the exported links. When editing an existing working inbound, keep its keys and short IDs: replacing them would invalidate its existing device links.
 
 ## 4. Set the client account
 
-The entry point is shared, but each device needs credentials of its own. We’ll create separate accounts so you can later replace or remove one device’s access without changing the other. The panel calls these accounts **clients**.
+An inbound is the shared entry point; a **client account** gives a device permission to use it. We’ll make two accounts so either device’s access can be removed later without affecting the other.
 
-Some forms reveal Flow only after selecting REALITY. For the RAW connection chosen above, select **Vision** flow; this tells both ends how to handle traffic inside the connection.
+In this panel version, accounts are created through the separate **Clients** page:
 
-| Client field | Set it to |
-|---|---|
-| Enable | On |
-| Email / Name | `desktop` for the first account, or a name you choose; this is a label, not an email address |
-| ID / UUID | Keep the generated value for a new account; keep the original value when editing an existing account |
-| Flow | `xtls-rprx-vision` |
-| Encryption | `none`, where shown |
-| Expiry / Traffic limit / IP limit | No limit for initial testing, unless you intentionally require one |
+1. In the left sidebar, click **Clients → Add Client**.
+2. In **Basics**, enter `desktop` in **Email**. Despite the field’s name, this is just an account label; no email address is needed.
+3. In **Attached inbounds**, select **Personal VPN**. This connects the account to the entry you just made.
+4. Keep **Enable** on. Leave traffic and IP limits at `0` (unlimited), and expiry unset for this first setup.
+5. Open **Credentials**. Keep the generated **UUID**, the account’s unique identifier.
+6. Set **Flow** to **xtls-rprx-vision**. Vision is the flow used with this guide’s RAW connection. Select the attached inbound first if Flow isn’t visible.
+7. Click **Create**.
+8. Repeat **Clients → Add Client** for `phone`, attached to **Personal VPN**, with its own generated UUID and the same Vision flow.
 
-`encryption=none` is the VLESS payload setting; the connection is still protected by REALITY. It does not mean the VPN is sent as plaintext.
-
-**desktop** and **phone** are example names, not required keywords. You can choose your own labels to recognize the accounts. Each account gets its own connection link.
-
-Create a second client named **phone** (or your chosen second name), with a different generated UUID and the same **Vision** flow. Use the form’s add-client action if it allows several rows. Otherwise save the inbound, reopen its client list and add the second account there. A UUID is the generated account identifier; don’t reuse the desktop value for the phone.
-
-Click **Create** / **Save**, then apply or restart Xray if prompted. If the panel reports that the port is in use, [follow the port-conflict fix](troubleshooting.md#the-vpn-port-is-already-in-use). This can briefly interrupt existing VPN connections. You should now see one enabled inbound with **desktop** and **phone** accounts, and Xray should show as running.
+`desktop` and `phone` are names you choose, not device types or required keywords. You could use `alex-laptop` and `alex-mobile`. Each account gets its own private link. You should now see both accounts in **Clients**, attached to **Personal VPN**.
 
 ## 5. Export the connection
 
-Hiddify needs the account, address and security settings you just created. Instead of typing those fields again on the phone, we’ll copy them together as one private **connection link**.
+We’ll turn on the entry and copy each account’s settings as a private **connection link**. This saves typing addresses and keys into Hiddify.
 
-For the **26.7.28** server version used here, we’ll add **keyshare=classical** to that link. It asks Hiddify to use the shorter opening message that worked in our mobile test. This is the device-side choice paired with the server version selected on the previous page. Make this adjustment before importing the link.
+1. Open **Inbounds**, edit **Personal VPN**, and in **Basics** turn **Enable** on.
+2. Click **Save Changes**. Accept a restart if prompted. If the panel reports a busy port, use [the port-conflict fix](troubleshooting.md#the-vpn-port-is-already-in-use).
+3. Open **Clients** and find `phone`.
+4. Click its **ⓘ Client Information** action. Under **Copy URL**, find the VLESS link for **Personal VPN** and click its copy icon. Copy the account link, rather than a subscription or dashboard address.
+5. Paste it into a text editor and keep a private copy.
 
-1. In **Inbounds**, expand the inbound’s client list if needed.
-2. Find the intended client row.
-3. Open its **Info / connection details** action, or the QR/share action. Depending on the layout, actions may be in **⋯**.
-4. Copy the **VLESS URL** for that account.
-5. Paste the copied link into a text editor and save a private copy of the original. For the **26.7.28** preset, find the `#` before its display name and insert **`&keyshare=classical`** immediately before it. This asks Hiddify to use the tested connection setup. If `keyshare=` already exists, change its value instead of adding it again.
-6. Copy the adjusted whole line for Hiddify. Repeat with the other device’s account and keep the two links separately named.
+For the **26.7.28** server version installed earlier, we’ll ask Hiddify to use the shorter opening message that worked in our mobile test. Find the `#` before the link’s display name and insert **`&keyshare=classical`** immediately before it. If `keyshare=` already exists, change its value instead of adding it twice.
 
-For example, the end of the link changes from `…&spx=%2F#Personal-VPN-phone` to `…&spx=%2F&keyshare=classical#Personal-VPN-phone`. Keep everything else unchanged. This option matches the **26.7.28** version installed earlier. [Compatibility notes for other versions](handshakes-and-versions.md#match-the-client-option-to-the-server) are separate from this setup.
+For example, the end changes from `…&spx=%2F#Personal-VPN-phone` to `…&spx=%2F&keyshare=classical#Personal-VPN-phone`. Keep everything else unchanged. [Why this version and option go together](handshakes-and-versions.md) is explained separately for curious readers.
 
-The panel’s QR code may contain the original link without this adjustment. Use the adjusted text link for this first connection.
+Copy the adjusted whole line for Hiddify. Repeat with `desktop` and keep the two links separately named. The panel’s QR code can contain the original link without the adjustment, so use the adjusted text link for this first connection.
 
-A placeholder link looks like this; import the panel's real export rather than copying this example:
+**This step is complete when:** the inbound and both accounts are enabled, Xray is running, and you have two private adjusted links.
 
-```text
-vless://YOUR_UUID@YOUR_SERVER_IP:8443?encryption=none&flow=xtls-rprx-vision&security=reality&sni=www.apple.com&fp=safari&pbk=YOUR_PUBLIC_KEY&sid=YOUR_SHORT_ID&type=tcp&spx=%2F&keyshare=classical#Personal-VPN-phone
-```
-
-Copy the whole link. Its account ID and key values are easy to damage by retyping; you only need to add the classical option shown above.
-
-For a desktop and phone, use two separately named client accounts, `desktop` and `phone`, on this same inbound. Export each account's own link; each device keeps its own credentials and can be revoked separately. Both accounts can use the same listener. When replacing a test account, verify the new accounts before removing the test account from the inbound and central client list.
-
-**Step 3 is complete when:** your inbound and account are enabled, Xray is running, and you have copied the private connection link.
-
-**[Next step: import the account into Hiddify and connect →](clients.md)**
-
+**[Next: import your account into Hiddify and connect →](clients.md)**
 
 ## Optional XHTTP instead of RAW
 
-Choose **XHTTP** in the transport field, set **Path** to `/vpn`, choose server mode **auto**, and keep **REALITY** as security. The XHTTP account's **Flow** is empty. Export and import the new XHTTP link; it contains a different transport and path. For this guide's RAW accounts, keep Vision flow. This entry variant is available in the helper and needs an end-to-end test on the intended network.
+<details>
+<summary>Try another transport after the RAW connection works</summary>
+
+Use a separate test inbound and account so your working RAW profiles stay usable. Only one inbound can use a given address and port: if RAW uses 8443, use 443 for this test when it is available.
+
+Follow the form steps above, with these changes:
+
+1. In **Basics**, give the inbound a different remark, use the other available port, and turn **Disable XTLS flow** on.
+2. In **Stream**, choose **Network → XHTTP**, **Path → /vpn**, and **Mode → auto**. The path is a shared connection setting, not a folder you need to create.
+3. Keep **Security → REALITY** and generate this new inbound’s own keys.
+4. Save the inbound, then create a separate account in **Clients**, attached to the test inbound. Leave **Flow** empty/None if shown; XHTTP doesn’t use Vision.
+5. Enable the test inbound and export its account link through **Client Information → Copy URL**. Add the same classical option for the selected server version, import it as a new Hiddify profile, and test on Wi-Fi and mobile data.
+
+The new link contains the different transport and path. Your old RAW link cannot connect to an XHTTP-only inbound. Keep whichever complete setup works on your network; a transport change is a test, not a guaranteed fix for blocking.
+
+</details>
 
 ## Versioned references
 

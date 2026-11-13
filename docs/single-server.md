@@ -62,7 +62,7 @@ You’ll open a terminal on your computer, connect to the server, and paste the 
 
 **[Install and open the dashboard →](server-setup.md)**
 
-Already able to sign in to 3x-ui? Start with step 3.
+Already able to sign in to 3x-ui? Complete the linked page’s **Xray version** step so the server matches the device links, then continue below.
 
 ### 3. Make a link for each device
 
@@ -78,12 +78,14 @@ Install Hiddify, add your device’s link, and press Connect. Open a website and
 
 That’s the whole route. Once your websites open and the address check matches your server, you can stop.
 
-## Set this up with scripts
+## Optional: set this up with scripts
 
 <details>
 <summary>Open the commands for the same single-server setup</summary>
 
 Use your **fresh foreign server**, such as the HostVDS rental, with Ubuntu/Debian, systemd and a public IPv4 address. Run these commands on **your setup computer**, after [downloading the repository and opening a terminal in its folder](quick-start.md#before-the-first-command). An existing 3x-ui installation needs the manual path. Save the root login from your provider.
+
+Before either command, replace **203.0.113.10** with your foreign server’s public IPv4 address. **desktop,phone** are two account names you choose; use comma-separated names without spaces. The script creates a private link for each. The remaining options select the same port, security and version as the manual walkthrough.
 
 **Windows PowerShell**, from the repository folder:
 
@@ -121,7 +123,12 @@ If Wi-Fi works but mobile data doesn’t, read [the mobile connection checks](tr
 
 ## Optional XHTTP entry
 
+<details>
+<summary>When to try another transport</summary>
+
 XHTTP is another way to carry the VPN traffic. The working phone setup in this guide uses RAW, so keep that for your first connection. If you want to test XHTTP later, use a separate account and follow [the XHTTP settings](server-inbound.md#optional-xhttp-instead-of-raw). Changing transport also means importing a matching new link.
+
+</details>
 
 ## Optional shortcuts and deeper reading
 

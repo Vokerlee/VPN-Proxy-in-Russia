@@ -23,7 +23,7 @@ Website
 
 Other networks can sit between these stops too. This setting changes the exit server’s outgoing connection; your internet provider still carries your connection to the VPN.
 
-You need access to **3x-ui**, the server’s browser dashboard, and a working device connection in **Hiddify**. [Set up a device first](clients.md) if you haven’t connected yet. In a two-server setup, make this change on the **foreign server**, which opens the website connections.
+You need access to **3x-ui**, the server’s browser dashboard. You can prepare this setting before your first device connection. To verify it afterward, you’ll need [Hiddify connected on your device](clients.md). In a two-server setup, make this change on the **foreign server**, which opens the website connections.
 
 This won’t fix a phone that can’t reach its VPN server. For that, use [troubleshooting](troubleshooting.md). You don’t need to disable IPv6 on the device or server for this change.
 

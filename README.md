@@ -143,7 +143,7 @@ On Windows PowerShell:
 
 **`--clients desktop,phone` / `-Clients desktop,phone` creates two VPN accounts with those names.** Choose your own names, such as `alex,anna,laptop`, separated by commas without spaces. Each gets its own link. [Names and output files](docs/automation.md#choose-the-vpn-account-names)
 
-Use your fresh VPS address. After checking the plan, replace `--plan` with `--apply`, or add `-Apply`. With the example account names, copy the link from **client-desktop.txt** or **client-phone.txt** in the printed output folder into Hiddify. If you chose other names, use **client-NAME.txt** for the intended account. Then test a website. [Full script walkthrough](docs/single-server.md#set-this-up-with-scripts)
+Use your fresh VPS address. After checking the plan, replace `--plan` with `--apply`, or add `-Apply`. With the example account names, copy the link from **client-desktop.txt** or **client-phone.txt** in the printed output folder into Hiddify. If you chose other names, use **client-NAME.txt** for the intended account. Then test a website. [Full script walkthrough](docs/single-server.md#optional-set-this-up-with-scripts)
 
 </details>
 
@@ -161,7 +161,9 @@ You pay for two servers. Your device connects to the one in Russia, which passes
 <details>
 <summary>Set up two servers with scripts</summary>
 
-Configure IPv6 on both servers first. [Download the repository and open a terminal in its folder](docs/quick-start.md#before-the-first-command), then preview the route:
+Configure IPv6 on both servers first. The helper creates the relay and device accounts, saves private links, and checks the foreign exit. [Download the repository and open a terminal in its folder](docs/quick-start.md#before-the-first-command).
+
+In the command, replace **--hub-host** with Moscow’s public IPv4, **--exit-host** with the foreign public IPv4, and **--exit-ipv6** with its configured IPv6 host address. **--route nl** names this country route, **--entry-port 443** is Moscow’s device port, and **--clients** names your device accounts. The remaining flags select the versions and connection settings explained in the walkthrough. **--plan** previews them without changing either server:
 
 ```bash
 python3 scripts/bootstrap_relay.py \
@@ -174,7 +176,7 @@ python3 scripts/bootstrap_relay.py \
 
 **`--clients desktop,phone` lists the Moscow device account names to create.** You can use your own comma-separated names, such as `alex,anna,laptop`; each name gets a private link. [Names and output files](docs/automation.md#choose-the-vpn-account-names)
 
-Use your own server addresses. On Windows, use `py` and put the arguments on one line. After checking the plan, replace `--plan` with `--apply`. With the example names, copy the link from **desktop.txt** or **phone.txt** in the printed private output folder into Hiddify. For a custom name, use **NAME.txt**. Then check the foreign exit IP. [Full script walkthrough](docs/two-hop-vpn.md#3-preview-and-apply-the-relay-helper)
+Use your own server addresses. On Windows, use `py` and put the arguments on one line. After checking the plan, replace `--plan` with `--apply`. With the example names, copy the link from **desktop.txt** or **phone.txt** in the printed private output folder into Hiddify. For a custom name, use **NAME.txt**. Then check the foreign exit IP. [Full script walkthrough](docs/two-hop-vpn.md#optional-preview-and-apply-the-relay-helper)
 
 </details>
 

@@ -132,4 +132,4 @@ Provider forms and billing offers change. The actions above describe the task; c
 - A running **Moscow server from FirstVDS**, with its IPv4 login and assigned IPv6 details.
 - A running **foreign server from HostVDS**, with its IPv4 login and assigned IPv6 details.
 
-If one is missing, finish that rental first. Once both are ready, [configure and test IPv6 on both servers →](two-hop-vpn.md#1-configure-ipv6-yourself-using-your-vps-providers-instructions). After those checks, that guide sends you to install a dashboard on each server.
+If one is missing, finish that rental first. Once both are ready, [configure IPv6 on both servers →](two-hop-vpn.md#1-configure-ipv6-yourself-using-your-vps-providers-instructions). After that setup, the guide sends you to install a dashboard on each server.

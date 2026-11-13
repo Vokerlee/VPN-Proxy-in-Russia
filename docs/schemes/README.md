@@ -53,7 +53,7 @@ With **one server**, Hiddify opens an encrypted VPN connection to the server abr
 
 With **two servers**, Hiddify opens **VPN 1** to the Russian server. That server opens **VPN 2** to the foreign server and passes the traffic into it. The foreign server opens the website connection. You still press **Connect once** in Hiddify; the Russian server handles the second VPN.
 
-In our example, the Russian server is Moscow and the foreign server is NL. VPN 1 uses **IPv4, VLESS + RAW + REALITY + Vision**. VPN 2 uses **IPv6, VLESS + XHTTP + REALITY**, with an empty flow. These are the settings used in [the two-server steps](../two-hop-vpn.md#2-choose-the-two-legs).
+In our example, the Russian server is Moscow and the foreign server is NL. VPN 1 uses **IPv4, VLESS + RAW + REALITY + Vision**. VPN 2 uses **IPv6, VLESS + XHTTP + REALITY**, with an empty flow. These are the settings used in [the two-server form steps](../two-hop-vpn.md#on-nl-create-the-relay-account).
 
 The first connection uses a Yandex target name and Safari fingerprint. The second uses a Google target name and Chrome fingerprint. Those describe connection setup, not which websites you can visit. The phone’s classical setting must match the entry server’s version. [Handshake versions](../handshakes-and-versions.md)
 

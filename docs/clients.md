@@ -37,7 +37,7 @@ The link contains your server address and account settings. Importing it saves t
 2. In Hiddify, press **+ → Clipboard**. Some versions call it **Add from clipboard**.
 3. Select the new connection. Its name can include both the server and device, such as **Personal VPN-phone**.
 
-If you used our one-server scripts, copy the link from **client-phone.txt** or **client-desktop.txt** in the output folder. The two-server scripts call those files **phone.txt** and **desktop.txt**. If someone manages the server for you, ask them for your device’s link.
+If you used our one-server scripts, copy the link from **client-phone.txt** or **client-desktop.txt** in the output folder. The two-server scripts call those files **phone.txt** and **desktop.txt**. If you chose custom account names, use **client-YOUR_NAME.txt** for one server or **YOUR_NAME.txt** for two servers. If someone manages the server for you, ask them for your device’s link.
 
 You can scan a QR code instead if it was made from that same link. Keep links and QR codes private: they let someone use the account.
 

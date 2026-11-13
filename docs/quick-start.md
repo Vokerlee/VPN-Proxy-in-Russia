@@ -1,10 +1,10 @@
-[← One-server walkthrough](single-server.md) · [Two-server scripts](two-hop-vpn.md#3-preview-and-apply-the-relay-helper)
+[← One-server walkthrough](single-server.md) · [Two-server scripts](two-hop-vpn.md#optional-preview-and-apply-the-relay-helper)
 
 # Let a script set up a fresh server
 
 If you’d rather paste a few commands than fill in the server dashboard yourself, use this page. The script installs the VPN software and makes separate connection links for your phone and computer. You’ll still rent the server yourself and add the links to Hiddify afterward.
 
-This is for a **one-server VPN on one fresh foreign server**, such as your HostVDS rental. Already have a working 3x-ui dashboard? [Create accounts there](server-inbound.md) instead; this installer stops when it finds an existing installation. For two servers, use [the two-server script instructions](two-hop-vpn.md#3-preview-and-apply-the-relay-helper).
+This is for a **one-server VPN on one fresh foreign server**, such as your HostVDS rental. Already have a working 3x-ui dashboard? [Create accounts there](server-inbound.md) instead; this installer stops when it finds an existing installation. For two servers, use [the two-server script instructions](two-hop-vpn.md#optional-preview-and-apply-the-relay-helper).
 
 **What you need:** a fresh Ubuntu or Debian server, its public IPv4 address, and working SSH access as **root**, its administrator. SSH is the terminal connection the script uses. The server needs systemd, the service manager normally supplied with those systems. [No server yet? Rent one first](choose-server.md).
 
@@ -28,6 +28,8 @@ Choose the commands for your computer. Replace **203.0.113.10** with your server
 The examples below create accounts named **desktop** and **phone** by default. To choose your own labels, add **`-Clients alex,anna,laptop`** on Windows or **`--clients alex,anna,laptop`** with Python. That example creates three separate VPN accounts. [How names and output files work](automation.md#choose-the-vpn-account-names)
 
 The examples use **8443 for the VPN connection** and **27297 for its browser dashboard**. These are separate numbered entry points on the server. HTTPS websites normally use 443, and 8443 is a common alternative; those familiar ports fit REALITY’s browser-like connection setup. You can choose 443 for the VPN instead. The port alone doesn’t disguise it.
+
+The fixed options below reproduce the manual setup: **Target** is the website REALITY uses during connection setup; **Fingerprint safari** makes Hiddify’s opening message resemble Safari. Neither limits the websites you can visit or requires Safari to be installed. The helper selects Xray **26.7.28**, the server’s VPN program, and adds **keyshare=classical** to your device links for the shorter opening message tested here. Its default **RAW/TCP** transport carries the VPN directly over TCP; the optional [XHTTP experiment](server-inbound.md#optional-xhttp-instead-of-raw) carries it through HTTP requests and streams instead. Keep RAW for your first phone connection.
 
 ### Windows PowerShell
 
@@ -74,7 +76,7 @@ python3 scripts/bootstrap_server.py --host 203.0.113.10 --vpn-port 8443 --target
 
 SSH may ask you to confirm the server’s identity on the first connection. Compare the host fingerprint with the provider’s console when available. It then asks for the root password. Nothing appears while you type; that’s normal. Keep passwords out of commands. An already configured SSH key also works.
 
-Leave the terminal open until setup finishes. The script checks for a fresh installation, installs the software, creates **desktop** and **phone** accounts, and saves the results. It doesn’t stop your existing VPN apps or change your computer’s network settings. If it stops with an error, use the table below rather than reinstalling the server.
+Leave the terminal open until setup finishes. The script checks for a fresh installation, installs the software, creates the accounts you chose (**desktop** and **phone** by default), and saves the results. It doesn’t stop your existing VPN apps or change your computer’s network settings. If it stops with an error, use the table below rather than reinstalling the server.
 
 For a custom SSH port, add `-SshPort YOUR_PORT` on Windows or `--ssh-port YOUR_PORT` with Python. [Other options](automation.md#start-with-only-a-vps-ip-and-root-password)
 
@@ -87,7 +89,7 @@ When setup finishes, it prints the panel URL and the private output folder. Open
 1. Open **server.json** locally in a text editor and find **panel_username** and **panel_password**.
 2. Open the printed panel URL in your browser. With the default port, it looks like `http://YOUR_SERVER_IP:27297/`.
 3. Sign in using those panel credentials. The SSH root password is a separate login.
-4. Open **Inbounds**. You should see **Personal VPN**, enabled, with **desktop** and **phone** accounts. The script already created them; don’t add them again.
+4. Open **Inbounds**. You should see **Personal VPN**, enabled. Open **Clients** to see the accounts you chose, attached to that inbound (**desktop** and **phone** by default). The script already created them; don’t add them again.
 
 If the page doesn’t open, use [the panel connection checks](troubleshooting.md#the-dashboard-doesnt-open-in-the-browser).
 
