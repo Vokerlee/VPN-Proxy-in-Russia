@@ -190,7 +190,7 @@ def parser():
     p.add_argument("--exit-target", default="www.google.com")
     p.add_argument("--exit-fingerprint", choices=("chrome", "safari", "firefox", "ios"), default="chrome")
     p.add_argument("--hub-core-version", default="26.7.28")
-    p.add_argument("--exit-core-version", default="26.9.9")
+    p.add_argument("--exit-core-version", default="26.7.28")
     p.add_argument("--entry-key-share", choices=("classical", "hybrid"), default="classical")
     p.add_argument("--entry-transport", choices=("raw", "xhttp"), default="raw")
     p.add_argument("--relay-transport", choices=("xhttp", "raw"), default="xhttp")

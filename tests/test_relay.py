@@ -92,7 +92,7 @@ class RelayTests(unittest.TestCase):
             "--hub-host", "203.0.113.10", "--exit-host", "198.51.100.20",
             "--exit-ipv6", "2001:db8:2::1", "--route", "nl"]))
         self.assertEqual((args.hub_core_version, args.entry_key_share, args.relay_transport,
-                          args.exit_core_version), ("26.7.28", "classical", "xhttp", "26.9.9"))
+                          args.exit_core_version), ("26.7.28", "classical", "xhttp", "26.7.28"))
         args.hub_core_version = "26.9.9"
         with self.assertRaisesRegex(ValueError, "classical"):
             launcher.validate(args)
